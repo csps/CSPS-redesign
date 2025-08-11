@@ -1,12 +1,26 @@
-import './App.css'
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
+import RouteContainer from "./router/RouteContainer";
+import AOS from "aos";
+import { useEffect } from "react";
+import 'aos/dist/aos.css';
 
 function App() {
 
+    useEffect(() => {
+    AOS.init({
+      duration: 600, 
+      easing: "ease-out-cubic",
+      once: false,    
+      offset: 100,   
+    });
+  }, [])
+  
   return (
-    <div className='text-center'>
-      <h1>Test</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <RouteContainer />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

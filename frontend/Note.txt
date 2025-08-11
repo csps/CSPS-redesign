@@ -1,0 +1,79 @@
+FRONTEND Project Structure
+==========================
+
+This file documents the purpose of each folder and key files in the project.
+Use this as a reference for organizing code, onboarding new developers, and maintaining consistency.
+
+───────────────────────────────
+ROOT LEVEL
+───────────────────────────────
+
+- node_modules/       → Auto-managed dependencies. Do not edit manually.
+- public/             → Static assets served directly (e.g. favicon, index.html).
+- bun.lock            → Bun package lock file. Do not modify manually.
+- .gitignore          → Specifies files/folders to exclude from version control.
+
+───────────────────────────────
+src/ — Main Application Code
+───────────────────────────────
+
+assets/              → Images, fonts, and other static resources.
+components/          → Global reusable UI components (buttons, modals, inputs).
+                      - Use for design primitives shared across pages.
+                      - Avoid placing page-specific logic here.
+
+constants/           → App-wide constants (e.g. route paths, enums, config values).
+                      - Use for values that rarely change and are reused.
+
+hooks/               → Custom React hooks.
+                      - Keep them generic and reusable.
+                      - Page-specific hooks should go inside the relevant page folder.
+
+pages/               → Route-level components. Each file corresponds to a route.
+                      - Example: /dashboard → DashboardPage.tsx
+                      - Keep page-specific components inside their folder.
+                      - Use descriptive names like HomePage.tsx, not Index.tsx.
+
+router/              → Centralized routing logic.
+                      - routes.tsx: Defines all app routes.
+                      - RouteContainer.tsx: Wraps routes with Suspense, layouts, or guards.
+
+services/            → API calls and external integrations.
+                      - Group by domain (e.g. authService.ts, productService.ts).
+                      - Avoid placing UI logic here.
+
+types/               → TypeScript interfaces and types.
+                      - Shared types used across multiple components or services.
+                      - Example: FeaturedCardType.ts
+
+utils/               → Utility functions and app entry files.
+                      - App.tsx: Main app component.
+                      - main.tsx: App entry point.
+                      - index.css, App.css: Global styles.
+                      - vite-env.d.ts: Vite environment types.
+
+───────────────────────────────
+NAMING CONVENTIONS
+───────────────────────────────
+
+- Use PascalCase for components and pages (e.g. HomePage.tsx).
+- Avoid generic filenames like Index.tsx unless absolutely necessary.
+- Use barrel files (index.ts) for clean imports when grouping components.
+
+───────────────────────────────
+RECOMMENDATIONS
+───────────────────────────────
+
+✅ Keep shared logic in components/, hooks/, services/, and types/.
+✅ Keep page-specific logic scoped inside pages/X/
+✅ Use lazy loading in routes.tsx for performance.
+✅ Wrap routes in <Suspense> inside RouteContainer.tsx.
+✅ Use aliases like @/pages/... for cleaner imports (set in tsconfig.json).
+
+───────────────────────────────
+MAINTAINABILITY TIPS
+───────────────────────────────
+
+- Avoid mixing global and page-specific logic.
+- Keep folder structure flat and predictable.
+- Document complex components or services with comments or README.md files.
