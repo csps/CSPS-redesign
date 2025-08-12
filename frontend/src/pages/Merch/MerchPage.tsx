@@ -27,10 +27,11 @@ const Index = () => {
     },
     {
       id: 3,
-      name: "T-SHIRT - 2",
+      name: "T-SHIRT-2",
       image: Sample2,
     },
   ];
+
   return (
     <Layout>
       <LogoSection withNav={true} />
@@ -82,11 +83,11 @@ const Index = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {sampleItems.map((item, index) => (
+            <Link to={`/product-view?product=${encodeURIComponent(item.name)}`} key={index}>
             <GlassmorphismCard
               glassCard={2}
               borderRadius={20}
               className="flex-col text-white text-lg h-[450px]"
-              key={index}
             >
               <div>
                 <img src={item.image} alt="sample1-icon" />
@@ -133,6 +134,7 @@ const Index = () => {
                 </div>
               </div>
             </GlassmorphismCard>
+            </Link>
           ))}
         </div>
       </div>

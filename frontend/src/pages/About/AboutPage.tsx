@@ -1,4 +1,4 @@
-import CardSwap from "@/pages/Dashboard/components/CardSwap";
+import CardSwap from "@/pages/About/components/CardSwap";
 import Footer from "@/components/shared/Footer";
 import HeroSection from "./components/HeroSection";
 import Cards from "./components/Cards";
@@ -8,11 +8,15 @@ import RepsCarousel from "./components/RepsCarousel";
 import GetToKnowCcsCards from "./components/GetToKnowCcsCards";
 import AboutLayout from "@/components/Layouts/AboutLayout";
 import { Link } from "react-router-dom";
+import LogoSection from "@/components/shared/LogoSection";
 
 const Index = () => {
   return (
-    <AboutLayout>
+    <AboutLayout >
+        <LogoSection withNav={true} authenticated={false}/>
+
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20 flex justify-center flex-col items-center ">
+
         <HeroSection />
 
         <div

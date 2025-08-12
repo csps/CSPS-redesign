@@ -1,5 +1,5 @@
 import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
-import React from "react";
+import React, { useState } from "react";
 import CSPSLogo from "@/assets/CSPSLogo.png";
 import { GlassTextField } from "@/components/Glassmorphism/GlassTextField";
 import Layout from "@/components/Layouts/Layout";
@@ -10,6 +10,20 @@ import { motion } from "framer-motion";
 import Logo from "@/assets/CSPS_LOGO.png";
 
 const Index = () => {
+
+  const MAX: number = 8;
+  const [idNumber, setIdNumber] = useState<string>('');
+
+  const handleIdNumberChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    
+      const numericValue = e.target.value.replace(/[^0-9]/g, '');
+      if(numericValue.length <= MAX){
+         setIdNumber(numericValue);
+      }
+      
+  }
+
+
   return (
     <Layout className="relative flex items-center justify-center px-4 sm:px-8 lg:px-20 py-8 sm:py-12">
       <div className="hidden md:flex absolute top-42 left-0 w-[84vw] h-[84vw] max-w-[950px] max-h-[950px] lg:top-0 lg:right-[-17rem]">
@@ -52,8 +66,12 @@ const Index = () => {
                 type="text"
                 blur={8}
                 borderRadius="1rem"
+                value={idNumber}
+                onChange={handleIdNumberChange}
               />
-
+              <div className="text-white w-full text-right px-2 mt-[-1rem]">
+                <p className="font-semibold text-gray-500">{idNumber.length}/{MAX}</p>
+              </div>
               <GlassTextField
                 label="Password"
                 type="password"
