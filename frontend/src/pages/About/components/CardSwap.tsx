@@ -27,7 +27,7 @@ export default function CardSwap() {
           transition={{ duration: 0.5 }}
         >
           <GlassmorphismCard
-            glassCard={isSwapped ? 2 : 1}
+            glassCard={isSwapped ? 1 : 2}
             className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl"
           >
             {/* Image */}
@@ -76,7 +76,7 @@ export default function CardSwap() {
           transition={{ duration: 0.5 }}
         >
           <GlassmorphismCard
-            glassCard={isSwapped ? 1 : 2}
+            glassCard={isSwapped ? 2 : 1}
             className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl"
           >
             {/* Image */}
