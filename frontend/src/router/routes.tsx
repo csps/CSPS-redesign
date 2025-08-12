@@ -1,3 +1,4 @@
+import ProductViewPage from "@/pages/ProductView/ProductViewPage";
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 
@@ -37,6 +38,10 @@ const routes: RouteObject[] = [
   {
     path: "/cart",
     element: <Cart />
+  },
+  {
+    path: "/product-view",
+    element: <ProductViewPage />
   }
 ];
 

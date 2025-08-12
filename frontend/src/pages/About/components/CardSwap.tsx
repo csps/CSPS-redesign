@@ -26,7 +26,10 @@ export default function CardSwap() {
           }}
           transition={{ duration: 0.5 }}
         >
-          <GlassmorphismCard className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl">
+          <GlassmorphismCard
+            glassCard={isSwapped ? 2 : 1}
+            className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl"
+          >
             {/* Image */}
             <div className="w-full md:w-[30%] h-52 md:h-auto flex items-center justify-center">
               <img
@@ -72,7 +75,10 @@ export default function CardSwap() {
           }}
           transition={{ duration: 0.5 }}
         >
-          <GlassmorphismCard className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl">
+          <GlassmorphismCard
+            glassCard={isSwapped ? 1 : 2}
+            className="flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl"
+          >
             {/* Image */}
             <div className="w-full md:w-[30%] h-52 md:h-auto flex items-center justify-center">
               <img

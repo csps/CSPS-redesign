@@ -8,17 +8,8 @@ import MobileMenu from "./MobileMenu";
 import { AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
-const LogoSection = ({ withNav = false }: { withNav?: boolean }) => {
+const LogoSection = ({ withNav = false, authenticated = true }: { withNav?: boolean, authenticated?: boolean }) => {
   const [isClicked, setIsClicked] = useState(false);
-  console.log(withNav);
-  // Close menu on ESC key
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsClicked(false);
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
 
   return (
     <>
@@ -51,13 +42,13 @@ const LogoSection = ({ withNav = false }: { withNav?: boolean }) => {
               <li className="list-none cursor-pointer">
                 <Link to="/merch">Merch</Link>
               </li>
-              <li className="list-none cursor-pointer">
+             {authenticated && <li className="list-none cursor-pointer">
                 <img
                   src={AccountCircleIcon}
                   alt="profile-icon"
                   className="w-10 h-10"
                 />
-              </li>
+              </li>}
             </nav>
 
             {/* Mobile Menu Button */}
@@ -70,7 +61,7 @@ const LogoSection = ({ withNav = false }: { withNav?: boolean }) => {
 
             {/* Mobile Menu */}
             <AnimatePresence>
-              {isClicked && <MobileMenu onClose={() => setIsClicked(false)} />}
+              {isClicked && <MobileMenu onClose={() => setIsClicked(false)} authenticated={authenticated}/>}
             </AnimatePresence>
           </>
         )}

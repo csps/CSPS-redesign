@@ -3,6 +3,7 @@ import React from "react";
 const AboutLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
+    className="overflow-x-hidden"
       style={{
         backgroundImage: `
       radial-gradient(126.59% 74% at 81.35% 27.09%, rgba(193, 19, 251, 0.10) 0%, rgba(193, 19, 251, 0.08) 27.88%, rgba(193, 19, 251, 0.00) 42.03%),

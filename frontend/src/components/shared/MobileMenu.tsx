@@ -8,9 +8,10 @@ import CloseIcon from "@mui/icons-material/Close";
 
 interface MobileMenuProps {
   onClose: () => void;
+  authenticated?: boolean;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ onClose, authenticated }) => {
   return (
     <>
       <motion.div
@@ -43,10 +44,10 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose }) => {
                 <StoreMallDirectorySharpIcon fontSize="large" />
                 Merch
               </li>
-              <li className="cursor-pointer flex gap-4 items-center">
+            {authenticated &&  <li className="cursor-pointer flex gap-4 items-center">
                 <AccountCircleSharpIcon fontSize="large" />
                 Profile
-              </li>
+              </li>}
             </ul>
           </div>
         </div>
