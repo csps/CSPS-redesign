@@ -9,6 +9,7 @@ import Sample2 from "@/assets/Sample2.png";
 import { useState } from "react";
 import Logo from "@/assets/CSPS_LOGO.png";
 import { Link } from "react-router-dom";
+import TransactionsNav from "@/components/shared/test/TransactionsNav";
 
 const Index = () => {
   const [sampleStock, setSampleStock] = useState<number>(10);
@@ -45,42 +46,8 @@ const Index = () => {
           />
         </div>
 
-        <div className=" w-full absolute top-20 flex justify-between items-center">
-          <Select
-            id="demo-controlled-open-select"
-            variant="standard"
-            disableUnderline
-            displayEmpty
-            value="" // default to empty for placeholder
-            sx={{
-              backgroundColor: "transparent",
-              color: "white",
-              fontSize: "1rem",
-              "& .MuiSelect-icon": {
-                color: "white",
-              },
-              "& .MuiInput-input": {
-                padding: "8px 12px",
-              },
-            }}
-          >
-            <MenuItem value="" disabled>
-              <em>Type</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-
-          <div className="flex gap-5 text-white px-15">
-            <Link to="/transactions">
-              <ReceiptIcon fontSize="large" />
-            </Link>
-            <Link to="/cart">
-              <ShoppingCartIcon fontSize="large" />
-            </Link>
-          </div>
-        </div>
+       <TransactionsNav />
+       
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {sampleItems.map((item, index) => (
             <Link to={`/product-view?product=${encodeURIComponent(item.name)}`} key={index}>
