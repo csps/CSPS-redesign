@@ -5,6 +5,30 @@
 @import "swiper/css/pagination";
 @import "swiper/css/navigation";
 
+body {
+  background-color: radial-gradient(
+      25.71% 30.27% at 89.86% 20.02%,
+      rgba(193, 19, 251, 0.2) 0%,
+      rgba(193, 19, 251, 0.16) 27.88%,
+      rgba(193, 19, 251, 0) 100%
+    ),
+    radial-gradient(
+      93.78% 51.58% at 0% 19.29%,
+      rgba(255, 204, 0, 0.2) 0%,
+      rgba(207, 176, 19, 0.15) 29.33%,
+      rgba(194, 164, 18, 0.13) 43.75%,
+      rgba(126, 99, 10, 0) 100%
+    ),
+    radial-gradient(
+      88.77% 62.89% at 67.78% 70.61%,
+      rgba(52, 21, 168, 0.8) 0%,
+      #290f86 14.42%,
+      #210c71 28.37%,
+      #160651 46.15%,
+      #0f033d 57.21%,
+      #0d0233 100%
+    );
+}
 .glass-card-1::before {
   content: "";
   position: absolute;

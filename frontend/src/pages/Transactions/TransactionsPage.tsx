@@ -7,6 +7,8 @@ import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
 import Sample1 from "@/assets/Sample1.png";
 import Sample2 from "@/assets/Sample2.png";
 import Logo from "@/assets/CSPS_LOGO.png";
+import { Link } from "react-router-dom";
+import TransactionsNav from "@/components/shared/test/TransactionsNav";
 
 const Index = () => {
   const sampleItems = [
@@ -39,40 +41,7 @@ const Index = () => {
           />
         </div>
 
-        <div className=" w-full absolute top-5 lg:top-30 flex justify-between items-center">
-          <Select
-            id="demo-controlled-open-select"
-            variant="standard"
-            disableUnderline
-            displayEmpty
-            value="" // default to empty for placeholder
-            sx={{
-              backgroundColor: "transparent",
-              color: "white",
-              fontSize: "1rem",
-              "& .MuiSelect-icon": {
-                color: "white",
-              },
-              "& .MuiInput-input": {
-                padding: "8px 12px",
-              },
-            }}
-          >
-            <MenuItem value="" disabled>
-              <em>Type</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
-          </Select>
-          <div className="text-gray-300  md:text-3xl font-semibold">
-            <p>CLAIM AT CSPS-S OFFICE</p>
-          </div>
-          <div className="flex gap-5 text-white px-15">
-            <ReceiptIcon fontSize="large" />
-            <ShoppingCartIcon fontSize="large" />
-          </div>
-        </div>
+        <TransactionsNav />
         <div className="flex flex-col gap-5 w-full">
           {sampleItems.map((item, index) => (
             <GlassmorphismCard

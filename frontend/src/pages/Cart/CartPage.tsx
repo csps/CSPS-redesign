@@ -7,6 +7,8 @@ import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
 import Sample1 from "@/assets/Sample1.png";
 import Sample2 from "@/assets/Sample2.png";
 import Logo from "@/assets/CSPS_LOGO.png";
+import { Link } from "react-router-dom";
+import TransactionsNav from "@/components/shared/test/TransactionsNav";
 
 const Index = () => {
   const sampleItems = [
@@ -36,16 +38,8 @@ const Index = () => {
         </div>
 
         {/* Top Bar */}
-        <div className=" w-full absolute top-20 flex justify-between items-center">
-          <p className="bg-white px-6 py-2 text-2xl lg:text-4xl rounded-full text-black font-semibold">
-            All
-          </p>
-          <div className="flex gap-5 text-white">
-            <ReceiptIcon fontSize="large" />
-            <ShoppingCartIcon fontSize="large" />
-          </div>
-        </div>
-
+        <TransactionsNav />
+        
         {/* Product Cards + Checkout */}
         <div className="flex flex-col lg:flex-row gap-8 w-full">
           {/* Product List */}

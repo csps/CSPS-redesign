@@ -23,11 +23,11 @@ const Index = () => {
       {/* CSPS Background Image */}
 
       {/* Logo Section */}
-      <LogoSection />
+      <LogoSection withNav={true}/>
 
       {/* Main Content */}
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20">
-        <div className="absolute top-42  right-0 w-[84vw] h-[84vw] max-w-[950px] max-h-[950px] lg:top-0 lg:right-[-17rem]">
+        <div className="absolute md:top-[-12rem]  right-0 w-[84vw] h-[84vw] max-w-[950px] max-h-[950px] lg:top-0 lg:right-[-17rem]">
           <img
             src={Logo}
             alt="CSPS Background"
@@ -44,16 +44,15 @@ const Index = () => {
             <button className=" px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[#3B0AED] bg-transparent text-white text-lg lg:text-2xl font-normal hover:bg-[#3B0AED]/10 transition-colors">
               Download App
             </button>
-            <Link
-              to="/login"
-              className="px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[rgba(207,176,19,0.83)] bg-transparent text-white text-lg lg:text-2xl font-normal underline hover:bg-[rgba(207,176,19,0.1)] transition-colors"
+            <button
+              className="px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[rgba(207,176,19,0.83)] bg-transparent text-white text-lg lg:text-2xl font-normal underline hover:bg-[rgba(207,176,19,0.1)] transition-colors text-center z-100"
             >
-              Log in
-            </Link>
+             <Link to="/login"> Log in</Link>
+            </button>
           </div>
 
-          {/* Feature Cards */}
-          <FeatureCards cards={cards} />
+          {/* Feature Cards 
+          <FeatureCards cards={cards} /> */}
         </div>
       </div>
 

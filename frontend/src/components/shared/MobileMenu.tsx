@@ -1,10 +1,14 @@
 import React from "react";
 import { motion } from "framer-motion";
 import FormatListBulletedSharpIcon from "@mui/icons-material/FormatListBulletedSharp";
-import CalendarMonthSharpIcon from "@mui/icons-material/CalendarMonthSharp";
 import StoreMallDirectorySharpIcon from "@mui/icons-material/StoreMallDirectorySharp";
 import AccountCircleSharpIcon from "@mui/icons-material/AccountCircleSharp";
 import CloseIcon from "@mui/icons-material/Close";
+import HomeIcon from "@mui/icons-material/Home";
+import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+import LoginIcon from "@mui/icons-material/Login";
+import InfoIcon from "@mui/icons-material/Info";
 
 interface MobileMenuProps {
   onClose: () => void;
@@ -12,6 +16,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ onClose, authenticated }) => {
+  const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
   return (
     <>
       <motion.div
@@ -32,22 +37,68 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose, authenticated }) => {
             </button>
 
             <ul className="space-y-5 text-3xl">
-              <li className="cursor-pointer flex gap-4 items-center">
-                <FormatListBulletedSharpIcon fontSize="large" />
-                Bulletin
-              </li>
-              <li className="cursor-pointer flex gap-4 items-center">
-                <CalendarMonthSharpIcon fontSize="large" />
-                Events
-              </li>
-              <li className="cursor-pointer flex gap-4 items-center">
-                <StoreMallDirectorySharpIcon fontSize="large" />
-                Merch
-              </li>
-            {authenticated &&  <li className="cursor-pointer flex gap-4 items-center">
-                <AccountCircleSharpIcon fontSize="large" />
-                Profile
-              </li>}
+              {isAuthenticated ? (
+                <>
+                  <li className="cursor-pointer ">
+                    <Link
+                      to="/dashboard"
+                      className="cursor-pointer flex gap-4 items-center"
+                    >
+                      <HomeIcon fontSize="large" />
+                      Home
+                    </Link>
+                  </li>
+
+                  <li className="cursor-pointer ">
+                    <Link
+                      to="/bulletin"
+                      className="cursor-pointer flex gap-4 items-center"
+                    >
+                      <FormatListBulletedSharpIcon fontSize="large" />
+                      Bulletin
+                    </Link>
+                  </li>
+
+                  <li className="cursor-pointer ">
+                    <Link
+                      to="/merch"
+                      className="cursor-pointer flex gap-4 items-center"
+                    >
+                      <StoreMallDirectorySharpIcon fontSize="large" />
+                      Merch
+                    </Link>
+                  </li>
+                  <li className="cursor-pointer">
+                    <Link to="/profile" className="flex gap-4 items-center">
+                    <AccountCircleSharpIcon fontSize="large" />
+                    Profile
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="cursor-pointer ">
+                    <Link
+                      to="/dashboard"
+                      className="cursor-pointer flex gap-4 items-center"
+                    >
+                      <InfoIcon fontSize="large" />
+                      About
+                    </Link>
+                  </li>
+
+                  <li className="cursor-pointer ">
+                    <Link
+                      to="/bulletin"
+                      className="cursor-pointer flex gap-4 items-center"
+                    >
+                      <LoginIcon fontSize="large" />
+                      Login
+                    </Link>
+                  </li>
+
+                </>
+              )}
             </ul>
           </div>
         </div>
