@@ -10,7 +10,7 @@ const Login = lazy(() => import("@/pages/Login/LoginPage"));
 const Dashboard = lazy(() => import("@/pages/Dashboard/DashboardPage"));
 const Merch = lazy(() => import("@/pages/Merch/MerchPage"));
 const Transactions = lazy(
-  () => import("@/pages/Transactions/TransactionsPage")
+  () => import("@/pages/Transactions/TransactionsPage"),
 );
 const Cart = lazy(() => import("@/pages/Cart/CartPage"));
 const ProductView = lazy(() => import("@/pages/ProductView/ProductViewPage"));
@@ -60,8 +60,8 @@ const routes: RouteObject[] = [
   {
     path: "/profile",
     element: <ProtectedRoute />,
-    children: [{ path: "", element: <Profile /> }]
-  }
+    children: [{ path: "", element: <Profile /> }],
+  },
 ];
 
 export default routes;

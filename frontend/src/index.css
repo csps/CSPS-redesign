@@ -6,7 +6,8 @@
 @import "swiper/css/navigation";
 
 body {
-  background-color: radial-gradient(
+  background-color:
+    radial-gradient(
       25.71% 30.27% at 89.86% 20.02%,
       rgba(193, 19, 251, 0.2) 0%,
       rgba(193, 19, 251, 0.16) 27.88%,
@@ -70,7 +71,8 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37),
+  box-shadow:
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
 }
 .swiper-pagination-bullet {

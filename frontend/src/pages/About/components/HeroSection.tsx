@@ -2,7 +2,10 @@ import React from "react";
 
 const HeroSection = () => {
   return (
-    <div data-aos="fade-up"  className="flex flex-col justify-center items-center text-center">
+    <div
+      data-aos="fade-up"
+      className="flex flex-col justify-center items-center text-center"
+    >
       <h1 className="text-5xl lg:text-8xl font-bold leading-tight mb-4 lg:mb-6 max-w-5xl">
         <span className="text-white">Discover the world of </span>
         <span

@@ -76,7 +76,7 @@ const RecentActivites = () => {
                 </p>
               </div>
             </div>
-          )
+          ),
         )}
       </div>
     </div>

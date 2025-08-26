@@ -13,7 +13,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import HomeIcon from "@mui/icons-material/Home";
 import StickyNote2Icon from "@mui/icons-material/StickyNote2";
 import StoreIcon from "@mui/icons-material/Store";
-import ProfileSample from "@/assets/ProfileSample.png"
+import ProfileSample from "@/assets/ProfileSample.png";
 
 const LogoSection = ({
   withNav = false,
@@ -45,11 +45,11 @@ const LogoSection = ({
             />
           </a>
           <Link to={isAuthenticated ? "/dashboard" : "/"}>
-          <img
-            src={CspsLogo}
-            alt="CSPS Logo"
-            className="w-15 h-15 lg:w-[98px] lg:h-[98px] rounded-full"
-          />
+            <img
+              src={CspsLogo}
+              alt="CSPS Logo"
+              className="w-15 h-15 lg:w-[98px] lg:h-[98px] rounded-full"
+            />
           </Link>
         </div>
 
@@ -78,13 +78,13 @@ const LogoSection = ({
                 </li>
                 {authenticated && (
                   <li className="list-none cursor-pointer ml-5">
-                   <Link to="/profile">
-                    <img
-                      src={ProfileSample}
-                      alt="profile-icon"
-                      className="w-10 h-10"
-                    />
-                   </Link>
+                    <Link to="/profile">
+                      <img
+                        src={ProfileSample}
+                        alt="profile-icon"
+                        className="w-10 h-10"
+                      />
+                    </Link>
                   </li>
                 )}
               </nav>

@@ -1,9 +1,10 @@
 import React from "react";
+import LogoSection from "../shared/LogoSection";
 
 const AboutLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
-    className="overflow-x-hidden"
+      className="overflow-x-hidden"
       style={{
         backgroundImage: `
       radial-gradient(126.59% 74% at 81.35% 27.09%, rgba(193, 19, 251, 0.10) 0%, rgba(193, 19, 251, 0.08) 27.88%, rgba(193, 19, 251, 0.00) 42.03%),
@@ -11,6 +12,7 @@ const AboutLayout = ({ children }: { children: React.ReactNode }) => {
       linear-gradient(2deg, #000 -7.33%, #0A0422 49.9%, #0C042A 90.5%, #100536 108.96%, rgba(29, 10, 100, 0.11) 136.7%, rgba(32, 11, 108, 0.04) 174.4%, rgba(33, 12, 113, 0.00) 215.72%)`,
       }}
     >
+      <LogoSection withNav={true} />
       {children}
     </div>
   );

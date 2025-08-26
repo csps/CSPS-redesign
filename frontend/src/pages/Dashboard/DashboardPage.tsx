@@ -1,5 +1,4 @@
 import Layout from "@/components/Layouts/Layout";
-import LogoSection from "@/components/shared/LogoSection";
 import Logo from "@/assets/CSPS_LOGO.png";
 import Announcements from "./components/Announcements";
 import RecentActivites from "./components/RecentActivites";
@@ -7,7 +6,6 @@ import RecentActivites from "./components/RecentActivites";
 const Index = () => {
   return (
     <Layout>
-      <LogoSection withNav={true} />
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20">
         <div className="absolute top-42  left-0 w-[84vw] h-[84vw] max-w-[950px] max-h-[950px] lg:top-0 lg:right-[-17rem]">
           <img

@@ -1,13 +1,8 @@
 import Layout from "@/components/Layouts/Layout";
-import LogoSection from "@/components/shared/LogoSection";
-import { MenuItem, Select } from "@mui/material";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
 import Sample1 from "@/assets/Sample1.png";
 import Sample2 from "@/assets/Sample2.png";
 import Logo from "@/assets/CSPS_LOGO.png";
-import { Link } from "react-router-dom";
 import TransactionsNav from "@/components/shared/test/TransactionsNav";
 
 const Index = () => {
@@ -17,15 +12,10 @@ const Index = () => {
     { id: 3, name: "T-SHIRT - 2", image: Sample2, price: 800, quantity: 1 },
   ];
 
-  const totalItems = sampleItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = sampleItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+ 
 
   return (
     <Layout>
-      <LogoSection withNav={true} />
 
       <div className="relative container mx-auto z-10 px-6 lg:px-20 pt-32 lg:pt-64 pb-20">
         {/* Background Logo */}
@@ -39,7 +29,7 @@ const Index = () => {
 
         {/* Top Bar */}
         <TransactionsNav />
-        
+
         {/* Product Cards + Checkout */}
         <div className="flex flex-col lg:flex-row gap-8 w-full">
           {/* Product List */}

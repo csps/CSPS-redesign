@@ -1,4 +1,6 @@
 import React from "react";
+import LogoSection from "../shared/LogoSection";
+import { useLocation } from "react-router-dom";
 
 const Layout = ({
   children,
@@ -7,6 +9,10 @@ const Layout = ({
   children: React.ReactNode;
   className?: string;
 }) => {
+  const location: any = useLocation();
+  const pathName: string = location.pathname;
+
+  console.log(pathName)
   return (
     <div className={"min-h-screen relative overflow-hidden " + className}>
       {/* Complex gradient background */}
@@ -33,6 +39,10 @@ const Layout = ({
       /> */}
 
       {/* Main content */}
+     {
+      pathName !== '/login' &&  <LogoSection withNav={true} /> 
+     }
+
       {children}
     </div>
   );

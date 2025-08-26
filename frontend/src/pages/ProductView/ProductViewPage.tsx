@@ -1,5 +1,4 @@
 import Layout from "@/components/Layouts/Layout";
-import LogoSection from "@/components/shared/LogoSection";
 import Logo from "@/assets/CSPS_LOGO.png";
 import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
 import Sample3 from "@/assets/sample3.png";
@@ -9,23 +8,21 @@ import Sample2 from "@/assets/Sample2.png";
 import { useLocation } from "react-router-dom";
 
 const ProductViewPage = () => {
-    const { search } = useLocation();
-    const params = new URLSearchParams(search);
-    const productName = params.get('product');
-
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const productName = params.get("product");
 
   const productMap: any = {
     "CSPS-S pin": Sample1,
     "T-SHIRT": Sample2,
     "T-SHIRT-2": Sample2,
-    "": Sample3
+    "": Sample3,
   };
 
-   const image = productMap[productName ?? ""];
+  const image = productMap[productName ?? ""];
 
   return (
     <Layout>
-      <LogoSection withNav={true} />
 
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-26 pb-20">
         <div className="absolute top-42  right-0 w-[84vw] h-screen max-w-[950px] max-h-[950px] lg:top-0 lg:right-[18rem]">

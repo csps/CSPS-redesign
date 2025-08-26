@@ -8,15 +8,12 @@ import RepsCarousel from "./components/RepsCarousel";
 import GetToKnowCcsCards from "./components/GetToKnowCcsCards";
 import AboutLayout from "@/components/Layouts/AboutLayout";
 import { Link } from "react-router-dom";
-import LogoSection from "@/components/shared/LogoSection";
 
 const Index = () => {
   return (
-    <AboutLayout >
-        <LogoSection withNav={true} authenticated={false}/>
+    <AboutLayout>
 
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20 flex justify-center flex-col items-center ">
-
         <HeroSection />
 
         <div

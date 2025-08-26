@@ -1,29 +1,16 @@
 import Logo from "@/assets/CSPS_LOGO.png";
-import LogoSection from "@/components/shared/LogoSection";
 import HeroSection from "@/pages/Home/components/HeroSection";
-import FeatureCards from "@/pages/Home/components/FeatureCards";
 import Footer from "@/components/shared/Footer";
 import Layout from "@/components/Layouts/Layout";
-import InfoIcon from "@/assets/SVG/info-icon.svg";
-import CalendarIcon from "@/assets/SVG/calendar-icon.svg";
-import LatestIcon from "@/assets/SVG/latest-icon.svg";
-import MerchIcon from "@/assets/SVG/merch-icon.svg";
-import type { CardProps } from "@/types/FeaturedCardType";
 import { Link } from "react-router-dom";
 
-const cards: CardProps[] = [
-  { title: "About", route: "about", icon: InfoIcon },
-  { title: "Events", route: "dashboard", icon: CalendarIcon },
-  { title: "Merch", route: "merch", icon: MerchIcon },
-  { title: "Latest", route: "dashboard", icon: LatestIcon },
-];
+
 const Index = () => {
   return (
     <Layout>
       {/* CSPS Background Image */}
 
       {/* Logo Section */}
-      <LogoSection withNav={true}/>
 
       {/* Main Content */}
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20">
@@ -44,10 +31,8 @@ const Index = () => {
             <button className=" px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[#3B0AED] bg-transparent text-white text-lg lg:text-2xl font-normal hover:bg-[#3B0AED]/10 transition-colors">
               Download App
             </button>
-            <button
-              className="px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[rgba(207,176,19,0.83)] bg-transparent text-white text-lg lg:text-2xl font-normal underline hover:bg-[rgba(207,176,19,0.1)] transition-colors text-center z-100"
-            >
-             <Link to="/login"> Log in</Link>
+            <button className="px-8 py-4 lg:px-10 lg:py-6 rounded-full border border-[rgba(207,176,19,0.83)] bg-transparent text-white text-lg lg:text-2xl font-normal underline hover:bg-[rgba(207,176,19,0.1)] transition-colors text-center z-100">
+              <Link to="/login"> Log in</Link>
             </button>
           </div>
 
@@ -56,7 +41,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Foot
+      er */}
       <Footer />
     </Layout>
   );

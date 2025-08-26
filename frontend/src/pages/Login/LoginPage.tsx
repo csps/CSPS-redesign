@@ -22,7 +22,7 @@ const Index = () => {
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
-    reason?: string
+    reason?: string,
   ) => {
     if (reason === "clickaway") return;
     setOpen(false);
@@ -41,7 +41,7 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleIdNumberChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const numericValue = e.target.value.replace(/[^0-9]/g, "");
     if (numericValue.length <= MAX) {
@@ -55,10 +55,10 @@ const Index = () => {
     const result = login(idNumber, password);
 
     if (result.success) navigate("/dashboard");
-    else{
-       setErrorMsg("Invalid credentials.");
-        setOpen(true);
-        return;
+    else {
+      setErrorMsg("Invalid credentials.");
+      setOpen(true);
+      return;
     }
   };
 

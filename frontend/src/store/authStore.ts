@@ -1,27 +1,25 @@
-import { create } from 'zustand';
-
+import { create } from "zustand";
 
 export const useAuthStore = create((set) => ({
-    isAuthenticated: !!localStorage.getItem('token'),
-    idNumber: null,
+  isAuthenticated: !!localStorage.getItem("token"),
+  idNumber: null,
 
+  login: (idNumber: string, password: string) => {
+    if (password === "1234") {
+      localStorage.setItem("token", "generateFakeTokenHAHAHAHAHA");
 
-    login: (idNumber: string, password: string) => {
-        if(password === "1234"){
-            localStorage.setItem('token', 'generateFakeTokenHAHAHAHAHA');
+      set({
+        isAuthenticated: true,
+      });
 
-            set({
-                isAuthenticated: true,
-            })
-
-            return { success: true };
-        }
-
-        return { success: false, message: "Invalid credentials" }
-    },
-
-    logout: () => {
-        localStorage.removeItem('token')
-        set({ isAuthenticated: false })
+      return { success: true };
     }
-}))
+
+    return { success: false, message: "Invalid credentials" };
+  },
+
+  logout: () => {
+    localStorage.removeItem("token");
+    set({ isAuthenticated: false });
+  },
+}));

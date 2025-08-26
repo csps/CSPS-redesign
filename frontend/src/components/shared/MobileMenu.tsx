@@ -70,8 +70,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose, authenticated }) => {
                   </li>
                   <li className="cursor-pointer">
                     <Link to="/profile" className="flex gap-4 items-center">
-                    <AccountCircleSharpIcon fontSize="large" />
-                    Profile
+                      <AccountCircleSharpIcon fontSize="large" />
+                      Profile
                     </Link>
                   </li>
                 </>
@@ -96,7 +96,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ onClose, authenticated }) => {
                       Login
                     </Link>
                   </li>
-
                 </>
               )}
             </ul>

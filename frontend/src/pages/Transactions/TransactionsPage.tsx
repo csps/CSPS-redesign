@@ -1,13 +1,8 @@
 import Layout from "@/components/Layouts/Layout";
-import LogoSection from "@/components/shared/LogoSection";
-import { MenuItem, Select } from "@mui/material";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import GlassmorphismCard from "@/components/Glassmorphism/GlassmorphismCard";
 import Sample1 from "@/assets/Sample1.png";
 import Sample2 from "@/assets/Sample2.png";
 import Logo from "@/assets/CSPS_LOGO.png";
-import { Link } from "react-router-dom";
 import TransactionsNav from "@/components/shared/test/TransactionsNav";
 
 const Index = () => {
@@ -30,8 +25,6 @@ const Index = () => {
   ];
   return (
     <Layout>
-      <LogoSection withNav={true} />
-
       <div className="relative container mx-auto  z-10 px-6 lg:px-18 pt-32 lg:pt-64 pb-20">
         <div className="absolute top-42  right-0 w-[84vw] h-screen max-w-[950px] max-h-[950px] lg:top-0 lg:right-[18rem]">
           <img
@@ -48,6 +41,7 @@ const Index = () => {
               glassCard={2}
               borderRadius={20}
               className=" text-white text-lg  justify-center items-center md:justify-between  w-full flex-col md:flex-row"
+              key={index}
             >
               <div className="w-full flex items-center justify-center md:justify-start    ">
                 <img src={item.image} alt={item.name} />
