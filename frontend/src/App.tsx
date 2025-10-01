@@ -1,15 +1,13 @@
-import { useState } from 'react'
-import './App.css'
-import LandingPage from "./pages/landing";
-import LoginPage from './pages/login'
+import "./App.css";
+import { BrowserRouter } from "react-router-dom";
+import RouterCounter from "./router/routerContainer";
 
 function App() {
-
   return (
-    <>
-        <LandingPage />
-    </>
-  )
+    <BrowserRouter>
+      <RouterCounter />
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ExpandableButton from "./ExpandableButton";
 
-
-
 export interface Card {
   name: string;
   role: string;
@@ -30,8 +28,7 @@ export const CardStack: React.FC<CardStackProps> = ({
   const [windowSize, setWindowSize] = useState({ width: 800, height: 600 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [dragStartY, setDragStartY] = useState(0);
-  const [jump, setJump] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
 
   // Window resize
   useEffect(() => {
@@ -44,9 +41,12 @@ export const CardStack: React.FC<CardStackProps> = ({
 
   // Responsive calculations
   const getResponsiveCardWidth = () => {
-    if (windowSize.width <= 480) return Math.min(cardWidth * 0.45, windowSize.width - 60);
-    if (windowSize.width < 768) return Math.min(cardWidth * 0.65, windowSize.width - 80);
-    if (windowSize.width < 1024) return Math.min(cardWidth * 0.8, windowSize.width - 100);
+    if (windowSize.width <= 480)
+      return Math.min(cardWidth * 0.45, windowSize.width - 60);
+    if (windowSize.width < 768)
+      return Math.min(cardWidth * 0.65, windowSize.width - 80);
+    if (windowSize.width < 1024)
+      return Math.min(cardWidth * 0.8, windowSize.width - 100);
     return cardWidth;
   };
 
@@ -76,55 +76,44 @@ export const CardStack: React.FC<CardStackProps> = ({
     return result;
   };
 
-  // Auto-rotate with jump
-  const moveTopCardWithJump = () => {
-    setJump(true); // start jump
-    setTimeout(() => {
-      setCards((prev) => moveArray([...prev], 0, prev.length - 1)); // move top card
-      setJump(false); // reset jump
-    }, 200); // jump duration
-  };
-
   // Drag handlers
   const handleDragStart = (e: React.PointerEvent | React.TouchEvent) => {
     setIsDragging(true);
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    setDragStartY(clientY);
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    setDragStartX(clientX);
     setDragOffset({ x: 0, y: 0 });
   };
 
   const handleDragMove = (e: React.PointerEvent | React.TouchEvent) => {
     if (!isDragging) return;
-
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const rect = e.currentTarget.getBoundingClientRect();
+    const deltaX = clientX - dragStartX;
 
-    const deltaY = clientY - dragStartY;
-    const deltaX = clientX - (rect.left + rect.width / 2);
+    // 🔒 Disable right swipe (only allow dragging left)
+    if (deltaX > 0) return;
 
-    const constrainedY = Math.max(
-      windowSize.width <= 480 ? -80 : windowSize.width < 768 ? -100 : -200,
-      Math.min(windowSize.width <= 480 ? 20 : windowSize.width < 768 ? 25 : 50, deltaY)
-    );
-
-    setDragOffset({ x: deltaX * 0.1, y: constrainedY });
+    setDragOffset({ x: deltaX, y: 0 });
   };
 
   const handleDragEnd = () => {
-    const swipeUpThreshold = windowSize.width < 768 ? -25 : -50;
-    if (dragOffset.y < swipeUpThreshold) {
-      moveTopCardWithJump();
+    const swipeThreshold = windowSize.width < 768 ? -60 : -100;
+
+    if (dragOffset.x < swipeThreshold) {
+      // swipe out left
+      setCards((prev) => moveArray([...prev], 0, prev.length - 1));
     }
+    // reset back
     setIsDragging(false);
     setDragOffset({ x: 0, y: 0 });
-    setDragStartY(0);
+    setDragStartX(0);
   };
 
-  // Auto-rotate interval
+  // Auto rotate
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isDragging) moveTopCardWithJump();
+      if (!isDragging) {
+        setCards((prev) => moveArray([...prev], 0, prev.length - 1));
+      }
     }, 4000);
     return () => clearInterval(interval);
   }, [isDragging]);
@@ -136,24 +125,31 @@ export const CardStack: React.FC<CardStackProps> = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        height: windowSize.width <= 480 ? "350px" : windowSize.width < 768 ? "450px" : "600px",
+        height:
+          windowSize.width <= 480
+            ? "350px"
+            : windowSize.width < 768
+            ? "450px"
+            : "600px",
         maxWidth: "100%",
-    
       }}
       className="px-2"
     >
       <ul
         style={{
           position: "relative",
-          width: responsiveCardWidth + responsiveOffsetX * Math.min(cards.length - 1, 3),
+          width:
+            responsiveCardWidth +
+            responsiveOffsetX * Math.min(cards.length - 1, 3),
           height: responsiveCardHeight + 30,
           maxWidth: "100%",
         }}
       >
         {cards.map((card, index) => {
           const isTop = index === 0;
-          const baseScale = 1 - index * (windowSize.width <= 480 ? scaleFactor * 0.5 : scaleFactor);
-          const dragScale = isTop && isDragging ? baseScale + 0.02 : baseScale;
+          const baseScale =
+            1 -
+            index * (windowSize.width <= 480 ? scaleFactor * 0.5 : scaleFactor);
 
           return (
             <li
@@ -167,14 +163,21 @@ export const CardStack: React.FC<CardStackProps> = ({
                 overflow: "hidden",
                 filter: isTop ? "none" : "blur(6px)",
                 opacity: 1,
-                borderRadius: windowSize.width <= 480 ? "12px" : windowSize.width < 768 ? "15px" : "25px",
+                borderRadius:
+                  windowSize.width <= 480
+                    ? "12px"
+                    : windowSize.width < 768
+                    ? "15px"
+                    : "25px",
                 listStyle: "none",
-                boxShadow: isTop ? "0 10px 30px rgba(0,0,0,0.3)" : "0 4px 12px rgba(0,0,0,0.2)",
-                right: index * (responsiveOffsetX * 0.7),
-                top:
-                  index * (cardOffsetY + 10) +
-                  (isTop ? (jump ? -40 : dragOffset.y) : 0),
-                transform: `scale(${dragScale})`,
+                boxShadow: isTop
+                  ? "0 10px 30px rgba(0,0,0,0.3)"
+                  : "0 4px 12px rgba(0,0,0,0.2)",
+                right:
+                  index * (responsiveOffsetX * 0.7) -
+                  (isTop ? dragOffset.x : 0),
+                top: index * (cardOffsetY + 10),
+                transform: `scale(${baseScale})`,
                 zIndex: cards.length - index,
                 transformOrigin: "left center",
                 transition: isDragging ? "none" : "all 0.25s ease",
@@ -194,7 +197,12 @@ export const CardStack: React.FC<CardStackProps> = ({
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    borderRadius: windowSize.width <= 480 ? "12px" : windowSize.width < 768 ? "15px" : "25px",
+                    borderRadius:
+                      windowSize.width <= 480
+                        ? "12px"
+                        : windowSize.width < 768
+                        ? "15px"
+                        : "25px",
                     pointerEvents: "none",
                   }}
                   draggable={false}
@@ -203,8 +211,14 @@ export const CardStack: React.FC<CardStackProps> = ({
                 <div
                   className="w-full h-full flex items-center justify-center text-white text-2xl font-bold"
                   style={{
-                    borderRadius: windowSize.width <= 480 ? "12px" : windowSize.width < 768 ? "15px" : "25px",
-                    background: "linear-gradient(135deg, #8B5A9F 0%, #6A4C93 50%, #4C2C85 100%)",
+                    borderRadius:
+                      windowSize.width <= 480
+                        ? "12px"
+                        : windowSize.width < 768
+                        ? "15px"
+                        : "25px",
+                    background:
+                      "linear-gradient(135deg, #8B5A9F 0%, #6A4C93 50%, #4C2C85 100%)",
                   }}
                 >
                   {card.name}
@@ -213,22 +227,38 @@ export const CardStack: React.FC<CardStackProps> = ({
 
               <div
                 className={`absolute bottom-0 w-full bg-gradient-to-r from-[#141414]/60 via-[#1c1c1c]/60 to-[#222222]/60 backdrop-blur-[15px] shadow-lg text-white ${
-                  windowSize.width <= 480 ? "h-20 p-2" : windowSize.width < 768 ? "h-24 p-3" : "h-30 p-7"
+                  windowSize.width <= 480
+                    ? "h-20 p-2"
+                    : windowSize.width < 768
+                    ? "h-24 p-3"
+                    : "h-30 p-7"
                 }`}
               >
                 <p
                   className={`font-semibold leading-tight ${
-                    windowSize.width <= 480 ? "text-sm" : windowSize.width < 768 ? "text-lg" : "text-4xl"
+                    windowSize.width <= 480
+                      ? "text-sm"
+                      : windowSize.width < 768
+                      ? "text-lg"
+                      : "text-4xl"
                   }`}
                 >
                   {card.name}
                 </p>
-                <p className={`text-[#FFFFFF] ${windowSize.width <= 480 ? "text-xs" : "text-sm"}`}>
+                <p
+                  className={`text-[#FFFFFF] ${
+                    windowSize.width <= 480 ? "text-xs" : "text-sm"
+                  }`}
+                >
                   {card.role}
                 </p>
                 <ExpandableButton
                   className={`${
-                    windowSize.width <= 480 ? "bottom-12 right-2 text-xs px-1 py-0.5" : windowSize.width < 768 ? "bottom-14 right-3" : "bottom-23 right-5"
+                    windowSize.width <= 480
+                      ? "bottom-12 right-2 text-xs px-1 py-0.5"
+                      : windowSize.width < 768
+                      ? "bottom-14 right-3"
+                      : "bottom-23 right-5"
                   }`}
                 />
               </div>
