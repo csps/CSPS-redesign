@@ -48,7 +48,7 @@ const Index = () => {
           <img src={CSPSLOGO2} alt="" />
           <div className="mt-5 text-center xl:text-start">
             <p className="text-2xl md:text-6xl font-semibold">Welcome Back!</p>
-            <p className="text-base sm:text-lg lg:text-xl font-extralight max-w-lg text-gray-400 mt-5 ">
+            <p className="xl:text-3xl font-extralight max-w-lg text-gray-400 mt-5 ">
               Connect, Collaborate, and Grow Together
             </p>
           </div>

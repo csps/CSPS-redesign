@@ -35,7 +35,6 @@ const Index = () => {
       }}
     >
       <div className="relative flex flex-wrap bg-[#2d0f52]/10 rounded-4xl border-b border-b-white/20 border-t border-t-white/20 shadow-[-11px_10px_5px_0px_rgba(0,_0,_0,_0.3)] min-h-[40rem] w-full">
-        
         {/* Left Side */}
         <div className="w-full xl:w-1/2 px-5 sm:px-10 py-8 text-white flex xl:block flex-col items-center justify-center">
           <div className="absolute left-[-4rem]  md:bottom-[-10rem]  ">
@@ -46,7 +45,11 @@ const Index = () => {
             />
           </div>
 
-          <img src={CSPSLOGO2} alt="" className="max-w-[10rem] sm:max-w-[14rem]" />
+          <img
+            src={CSPSLOGO2}
+            alt=""
+            className="max-w-[10rem] sm:max-w-[14rem]"
+          />
           <div className="mt-5 text-center xl:text-start">
             <p className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
               Forgot Your Password?
