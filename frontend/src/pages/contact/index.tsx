@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "../../components/Navbar";
-import MobileNav from "../../components/MobileNav";
 import UCMAP from "../../assets/ucLoc.png";
 import { FaMapMarkerAlt, FaEnvelope, FaClock } from "react-icons/fa";
 
@@ -10,7 +9,6 @@ const Index = () => {
       <div className="w-full max-w-[90rem] p-6 text-white">
         {/* Navigation */}
         <Navbar />
-        <MobileNav />
 
         <div className="flex flex-col lg:flex-row w-full py-10 gap-10">
           {/* Left Side - Mapa */}

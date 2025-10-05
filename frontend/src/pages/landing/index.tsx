@@ -7,19 +7,9 @@ import VolunteersSection from "./components/VolunteersSection";
 import DevsSection from "./components/DevsSection";
 import CcsVisionMission from "./components/CcsVisionMission";
 import Navbar from "../../components/Navbar";
-import MobileNav from "../../components/MobileNav";
 
 const Index = () => {
-  /*const NAVBARS = [
-    { name: "Home" },
-    { name: "Forum" },
-    { name: "Merchandise" },
-    { name: "Bulletin" },
-    { name: "Events" },
-    { name: "Resources" },
-    { name: "Showcase" },
-    { name: "Contact Us" },
-  ]; */
+
 
   return (
     <div className="relative">
@@ -29,7 +19,6 @@ const Index = () => {
         <div className="w-full max-w-[90rem] p-6 text-white ">
           {/* Navigatiosn */}
           <Navbar />
-          <MobileNav />
 
           {/* First Section - First Page*/}
           <HeroSection />
@@ -42,19 +31,18 @@ const Index = () => {
           {/* Second Section - Who We Are*/}
           <AboutSection />
 
-          {/* Third Section - Dean & Adviser*/}
-          <DeanAdviserSection />
+      
 
-          {/* Fourth Section - CSP-S Officers */}
+          {/* Third Section - CSP-S Officers */}
           <OfficersSection />
 
-          {/* Fifth Section - Voluteers*/}
+          {/* Fourth Section - Voluteers*/}
           <VolunteersSection />
 
-          {/* Sixth Section - Dev Team*/}
+          {/* Fifth Section - Dev Team*/}
           <DevsSection />
 
-          {/* Seventh Section */}
+          {/* Sixth Section */}
           <CcsVisionMission />
         </div>
       </div>

@@ -2,23 +2,14 @@
 @import "tailwindcss";
 
 @import 'swiper/css';
+@import 'swiper/css/effect-coverflow';
 @import 'swiper/css/pagination';
 
 body {
   font-family: 'Poppins', sans-serif;
 }
 
-.swiper-slide {
-  width: 80%;
-}
 
-.swiper-slide:nth-child(2n) {
-  width: 60%;
-}
-
-.swiper-slide:nth-child(3n) {
-  width: 40%;
-}
 
 /* in globals.css or inside a Tailwind layer */
 .swiper-pagination {
