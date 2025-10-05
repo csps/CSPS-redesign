@@ -25,7 +25,7 @@ const Index = () => {
     <div className="relative">
       {/* First Layout */}
 
-      <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F]  to-black flex justify-center">
+      <div className="h-[900px] w-full bg-gradient-to-b from-[#41169C] via-[#20113F]  to-black flex justify-center">
         <div className="w-full max-w-[90rem] p-6 text-white ">
           {/* Navigatiosn */}
           <Navbar />

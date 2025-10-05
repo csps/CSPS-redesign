@@ -5,6 +5,7 @@ const LandingPage = lazy(() => import(".././pages/landing"));
 const LoginPage = lazy(() => import("../pages/login"));
 const ContactUs = lazy(() => import("../pages/contact"));
 const ForgotPassword = lazy(() => import("../pages/forgotPassword"));
+const Dashboard = lazy(() => import("../pages/dashboard"));
 
 const routes: RouteObject[] = [
   {
@@ -23,6 +24,10 @@ const routes: RouteObject[] = [
     path: "/forgot-password",
     element: <ForgotPassword />,
   },
+  {
+    path: "/dashboard",
+    element: <Dashboard />
+  }
 ];
 
 export default routes;

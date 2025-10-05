@@ -1,7 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 @import "tailwindcss";
 
+@import 'swiper/css';
+@import 'swiper/css/pagination';
+
 body {
   font-family: 'Poppins', sans-serif;
 }
 
+.swiper-slide {
+  width: 80%;
+}
+
+.swiper-slide:nth-child(2n) {
+  width: 60%;
+}
+
+.swiper-slide:nth-child(3n) {
+  width: 40%;
+}
+
+/* in globals.css or inside a Tailwind layer */
+.swiper-pagination {
+  position: static !important; 
+  margin-top: 1rem;            
+  text-align: center;          
+}
+
+
+/* Default bullet */
+.swiper-pagination-bullet {
+  
+  @apply bg-gray-400 opacity-70 w-2 h-2 rounded-full mx-1;
+}
+
+/* Active bullet */
+.swiper-pagination-bullet-active {
+  @apply bg-white opacity-100 w-3 h-3;
+}
