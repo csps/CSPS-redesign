@@ -1,5 +1,4 @@
 import BACKGROUNDCSSLOGO from "../../assets/logos/Background_Logo.png";
-import MobileNav from "../../components/MobileNav";
 import Navbar from "../../components/Navbar";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
@@ -44,17 +43,16 @@ const Index = () => {
           <img
             src={BACKGROUNDCSSLOGO}
             alt=""
-            className="absolute top-[28rem] right-[10%] sm:right-[20%] lg:left-[56rem] opacity-40 w-[12rem] sm:w-[16rem] lg:w-[20rem]"
+            className="invisible md:visible absolute top-[28rem] right-[10%] sm:right-[20%] lg:left-[56rem] opacity-40 w-[12rem] sm:w-[16rem] lg:w-[20rem]"
           />
           <img
             src={BACKGROUNDCSSLOGO}
             alt=""
-            className="absolute top-[32rem] left-[20%] sm:left-[25%] lg:left-[23rem] opacity-20 w-[15rem] sm:w-[20rem] lg:w-[25rem]"
+            className=" absolute top-[32rem] left-[20%] sm:left-[25%] lg:left-[23rem] opacity-20 w-[15rem] sm:w-[20rem] lg:w-[25rem]"
           />
 
           {/* Foreground UI */}
           <Navbar />
-          <MobileNav />
 
           <div className="w-full flex flex-col md:flex-row items-center md:items-start">
             {/* Left */}
@@ -72,7 +70,7 @@ const Index = () => {
             </div>
 
             {/* Right */}
-            <div className="flex justify-center md:justify-start  flex-col w-full md:w-1/2 text-center md:text-left mt-6 md:mt-0 py-[14rem]">
+            <div className="flex justify-center md:justify-start  flex-col w-full md:w-1/2 text-center md:text-left mt-36 md:mt-0 py-[14rem]">
               <h1 className="text-4xl sm:text-5xl md:text-4xl lg:text-6xl font-semibold">
                 Welcome Back
               </h1>
@@ -96,8 +94,8 @@ const Index = () => {
               </p>
             </div>
             <Swiper
-              slidesPerView={"auto"}
-              spaceBetween={20}
+              slidesPerView={1}
+              spaceBetween={30}
               pagination={{ clickable: true }}
               modules={[Pagination]}
               className="w-full h-full pb-10"
@@ -106,13 +104,15 @@ const Index = () => {
                 <SwiperSlide
                   key={index}
                   className={`
-        !bg-[#BBBBBB]/20 flex justify-center items-center 
-        !w-[90%] sm:!w-[500px] md:!w-[600px] lg:!w-[800px]
-        !h-[300px] sm:!h-[400px] md:!h-[500px] lg:!h-[665px]
-        rounded-xl
-      `}
+                 !flex flex-col md:flex-row gap-10 justify-center items-center 
+                  !h-[300px] sm:!h-[400px] md:!h-[500px] lg:!h-[665px]
+                  rounded-xl
+                `}
                 >
-                  <div className="border-b-2 border-t-2 border-[#919191] w-full h-full rounded-3xl flex justify-center items-center">
+                  <div className="border-b-2 !bg-[#BBBBBB]/20 border-t-2 border-[#919191] w-full md:w-[70%] h-full rounded-3xl flex justify-center items-center">
+                    slide {t}
+                  </div>
+                     <div className="border-b-2 !bg-[#BBBBBB]/20 border-t-2 border-[#919191] w-full md:w-[30%] h-full rounded-3xl flex justify-center items-center">
                     slide {t}
                   </div>
                 </SwiperSlide>

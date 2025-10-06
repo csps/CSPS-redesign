@@ -1,40 +1,118 @@
 import DEAN1 from "../../../assets/Dean/Dean 2.png";
 import DEAN2 from "../../../assets/Dean/Dean 2(1).png";
-import ExpandableButton from "../../../components/ExpandableButton";
+import { Typewriter } from "react-simple-typewriter";
+import { motion } from "framer-motion";
+import { useState } from "react";
 
 const DeanAdviserSection = () => {
+  const [isSwapped, setIsSwapped] = useState(false);
+
+  const handleSwap = () => setIsSwapped(!isSwapped);
+
   return (
-    <div className="w-full mt-56">
-      <div className="space-y-5">
-        <p className="text-5xl font-semibold text-[#FDE006]">
-          Meet our dean and adviser
-        </p>
-        <p className="md:w-[30rem] text-lg">
-          Discover the guidance and vision that drive your academic and
-          professional development.
-        </p>
-      </div>
-      <div className="flex flex-wrap gap-20 py-10 w-full  justify-center">
-        <div className="w-96 relative">
-          <img src={DEAN1} alt="DEAN" className="h-full rounded-3xl " />
-          <div className="absolute bottom-0 w-full h-20  max-w-sm p-4 rounded-b-3xl bg-gradient-to-r from-[#141414]/60 via-[#1c1c1c]/60 to-[#222222]/60 backdrop-blur-[6px] shadow-lg text-white py-2">
-            <p className="font-semibold">Heubert Martinez Ferolino, MSTCS</p>
-            <p className="text-sm text-[#FFFFFF]">
-              Dean, College of Computer Studies UC main campus
-            </p>
-            <ExpandableButton className=" bottom-14 right-5" />
+    <div className="relative w-full max-w-4xl mx-auto mt-20 px-4 sm:px-6 mb-10">
+      <div className="relative w-full h-auto min-h-[500px] sm:min-h-[450px]">
+        {/* Card 1 */}
+        <motion.div
+          className="absolute inset-0 cursor-pointer"
+          onClick={handleSwap}
+          animate={{
+            zIndex: isSwapped ? 0 : 1,
+            rotate: isSwapped ? -10 : 0,
+            x: isSwapped ? -30 : 0,
+            y: isSwapped ? 20 : 0,
+            scale: isSwapped ? 0.95 : 1,
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          <div
+            className={`flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl border-t border-b border-gray-400 ${isSwapped ? "blur-md" : ""}`}
+          >
+            <div className="w-full md:w-[30%] h-40 sm:h-52 md:h-auto flex items-center justify-center">
+              <img
+                src={DEAN1}
+                alt="Card 1"
+                className="object-center md:object-cover h-full w-full rounded-md"
+              />
+            </div>
+
+            <div className="w-full md:w-[70%] flex flex-col items-start p-4 sm:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
+              <p className="mb-4 text-justify text-[12px] sm:text-sm md:text-base ">
+                <Typewriter
+                  words={[
+                    `Welcome to the University of Cebu and the world of Computer Science. We provide quality education, expert faculty, and modern facilities to prepare you for academic and career success. Engage in research, internships, hackathons, and ICT events to grow, stand out, and build valuable connections. We're here to support you every step of the way.`,
+                  ]}
+                  loop={1}
+                  cursor
+                  cursorStyle="|"
+                  typeSpeed={150}
+                  deleteSpeed={50}
+                  delaySpeed={500}
+                />
+              </p>
+              <div className="mt-auto">
+                <p className="text-sm md:text-xl font-bold">
+                  Heubert Martinez Ferolino, MSTCS
+                </p>
+                <p className="text-xs sm:text-sm md:text-base">
+                  Program Head, Computer Science
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="w-96 relative">
-          <img src={DEAN2} alt="DEAN" className="h-full rounded-3xl " />
-          <div className="absolute bottom-0 w-full h-20  max-w-sm p-4 rounded-b-3xl bg-gradient-to-r from-[#141414]/60 via-[#1c1c1c]/60 to-[#222222]/60 backdrop-blur-[6px] shadow-lg text-white py-2">
-            <p className="font-semibold">Neil A. Basabe, MIT</p>
-            <p className="text-sm text-[#FFFFFF]">
-              Dean, College of Computer Studies UC main campus
-            </p>
-            <ExpandableButton className=" bottom-14 right-5" />
+        </motion.div>
+
+        {/* Card 2 */}
+        <motion.div
+          className="absolute inset-0 cursor-pointer"
+          onClick={handleSwap}
+          animate={{
+            zIndex: isSwapped ? 1 : 0,
+            rotate: isSwapped ? 0 : 10,
+            x: isSwapped ? 0 : 30,
+            y: isSwapped ? 0 : 20,
+            scale: isSwapped ? 1 : 0.95,
+          }}
+          transition={{ duration: 0.5 }}
+        >
+          <div
+            className={`flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl border-t border-b border-gray-400 ${isSwapped ? "" : "blur-md"}`}
+          >
+            <div className="w-full md:w-[30%] h-40 sm:h-52 md:h-auto flex items-center justify-center">
+              <img
+                src={DEAN2}
+                alt="Card 2"
+                className="object-center md:object-cover h-full w-full rounded-md"
+              />
+            </div>
+
+            <div className="w-full md:w-[70%] flex flex-col items-start p-4 sm:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
+              <p className="mb-4 text-justify text-[12px] sm:text-sm md:text-base">
+                <Typewriter
+                  words={[
+                    `On behalf of the faculty and staff, welcome to the University of Cebu and the vibrant world of Computer Science!
+                    We are dedicated to helping you succeed through hands-on learning, expert guidance, and real-world opportunities.
+                    Whether it's research, hackathons, or internships, we encourage you to explore and grow. We're here to support you—every step of the way.`,
+                  ]}
+                  loop={1}
+                  cursor
+                  cursorStyle="|"
+                  typeSpeed={150}
+                  deleteSpeed={50}
+                  delaySpeed={500}
+                />
+              </p>
+              <div className="mt-auto">
+                <p className="text-sm md:text-xl font-bold">
+                  Neil A. Basabe, MIT
+                </p>
+                <p className="text-xs sm:text-sm md:text-base">
+                  Dean, College of Computer Studies
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
