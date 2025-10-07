@@ -10,6 +10,7 @@ type NavProps = {
   LOGOS: string[];
   NAVBARS: { name: string }[];
 };
+
 const Navbar = () => {
   const LOGOS: string[] = [UCLOGO, CCSLOGO, CSPSLOGO];
 
@@ -40,9 +41,18 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
       </div>
       {/* Links */}
       <ul className="flex gap-2 ">
-        <div className="flex gap-20">
+        <div className="flex items-center justify-center gap-18">
           {NAVBARS.map((navs, index) => (
-            <li key={index}>
+            <li
+              key={index}
+              className="relative flex items-center justify-center"
+               >
+              {/*
+              
+                <div  className="absolute w-28 h-12 shadow-[inset_5px_7px_6px_-4px_rgba(192,132,252,0.4),_-2px_5px_6px_-7px_rgba(0,0,0,0.8)]
+               rounded-3xl border border-purple-600"/>
+              
+              */}
               <p>{navs.name}</p>
             </li>
           ))}

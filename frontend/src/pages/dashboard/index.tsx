@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import Footer from "../../components/Footer";
 import TSHIRT from "../../assets/carrot 1.png";
+import AuthenticatedNav from "../../components/AuthenticatedNav";
 
 const Index = () => {
   return (
@@ -52,7 +53,7 @@ const Index = () => {
           />
 
           {/* Foreground UI */}
-          <Navbar />
+          <AuthenticatedNav />
 
           <div className="w-full flex flex-col md:flex-row items-center md:items-start">
             {/* Left */}
