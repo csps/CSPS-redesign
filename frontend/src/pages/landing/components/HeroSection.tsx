@@ -4,7 +4,7 @@ import { FaGreaterThan } from "react-icons/fa";
 const HeroSection = () => {
   return (
     <div className="flex w-full py-10 relative">
-      <div className="absolute top-0 left-0 xl:static">
+      <div className="absolute top-0 left-0 lg:static">
         <img
           src={BACKGROUNDCSSLOGO}
           alt="CSSLOGO"
@@ -12,7 +12,7 @@ const HeroSection = () => {
         />
       </div>
 
-      <div className="w-full md:w-1/2 py-10 space-y-5 relative z-10">
+      <div className="w-full lg:w-1/2 py-10 space-y-5 relative z-10">
         <p className="text-[2rem] md:text-[3rem] font-bold">
           Empowering curious minds to code, create, and shape the future of
           technology.
