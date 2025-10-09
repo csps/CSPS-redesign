@@ -6,9 +6,11 @@ const LoginPage = lazy(() => import("../pages/login"));
 const ContactUsPage = lazy(() => import("../pages/contact"));
 const ForgotPasswordPage = lazy(() => import("../pages/forgotPassword"));
 const DashboardPage = lazy(() => import("../pages/dashboard"));
-const ResourcesPage = lazy(() => import("../pages/resources"))
+const ResourcesPage = lazy(() => import("../pages/resources"));
 const EventsPage = lazy(() => import("../pages/events"));
 const EventViewPage = lazy(() => import("../pages/events/eventView"));
+const MerchPage = lazy(() => import("../pages/merch"));
+const BulletinPage = lazy(() => import("../pages/bulletin"));
 
 const routes: RouteObject[] = [
   {
@@ -29,19 +31,27 @@ const routes: RouteObject[] = [
   },
   {
     path: "/dashboard",
-    element: <DashboardPage />
+    element: <DashboardPage />,
   },
   {
     path: "/resources",
-    element: <ResourcesPage />
+    element: <ResourcesPage />,
   },
   {
     path: "/events",
-    element: <EventsPage />
+    element: <EventsPage />,
   },
-   {
+  {
     path: "/events/view/:id",
-    element: <EventViewPage />
+    element: <EventViewPage />,
+  },
+  {
+    path: "/merch",
+    element: <MerchPage />,
+  },
+  {
+    path: "/bulletin",
+    element: <BulletinPage  />
   }
 ];
 
