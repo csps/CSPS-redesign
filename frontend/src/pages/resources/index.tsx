@@ -11,7 +11,7 @@ import GENMATHLOGO from "../../assets/logos/genmath.png";
 import DISCRETELOGO from "../../assets/logos/discretemath.png";
 import DIFFCALLOGO from "../../assets/logos/diffcal.png";
 import INTCALLOGO from "../../assets/logos/intcal.png";
-import CSPSLOGO from '../../assets/logos/BIGLOGOCSPS.png'
+import CSPSLOGO from "../../assets/logos/BIGLOGOCSPS.png";
 const Index = () => {
   const TOPICS = [
     {
@@ -96,9 +96,9 @@ const Index = () => {
       <div className="relative  w-full max-w-[90rem] p-6 text-white">
         <Navbar />
 
-            <img
-            src={CSPSLOGO}
-            className="
+        <img
+          src={CSPSLOGO}
+          className="
                 absolute
                 w-[90%] h-screen
                 md:object-contain
@@ -106,23 +106,23 @@ const Index = () => {
                 opacity-80
                 md:w-[80%] md:h-auto xl:left-60 xl:top-47 
             "
-            />
+        />
         <div className="space-y-10 py-30">
           {TOPICS.map((topic, index) => (
             <div key={index}>
               <p className="text-2xl font-semibold mb-5">{topic.title}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-0 xl:gap-30 ">
                 {topic.contents.map((content, index) => (
-                  <div  
+                  <div
                     className=" sm:w-[16rem] sm:h-[20rem]
-                  bg-gradient-to-b from-white/10 to-white/5   
-                  shadow-[0px_0px_33px_5px_rgba(52,_21,_168,_0.2)]    
-                  rounded-2xl    
-                  border-b-2
-                  border-t-2
-                border-gray-700 p-6 
-                text-white 
-                 flex flex-col justify-between "
+                    bg-gradient-to-b from-white/10 to-white/5   
+                    shadow-[0px_0px_33px_5px_rgba(52,_21,_168,_0.2)]    
+                    rounded-2xl    
+                    border-b-2
+                    border-t-2
+                  border-gray-700 p-6 
+                  text-white 
+                    flex flex-col justify-between "
                     key={index}
                   >
                     <img src={content.logo} alt={content.name} />
