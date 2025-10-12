@@ -25,7 +25,6 @@ const NAVBARSAUTHENTICATED: { name: string; icon?: string }[] = [
 ];
 
 const AuthenticatedNav = () => {
-
   return (
     <>
       <DesktopAuthenticatedNav />
@@ -63,9 +62,9 @@ const DesktopAuthenticatedNav = () => {
               onClick={() => setSelected(navs.name)}
             >
               <div className="relative flex items-center">
-                <AnimatePresence mode="wait">
-                  {selected === navs.name && (
-                    <>
+                {selected === navs.name && (
+                  <>
+                    <AnimatePresence mode="wait">
                       <motion.div
                         key={"line"}
                         initial={{ width: 0 }}
@@ -82,9 +81,61 @@ const DesktopAuthenticatedNav = () => {
                         transition={{ duration: 0.2, delay: 0.25 }}
                         className="absolute top-[-8px] left-1/2 -translate-x-1/2 w-10 h-[3px] bg-white [clip-path:polygon(0_0,100%_0,95%_100%,5%_100%)]"
                       />
-                    </>
-                  )}
-                </AnimatePresence>
+                    </AnimatePresence>
+
+                    {selected === "Merchandise" && (
+                      <div
+                        className="text-xs absolute top-16 left-0 w-62 p-4 space-y-1  text-white bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg border border-purple-200/40
+                          before:content-[''] before:absolute before:left-[-2px] before:border-l before:border-purple-200/40 before:rotate-180 before:z-100 before:top-1/2 before:-translate-y-1/2 before:w-[5px] before:h-8 before:bg-[#310d80] before:rounded-l-xs before:shadow-[inset_2px_0_4px_rgba(0,0,0,0.3)] z-100"
+                      >
+                        <div className="tab-shape flex items-center gap-3 px-4 py-1 bg-[#2d0d70] text-white">
+                          <div className="w-1 h-6 bg-gray-200 rounded-r-md"></div>
+                          <span className="text-base font-medium">
+                            Products
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 hover:bg-[#2d0d70]/60 rounded-xl px-4 py-3 transition-all cursor-pointer">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-5h-8m0 0l3 3m-3-3l3-3"
+                            />
+                          </svg>
+                          <span className="text-base font-medium">
+                            Transaction
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 hover:bg-[#2d0d70]/60 rounded-xl px-4 py-3 transition-all cursor-pointer">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 3h18l-1 9H4L3 3zm0 9h18v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm5 7h8"
+                            />
+                          </svg>
+                          <span className="text-base font-medium">Cart</span>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
 
                 {selected === navs.name && (
                   <img src={navs.icon} alt="" className="w-5 h-5 mr-2" />
@@ -111,12 +162,10 @@ const MobileAuthenticatedNav = () => {
 
   return (
     <div className="flex justify-end lg:hidden  ">
-      {/* Toggle button */}
       <button onClick={() => setIsOpen(!isOpen)} className="text-2xl p-2">
         {<FaBars />}
       </button>
 
-      {/* Slide-in menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

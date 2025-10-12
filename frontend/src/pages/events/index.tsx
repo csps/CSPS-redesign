@@ -12,7 +12,7 @@ const Index = () => {
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n, index) => (
             <Link
               to={`/events/view/${n}`}
-              key={n}
+              key={index}
               className="bg-purple-600/40 p-2 relative rounded-xl overflow-hidden group"
             >
               <img

@@ -1,11 +1,11 @@
 import "./App.css";
 import { BrowserRouter } from "react-router-dom";
-import RouterCounter from "./router/routerContainer";
+import AppRoutes from "./router/AppRoutes";
 
 function App() {
   return (
     <BrowserRouter>
-      <RouterCounter />
+      <AppRoutes />
     </BrowserRouter>
   );
 }
