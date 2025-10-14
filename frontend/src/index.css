@@ -4,6 +4,8 @@
 @import 'swiper/css';
 @import 'swiper/css/effect-coverflow';
 @import 'swiper/css/pagination';
+@import "react-calendar/dist/Calendar.css";
+
 
 body {
   font-family: 'Poppins', sans-serif;
@@ -29,3 +31,156 @@ body {
 .swiper-pagination-bullet-active {
   @apply bg-white opacity-100 w-3 h-3;
 }
+/* === Calendar Overrides === */
+.react-calendar {
+  width: 100% !important;
+  max-width: none !important;
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* === Month Navigation Header (left aligned) === */
+.react-calendar__navigation {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 0.5rem !important; 
+  padding: 0.5rem 1rem !important;
+  margin-bottom: 1rem !important;
+  width: fit-content !important; 
+}
+
+.react-calendar__navigation button {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  font-size: 1.2rem !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease;
+}
+
+.react-calendar__navigation button:hover {
+  color: #c084fc !important;
+}
+
+.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button {
+  display: none !important;
+}
+
+
+.react-calendar__navigation .react-calendar__navigation__label {
+  flex-grow: 1 !important;
+  text-align: center !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: white !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;  
+  line-height: 1 !important;
+  padding: 0 .5rem !important;
+}
+
+@media (max-width: 640px) {
+  .react-calendar__navigation .react-calendar__navigation__label {
+    font-size: 0.95rem !important;  
+  }
+
+  .react-calendar__month-view__weekdays {
+    font-size: 0.65rem !important;
+  }
+
+  .react-calendar__tile {
+    padding: 0.4rem !important;
+    height: 72px !important; 
+  }
+}
+
+/* === Weekday Labels === */
+.react-calendar__month-view__weekdays {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  text-align: center !important;
+  margin-bottom: 0.3rem !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 0 !important;
+  font-weight: 500 !important;
+  color: #e0e0e0 !important;
+  border: none !important;
+  
+}
+
+/* === Grid Days === */
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  width: 100% !important;
+  margin-top: 0 !important;
+}
+
+/* === Tile Cells === */
+.react-calendar__tile {
+  width: 100% !important;
+  height: 90px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-radius: 12px !important;
+  position: relative !important;
+  transition: background 0.2s ease;
+}
+
+/* === Hover Effects === */
+.react-calendar__tile:hover,
+.react-calendar__navigation button:hover,
+.react-calendar__month-view__days__day:hover {
+  background: transparent !important;
+  color: gray !important;
+}
+
+/* === Active Tile === */
+.react-calendar__tile--active {
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: gray !important;
+}
+
+/* === Today Highlight === */
+.react-calendar__tile--now {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+.react-calendar__tile > div {
+  position: absolute !important;
+  bottom: 8px !important;
+  display: flex !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+  cursor: default !important;
+}
+
+
+.react-calendar__tile--active {
+  background: rgba(2255, 255, 255, 0.15) !important;
+  color: white !important;
+  border-radius: 12px !important;
+}
+
+
+.react-calendar__tile:focus {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.tab-shape {
+clip-path: polygon(0 0, 100% 0, 100% 75%, 95% 100%, 0 100%);
+
+}
+
