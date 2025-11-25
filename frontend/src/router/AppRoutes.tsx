@@ -15,6 +15,9 @@ import TransactionsPage from '../pages/merch/transactions';
 import CartPage from '../pages/merch/cart';
 import BulletinPage from "../pages/bulletin";
 
+// Admin
+import AdminDashboardPage from '../pages/admin/dashboard';
+
 const routers = [
   { path: "/", element: <LandingPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -29,6 +32,7 @@ const routers = [
   { path: "/merch/transactions", element: <TransactionsPage /> },
   { path: "/merch/cart", element: <CartPage /> },
   { path: "/bulletin", element: <BulletinPage /> },
+  {path: "/admin/dashboard", element: <AdminDashboardPage />}
 ];
 
 const AppRoutes = () => {
