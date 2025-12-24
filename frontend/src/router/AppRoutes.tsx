@@ -19,6 +19,8 @@ import BulletinPage from "../pages/bulletin";
 import AdminDashboardPage from "../pages/admin/dashboard";
 import AdminEventPage from "../pages/admin/event/page";
 import AdminFinancePage from "../pages/admin/dashboard/finance";
+import AdminProductsPage from "../pages/admin/products";
+import AdminSalesPage from "../pages/admin/sales";
 
 const routers = [
   { path: "/", element: <LandingPage /> },
@@ -37,6 +39,8 @@ const routers = [
   { path: "/admin/dashboard", element: <AdminDashboardPage /> },
   { path: "/admin/event", element: <AdminEventPage /> },
   { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+  { path: "/admin/products", element: <AdminProductsPage /> },
+  { path: "/admin/sales", element: <AdminSalesPage /> },
 ];
 
 const AppRoutes = () => {

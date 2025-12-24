@@ -225,7 +225,7 @@ const Index = () => {
                       <p className="before:w-[2px] before:bg-[#A000FF] before:absolute before:h-full before:left-0 relative px-2">
                         Non-Member
                       </p>
-                      <p>25%</p>
+                      <p>25%</p>  
                     </div>
                   </div>
                 </div>
