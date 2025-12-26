@@ -22,6 +22,8 @@ import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
 
+
+import NotFoundPage from "../pages/notFound";
 const routers = [
   { path: "/", element: <LandingPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -41,6 +43,7 @@ const routers = [
   { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
   { path: "/admin/products", element: <AdminProductsPage /> },
   { path: "/admin/sales", element: <AdminSalesPage /> },
+  { path: "*", element: <NotFoundPage /> },
 ];
 
 const AppRoutes = () => {

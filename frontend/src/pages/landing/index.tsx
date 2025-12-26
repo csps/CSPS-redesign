@@ -7,31 +7,26 @@ import VolunteersSection from "./components/VolunteersSection";
 import DevsSection from "./components/DevsSection";
 import CcsVisionMission from "./components/CcsVisionMission";
 import Navbar from "../../components/Navbar";
+import Layout from "../../components/Layout";
 
 const Index = () => {
-
-
   return (
     <div className="relative">
       {/* First Layout */}
 
-      <div className="h-[900px] w-full bg-gradient-to-b from-[#41169C] via-[#20113F]  to-black flex justify-center">
-        <div className="w-full max-w-[90rem] p-6 text-white ">
-          {/* Navigatiosn */}
-          <Navbar />
+      <Layout containerScreen="900px" withFooter={false}>
+        {/* Navigatiosn */}
+        <Navbar />
 
-          {/* First Section - First Page*/}
-          <HeroSection />
-        </div>
-      </div>
+        {/* First Section - First Page*/}
+        <HeroSection />
+      </Layout>
 
       {/* Second Layout */}
       <div className="min-h-screen w-full bg-black flex justify-center py-56">
         <div className="w-full max-w-[90rem] px-6 text-white">
           {/* Second Section - Who We Are*/}
           <AboutSection />
-
-      
 
           {/* Third Section - CSP-S Officers */}
           <OfficersSection />

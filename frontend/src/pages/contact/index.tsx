@@ -2,11 +2,11 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import UCMAP from "../../assets/ucLoc.png";
 import { FaMapMarkerAlt, FaEnvelope, FaClock } from "react-icons/fa";
+import Layout from "../../components/Layout";
 
 const Index = () => {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
-      <div className="w-full max-w-[90rem] p-6 text-white">
+    <Layout>
         {/* Navigation */}
         <Navbar />
 
@@ -114,8 +114,7 @@ const Index = () => {
             </form>
           </div>
         </div>
-      </div>
-    </div>
+      </Layout>
   );
 };
 
