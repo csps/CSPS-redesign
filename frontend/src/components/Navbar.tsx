@@ -1,10 +1,8 @@
-import UCLOGO from "../assets/logos/uc_LOGO 1.png";
-import CCSLOGO from "../assets/logos/ccs logo 1.png";
-import CSPSLOGO from "../assets/logos/CSPS PNG (1) 1.png";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
+import { LOGOS } from "./nav.config";
 
 type NavProps = {
   LOGOS: string[];
@@ -12,8 +10,6 @@ type NavProps = {
 };
 
 const Navbar = () => {
-  const LOGOS: string[] = [UCLOGO, CCSLOGO, CSPSLOGO];
-
   const NAVBARS: { name: string }[] = [
     { name: "Home" },
     { name: "About" },
@@ -46,7 +42,7 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
             <li
               key={index}
               className="relative flex items-center justify-center"
-               >
+            >
               {/*
               
                 <div  className="absolute w-28 h-12 shadow-[inset_5px_7px_6px_-4px_rgba(192,132,252,0.4),_-2px_5px_6px_-7px_rgba(0,0,0,0.8)]

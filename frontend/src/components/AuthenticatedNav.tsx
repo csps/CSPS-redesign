@@ -1,28 +1,9 @@
 import React, { useState } from "react";
-import UCLOGO from "../assets/logos/uc_LOGO 1.png";
-import CCSLOGO from "../assets/logos/ccs logo 1.png";
-import CSPSLOGO from "../assets/logos/CSPS PNG (1) 1.png";
 import { PiGearSixLight } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
-import HOME from "../assets/navs/home.svg";
-import FORUM from "../assets/navs/forum.svg";
-import MERCHANDISE from "../assets/navs/merchandise.svg";
-import BULLETIN from "../assets/navs/bulletin.svg";
-import EVENTS from "../assets/navs/events.svg";
-import RESOURCES from "../assets/navs/resources.svg";
 import { FaBars, FaTimes } from "react-icons/fa";
-
-const LOGOS: string[] = [UCLOGO, CCSLOGO, CSPSLOGO];
-const NAVBARSAUTHENTICATED: { name: string; icon?: string }[] = [
-  { name: "Home", icon: HOME },
-  { name: "Forum", icon: FORUM },
-  { name: "Merchandise", icon: MERCHANDISE },
-  { name: "Bulletin", icon: BULLETIN },
-  { name: "Events", icon: EVENTS },
-  { name: "Resources", icon: RESOURCES },
-  { name: "Showcase", icon: "" },
-  { name: "Contact us", icon: "" },
-];
+import { Link } from "react-router-dom";
+import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
 
 const AuthenticatedNav = () => {
   return (
@@ -52,7 +33,8 @@ const DesktopAuthenticatedNav = () => {
 
         <ul className="flex gap-8 items-center">
           {NAVBARSAUTHENTICATED.map((navs, index) => (
-            <li
+            <Link
+              to={navs.to}
               key={index}
               className={`relative cursor-pointer text-lg font-medium transition-all ${
                 selected === navs.name
@@ -142,7 +124,7 @@ const DesktopAuthenticatedNav = () => {
                 )}
                 <span>{navs.name}</span>
               </div>
-            </li>
+            </Link>
           ))}
           <PiGearSixLight className="text-3xl text-white/90 hover:text-white transition" />
         </ul>
