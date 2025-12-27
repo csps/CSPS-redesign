@@ -1,11 +1,12 @@
-import Navbar from "../../components/Navbar";
 import CSPSLOGO from "../../assets/logos/BIGLOGOCSPS.png";
 import Layout from "../../components/Layout";
 import { TOPICS } from "../../data/topics";
+import AuthenticatedNav from "../../components/AuthenticatedNav";
+
 const Index = () => {
   return (
     <Layout classNameInner="relative">
-      <Navbar />
+      <AuthenticatedNav />
       <img
         src={CSPSLOGO}
         className=" absolute w-[90%] h-screen md:object-contain top-90 opacity-80 md:w-[80%] md:h-auto xl:left-60 xl:top-47"

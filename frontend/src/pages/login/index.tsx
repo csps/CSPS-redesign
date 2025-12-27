@@ -1,12 +1,12 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import BACKGROUNDCSSLOGO from "../../assets/logos/BIGLOGOCSPS.png";
 import CSPSLOGO2 from "../../assets/logos/csps_logo 1.png";
-import { FaHashtag } from "react-icons/fa6";
-import { FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import LoginForm from "./components/LoginForm";
+import { FaArrowLeft } from "react-icons/fa";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div
       className="px-4 sm:px-8 lg:px-20 xl:px-56 mx-auto min-h-screen w-full flex items-center justify-center  overflow-hidden"
@@ -37,6 +37,15 @@ const Index = () => {
       }}
     >
       <div className="relative flex flex-wrap bg-[#2d0f52]/10  rounded-4xl  border-b border-b-white/20 border-t border-t-white/20 shadow-[-11px_10px_5px_0px_rgba(0,_0,_0,_0.3)] min-h-[40rem]">
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-6 left-6 z-10
+                     flex items-center gap-2 text-sm text-gray-300
+                     hover:text-white transition"
+        >
+          <FaArrowLeft className="text-xl" />
+          Back
+        </button>
         <div className="w-full xl:w-1/2 px-5 sm:px-10 py-8 text-white flex xl:block flex-col items-center justify-center">
           <div className="absolute left-[-4rem]  md:bottom-[-10rem]  ">
             <img

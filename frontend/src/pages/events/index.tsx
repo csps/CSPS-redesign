@@ -1,19 +1,12 @@
-import React, { useState } from "react";
-import Navbar from "../../components/Navbar";
-import SAMPLEIMAGE from "../../assets/sampleImage.png";
-import { Link } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import Footer from "../../components/Footer";
-import { AnimatePresence, motion } from "framer-motion";
 import Layout from "../../components/Layout";
 import RecentEvents from "./components/RecentEvents";
 import UpcomingEvents from "./components/UpcomingEvents";
+import AuthenticatedNav from "../../components/AuthenticatedNav";
 
 const Index = () => {
   return (
     <Layout>
-      <Navbar />
+      <AuthenticatedNav />
       {/*
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-10">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n, index) => (
