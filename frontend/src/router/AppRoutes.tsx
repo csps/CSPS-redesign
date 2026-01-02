@@ -11,13 +11,19 @@ import EventsPage from "../pages/events";
 import EventViewPage from "../pages/events/eventView";
 import MerchPage from "../pages/merch";
 import ProductViewPage from "../pages/merch/productView";
-import TransactionsPage from '../pages/merch/transactions';
-import CartPage from '../pages/merch/cart';
+import TransactionsPage from "../pages/merch/transactions";
+import CartPage from "../pages/merch/cart";
 import BulletinPage from "../pages/bulletin";
 
 // Admin
-import AdminDashboardPage from '../pages/admin/dashboard';
+import AdminDashboardPage from "../pages/admin/dashboard";
+import AdminEventPage from "../pages/admin/event/page";
+import AdminFinancePage from "../pages/admin/dashboard/finance";
+import AdminProductsPage from "../pages/admin/products";
+import AdminSalesPage from "../pages/admin/sales";
 
+
+import NotFoundPage from "../pages/notFound";
 const routers = [
   { path: "/", element: <LandingPage /> },
   { path: "/login", element: <LoginPage /> },
@@ -32,7 +38,12 @@ const routers = [
   { path: "/merch/transactions", element: <TransactionsPage /> },
   { path: "/merch/cart", element: <CartPage /> },
   { path: "/bulletin", element: <BulletinPage /> },
-  {path: "/admin/dashboard", element: <AdminDashboardPage />}
+  { path: "/admin/dashboard", element: <AdminDashboardPage /> },
+  { path: "/admin/event", element: <AdminEventPage /> },
+  { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+  { path: "/admin/products", element: <AdminProductsPage /> },
+  { path: "/admin/sales", element: <AdminSalesPage /> },
+  { path: "*", element: <NotFoundPage /> },
 ];
 
 const AppRoutes = () => {
