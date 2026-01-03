@@ -22,10 +22,11 @@ import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
 import AdminForumPage from "../pages/admin/forum";
+import AdminMerchPage from "../pages/admin/merch";
 
 import NotFoundPage from "../pages/notFound";
 const routers = [
-  { path: "/", element: <AdminEventPage /> },
+  { path: "/", element: <AdminMerchPage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/contact-us", element: <ContactUsPage /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
