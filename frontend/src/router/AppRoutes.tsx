@@ -23,6 +23,7 @@ import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
 import AdminForumPage from "../pages/admin/forum";
 import AdminMerchPage from "../pages/admin/merch";
+import AdminMercheOrdersPage from '../pages/admin/merch/orders';
 
 import NotFoundPage from "../pages/notFound";
 const routers = [
@@ -46,6 +47,7 @@ const routers = [
   { path: "/admin/sales", element: <AdminSalesPage /> },
   { path: "/admin/forum", element: <AdminForumPage /> },
   { path: "/admin/merch", element: <AdminMerchPage /> },
+  { path: "/admin/merch/orders", element: <AdminMercheOrdersPage />},
   { path: "*", element: <NotFoundPage /> },
 ];
 

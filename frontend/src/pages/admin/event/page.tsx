@@ -46,7 +46,7 @@ const Page = () => {
                   key={index}
                   className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200 rounded-lg cursor-pointer"
       
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => alert(index)}
                 >
                   <div className="p-4 flex items-center justify-center h-full text-white/50">
                      Slide {index}
