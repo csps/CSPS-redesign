@@ -1,0 +1,80 @@
+/* src/css/CalendarCustom.css */
+
+/* --- Base Reset --- */
+.react-calendar { 
+  background: transparent !important;
+  border: none !important;
+  font-family: inherit;
+  width: 100% !important;
+}
+
+/* --- Navigation Header (Month/Year) --- */
+.react-calendar__navigation {
+  margin-bottom: 0 !important;
+  height: 40px !important; /* Fixed short height */
+  display: flex;
+}
+
+.react-calendar__navigation button {
+  color: white !important;
+  min-width: 30px;
+  background: none;
+  font-size: 1.25rem;
+  padding: 0 !important;
+}
+
+/* --- Weekday Headers (MON, TUE...) --- */
+.react-calendar__month-view__weekdays {
+  text-transform: uppercase;
+  font-size: 0.65em;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 10px 0; /* Add slight breathing room above days */
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+}
+
+/* --- THE DAYS (Fixing the elongation) --- */
+.react-calendar__tile {
+  color: white;
+  background: none;
+  font-size: 0.85rem;
+  border-radius: 8px; /* Slightly rounded corners */
+  
+  /* CRITICAL FIXES FOR HEIGHT: */
+  height: 36px !important;    /* Force a fixed, short height */
+  padding: 0 !important;      /* Remove padding that causes stretching */
+  
+  /* Center the numbers perfectly */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Hover effects */
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Selected Day (The Active Pill) */
+.react-calendar__tile--active {
+  background: #4d4c7d !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Today's date */
+.react-calendar__tile--now {
+  background: rgba(255, 255, 255, 0.05); 
+  color: #a5a4ff !important;
+}
