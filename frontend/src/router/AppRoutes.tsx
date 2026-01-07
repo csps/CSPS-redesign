@@ -21,6 +21,12 @@ import AdminEventPage from "../pages/admin/event/page";
 import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
+<<<<<<< HEAD
+=======
+import AdminForumPage from "../pages/admin/forum";
+import AdminMerchPage from "../pages/admin/merch";
+import AdminMercheOrdersPage from '../pages/admin/merch/orders';
+>>>>>>> origin/main
 
 import NotFoundPage from "../pages/notFound";
 import LoadingPage from "../pages/loading";
@@ -31,6 +37,7 @@ const routers = [
   { path: "/login", element: <LoginPage /> },
   { path: "/contact-us", element: <ContactUsPage /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
+<<<<<<< HEAD
 
   // Student Protected Routes
   {
@@ -61,6 +68,25 @@ const routers = [
   },
 
   // 404 fallback
+=======
+  { path: "/dashboard", element: <DashboardPage /> },
+  { path: "/resources", element: <ResourcesPage /> },
+  { path: "/events", element: <EventsPage /> },
+  { path: "/events/view/:id", element: <EventViewPage /> },
+  { path: "/merch", element: <MerchPage /> },
+  { path: "/merch/product", element: <ProductViewPage /> },
+  { path: "/merch/transactions", element: <TransactionsPage /> },
+  { path: "/merch/cart", element: <CartPage /> },
+  { path: "/bulletin", element: <BulletinPage /> },
+  { path: "/admin/dashboard", element: <AdminDashboardPage /> },
+  { path: "/admin/event", element: <AdminEventPage /> },
+  { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+  { path: "/admin/products", element: <AdminProductsPage /> },
+  { path: "/admin/sales", element: <AdminSalesPage /> },
+  { path: "/admin/forum", element: <AdminForumPage /> },
+  { path: "/admin/merch", element: <AdminMerchPage /> },
+  { path: "/admin/merch/orders", element: <AdminMercheOrdersPage />},
+>>>>>>> origin/main
   { path: "*", element: <NotFoundPage /> },
 ];
 
