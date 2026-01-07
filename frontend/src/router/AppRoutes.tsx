@@ -22,33 +22,55 @@ import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
 
-
 import NotFoundPage from "../pages/notFound";
+import LoadingPage from "../pages/loading";
+import { ProtectedRoute } from "./ProtectedRoute";
 const routers = [
+  // Public routes - accessible to everyone
   { path: "/", element: <LandingPage /> },
   { path: "/login", element: <LoginPage /> },
   { path: "/contact-us", element: <ContactUsPage /> },
   { path: "/forgot-password", element: <ForgotPasswordPage /> },
-  { path: "/dashboard", element: <DashboardPage /> },
-  { path: "/resources", element: <ResourcesPage /> },
-  { path: "/events", element: <EventsPage /> },
-  { path: "/events/view/:id", element: <EventViewPage /> },
-  { path: "/merch", element: <MerchPage /> },
-  { path: "/merch/product", element: <ProductViewPage /> },
-  { path: "/merch/transactions", element: <TransactionsPage /> },
-  { path: "/merch/cart", element: <CartPage /> },
-  { path: "/bulletin", element: <BulletinPage /> },
-  { path: "/admin/dashboard", element: <AdminDashboardPage /> },
-  { path: "/admin/event", element: <AdminEventPage /> },
-  { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
-  { path: "/admin/products", element: <AdminProductsPage /> },
-  { path: "/admin/sales", element: <AdminSalesPage /> },
+
+  // Student Protected Routes
+  {
+    element: <ProtectedRoute allowedRole="STUDENT" />,
+    children: [
+      { path: "/dashboard", element: <DashboardPage /> },
+      { path: "/resources", element: <ResourcesPage /> },
+      { path: "/events", element: <EventsPage /> },
+      { path: "/events/view/:id", element: <EventViewPage /> },
+      { path: "/merch", element: <MerchPage /> },
+      { path: "/merch/product", element: <ProductViewPage /> },
+      { path: "/merch/transactions", element: <TransactionsPage /> },
+      { path: "/merch/cart", element: <CartPage /> },
+      { path: "/bulletin", element: <BulletinPage /> },
+    ],
+  },
+
+  // Admin Protected Routes
+  {
+    element: <ProtectedRoute allowedRole="ADMIN" />,
+    children: [
+      { path: "/admin/dashboard", element: <AdminDashboardPage /> },
+      { path: "/admin/event", element: <AdminEventPage /> },
+      { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+      { path: "/admin/products", element: <AdminProductsPage /> },
+      { path: "/admin/sales", element: <AdminSalesPage /> },
+    ],
+  },
+
+  // 404 fallback
   { path: "*", element: <NotFoundPage /> },
 ];
 
 const AppRoutes = () => {
   const elements = useRoutes(routers);
-  return <Suspense fallback={<div>Loading...</div>}>{elements}</Suspense>;
+  return (
+    <div className="w-full min-h-screen bg-black">
+      <Suspense fallback={<LoadingPage />}>{elements}</Suspense>
+    </div>
+  );
 };
 
 export default AppRoutes;

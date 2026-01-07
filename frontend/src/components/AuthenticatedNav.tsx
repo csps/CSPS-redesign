@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
+import { useAuthStore } from "../store/auth_store";
+import type { StudentResponse } from "../interfaces/student/StudentResponse";
+import LoadingPage from "../pages/loading";
 
 const AuthenticatedNav = () => {
   return (
@@ -16,6 +19,14 @@ const AuthenticatedNav = () => {
 
 const DesktopAuthenticatedNav = () => {
   const [selected, setSelected] = useState<string>("Home");
+
+  const student = useAuthStore((state) => state.user as StudentResponse);
+
+  // Don't render anything if no student, but don't return a loading page
+  // The parent route protection will handle redirects
+  if (!student) {
+    return null;
+  }
 
   return (
     <div className="hidden lg:flex w-full justify-center px-6 py-4">
@@ -30,7 +41,6 @@ const DesktopAuthenticatedNav = () => {
             />
           ))}
         </div>
-
         <ul className="flex gap-8 items-center">
           {NAVBARSAUTHENTICATED.map((navs, index) => (
             <Link
@@ -132,7 +142,7 @@ const DesktopAuthenticatedNav = () => {
       <div className="hidden lg:flex items-center ml-4 mt-2">
         <div className="hidden xl:flex flex-col items-center">
           <div className="h-14 w-14 bg-purple-700/40 rounded-md"></div>
-          <p className="text-xs mt-1 text-gray-300">xxxxxxxx</p>
+          <p className="text-xs mt-1 text-gray-300">{student?.studentId}</p>
         </div>
       </div>
     </div>
