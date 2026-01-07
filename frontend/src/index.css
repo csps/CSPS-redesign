@@ -184,3 +184,14 @@ clip-path: polygon(0 0, 100% 0, 100% 75%, 95% 100%, 0 100%);
 
 }
 
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #6b46c1;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #1a202c;
+}

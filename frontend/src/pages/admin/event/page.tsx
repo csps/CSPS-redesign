@@ -5,7 +5,7 @@ import { Pagination } from "swiper/modules";
 import { IoMdAdd } from "react-icons/io";
 
 import AddEventModal from "./addEventModal"; 
-import Navbar from "../../../components/Navbar";
+import AuthenticatedNav from "../../../components/AuthenticatedNav";
 
 const Page = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -18,7 +18,7 @@ const Page = () => {
     <>
       <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
         <div className="relative w-full max-w-[90rem] p-6 text-white">
-          <Navbar />
+          <AuthenticatedNav />
 
           <div className="flex flex-col sm:flex-row items-center justify-between py-10 gap-4 sm:gap-0">
             <p className="text-lg w-full sm:w-auto md:text-2xl lg:text-3xl font-semibold flex ">
