@@ -7,9 +7,14 @@ import { LOGOS } from "./nav.config";
 type NavProps = {
   LOGOS: string[];
   NAVBARS: { name: string }[];
+  scrollToDiv: (section: string) => void;
 };
 
-const Navbar = () => {
+const Navbar = ({
+  scrollToDiv,
+}: {
+  scrollToDiv: (section: string) => void;
+}) => {
   const NAVBARS: { name: string }[] = [
     { name: "Home" },
     { name: "About" },
@@ -19,16 +24,26 @@ const Navbar = () => {
 
   return (
     <>
-      <DesktopNav LOGOS={LOGOS} NAVBARS={NAVBARS} />
-      <MobileNav LOGOS={LOGOS} NAVBARS={NAVBARS} />
+      <DesktopNav LOGOS={LOGOS} NAVBARS={NAVBARS} scrollToDiv={scrollToDiv} />
+      <MobileNav LOGOS={LOGOS} NAVBARS={NAVBARS} scrollToDiv={scrollToDiv} />
     </>
   );
 };
 
-const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
+const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, scrollToDiv }) => {
   const navigate = useNavigate();
+
+  const HandleNavigate = (name: string) => {
+    if (name !== "Contact us") {
+      scrollToDiv(name.toLowerCase());
+      return;
+    }
+
+    navigate("/contact-us");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return (
-    <nav className="hidden  bg-white/4 backdrop-blur-lg border-1 border-white/20 rounded-[25px] shadow-lg py-4 px-8 max-w-full text-white lg:flex items-center justify-between">
+    <nav className="sticky top-0 hidden  bg-white/4 backdrop-blur-lg border-1 border-white/20 rounded-[25px] shadow-lg py-4 px-8 max-w-full text-white lg:flex items-center justify-between">
       {/* Logos*/}
       <div className="flex">
         {LOGOS.map((logo, index) => (
@@ -41,14 +56,9 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
           {NAVBARS.map((navs, index) => (
             <li
               key={index}
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center hover:cursor-pointer"
+              onClick={() => HandleNavigate(navs.name)}
             >
-              {/*
-              
-                <div  className="absolute w-28 h-12 shadow-[inset_5px_7px_6px_-4px_rgba(192,132,252,0.4),_-2px_5px_6px_-7px_rgba(0,0,0,0.8)]
-               rounded-3xl border border-purple-600"/>
-              
-              */}
               <p>{navs.name}</p>
             </li>
           ))}

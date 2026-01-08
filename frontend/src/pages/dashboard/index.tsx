@@ -8,6 +8,8 @@ import Activities from "./components/Activities";
 import Merch from "./components/Merch";
 
 const Index = () => {
+
+
   return (
     <div className="">
       <Layout overflowHidden={true} withFooter={false}>
