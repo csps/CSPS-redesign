@@ -13,6 +13,8 @@ const DesktopCarousel = ({
   setActiveIndex,
   getSlidePosition,
 }: Props) => {
+  if (!items || items.length === 0) return null;
+  
   return (
     <div className="hidden lg:flex justify-center items-center gap-6 flex-shrink-0">
       {/* Pagination Dots */}
