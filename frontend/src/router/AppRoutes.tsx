@@ -1,5 +1,6 @@
-import { useRoutes } from "react-router-dom";
+import { useRoutes, Navigate } from "react-router-dom";
 import { Suspense } from "react";
+import { useAuthStore } from "../store/auth_store";
 
 import LandingPage from "../pages/landing";
 import LoginPage from "../pages/login";
@@ -29,12 +30,36 @@ import AdminMercheOrdersPage from "../pages/admin/merch/orders";
 import NotFoundPage from "../pages/notFound";
 import LoadingPage from "../pages/loading";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { PublicRoute } from "./PublicRoute";
+
+// Home route component - redirects authenticated users to dashboard
+const HomeRoute = () => {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
+
+  // If authenticated, redirect to appropriate dashboard via protected routes
+  if (accessToken && user) {
+    return (
+      <Navigate
+        to={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
+        replace
+      />
+    );
+  }
+  return <LandingPage />;
+};
 const routers = [
-  // Public routes - accessible to everyone
-  { path: "/", element: <LandingPage /> },
-  { path: "/login", element: <LoginPage /> },
-  { path: "/contact-us", element: <ContactUsPage /> },
-  { path: "/forgot-password", element: <ForgotPasswordPage /> },
+  // Home route - redirects authenticated users to dashboard
+  { path: "/", element: <HomeRoute /> },
+  // Public routes - protected by PublicRoute to prevent authenticated access
+  {
+    element: <PublicRoute />,
+    children: [
+      { path: "/login", element: <LoginPage /> },
+      { path: "/contact-us", element: <ContactUsPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordPage /> },
+    ],
+  },
 
   // Student Protected Routes
   {
@@ -45,7 +70,7 @@ const routers = [
       { path: "/events", element: <EventsPage /> },
       { path: "/events/view/:id", element: <EventViewPage /> },
       { path: "/merch", element: <MerchPage /> },
-      { path: "/merch/product", element: <ProductViewPage /> },
+      { path: "/merch/variant/:merchId", element: <ProductViewPage /> },
       { path: "/merch/transactions", element: <TransactionsPage /> },
       { path: "/merch/cart", element: <CartPage /> },
       { path: "/bulletin", element: <BulletinPage /> },
