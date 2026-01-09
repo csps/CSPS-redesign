@@ -1,55 +1,97 @@
 import React from "react";
 import { FaCheck } from "react-icons/fa";
-import type { ProductCardProps } from "./ProductCard";
+import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
+import { MerchType } from "../../../../enums/MerchType";
 
 const OrderSummary = ({
   items,
   totalPrice,
 }: {
-  items: ProductCardProps[];
+  items: CartItemResponse[];
   totalPrice: number;
 }) => {
   return (
-    <div className="bg-white rounded-3xl shadow-2xl w-full lg:max-w-md p-8 relative">
+    /* h-full and items-stretch in parent grid ensure this balances with the product cards */
+    <div className="bg-white rounded-[40px] shadow-2xl w-[700px] p-8 flex flex-col h-full text-purple-900 min-h-[600px]">
+      {/* Header Icon Section */}
       <div className="flex justify-center mb-6">
-        <div className="bg-indigo-200 rounded-full p-6">
-          <FaCheck className="w-8 h-8 text-indigo-600" strokeWidth={3} />
+        <div className="bg-[#C7D2FE] rounded-full p-5">
+          <FaCheck className="w-8 h-8 text-[#4F46E5]" />
         </div>
       </div>
-      <h1 className="text-3xl font-bold text-center text-purple-900 mb-8">
+
+      <h2 className="text-3xl font-extrabold text-center mb-8 tracking-tight">
         Order Summary
-      </h1>
-      <div className="border-t-2 border-purple-900 mb-6"></div>
-      <div className="flex justify-between mb-4">
-        <span className="text-purple-900 font-semibold text-sm">Item(s)</span>
-        <div className="flex gap-12">
-          <span className="text-purple-900 font-semibold text-sm">Qty</span>
-          <span className="text-purple-900 font-semibold text-sm">Price</span>
-        </div>
+      </h2>
+
+      {/* Top Divider */}
+      <div className="border-t-[3px] border-purple-900 mb-6"></div>
+
+      {/* Column Headers - Using Grid for pixel-perfect alignment */}
+      <div className="grid grid-cols-12 gap-2 mb-4 px-1">
+        <span className="col-span-6 font-bold text-sm uppercase tracking-wider">
+          Item(s)
+        </span>
+        <span className="col-span-2 font-bold text-sm uppercase tracking-wider text-center">
+          Qty
+        </span>
+        <span className="col-span-4 font-bold text-sm uppercase tracking-wider text-right">
+          Price
+        </span>
       </div>
-      <div className="space-y-3 mb-32">
-        {items.map((item, index) => (
-          <div className="flex justify-between items-center" key={index}>
-            <span className="text-gray-800 text-sm">
-              {item.name} ({item.size})
-            </span>
-            <div className="flex gap-16">
-              <span className="text-gray-800 text-sm">{item.quantity}</span>
-              <span className="text-gray-800 text-sm">₱{item.price}</span>
+
+      {/* Dynamic Item List */}
+      <div className="flex-1 overflow-y-auto space-y-5 mb-8 pr-2 custom-scrollbar">
+        {items.map((item) => (
+          <div
+            className="grid grid-cols-12 gap-2 items-start px-1"
+            key={item.merchVariant.merchVariantId}
+          >
+            <div className="col-span-6 flex flex-col">
+              <span className="text-sm font-medium leading-tight text-gray-800">
+                {item.merchName}
+              </span>
+              <span className="text-[11px] text-gray-500 mt-0.5">
+                {item.merchType === MerchType.CLOTHING
+                  ? `(${item.merchVariant.size})`
+                  : `(${item.merchVariant.design || "Standard"})`}
+              </span>
             </div>
+            <span className="col-span-2 text-sm text-gray-700 text-center font-medium">
+              {item.quantity}
+            </span>
+            <span className="col-span-4 text-sm text-gray-700 text-right font-semibold">
+              ₱
+              {(item.merchVariant.price * item.quantity).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2 }
+              )}
+            </span>
           </div>
         ))}
       </div>
-      <div className="border-t-2  border-purple-900 mb-6"></div>
-      <div className="flex justify-between items-center mb-8">
-        <span className="text-purple-900 font-bold text-lg">Total</span>
-        <span className="text-purple-900 font-bold text-lg">{totalPrice}</span>
-      </div>
-      <div className="border-t-2  border-purple-900 mb-6"></div>
 
-      <button className="w-full bg-white border-2 border-indigo-600 text-indigo-600 rounded-full py-3 px-6 font-semibold hover:bg-indigo-50 transition-colors duration-200">
-        Confirm order
-      </button>
+      {/* Footer / Calculation Section */}
+      <div className="mt-auto">
+        <div className="border-t-[3px] border-purple-900 mb-6"></div>
+
+        <div className="flex justify-between items-center mb-6">
+          <span className="text-2xl font-bold">Total</span>
+          <span className="text-2xl font-bold">
+            ₱
+            {totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+          </span>
+        </div>
+
+        <div className="border-t-[3px] border-purple-900 mb-8"></div>
+
+        <button
+          disabled={items.length === 0}
+          className="w-full bg-white border-[3px] border-[#4F46E5] text-[#4F46E5] rounded-full py-4 px-6 text-lg font-bold hover:bg-indigo-50 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+        >
+          Confirm order
+        </button>
+      </div>
     </div>
   );
 };
