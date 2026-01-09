@@ -2,23 +2,26 @@ import React, { useState } from "react";
 import { PiGearSixLight } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
 import { useAuthStore } from "../store/auth_store";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
 import LoadingPage from "../pages/loading";
 
 const AuthenticatedNav = () => {
+  const locationPath = useLocation();
+  
+  const location = locationPath.pathname;
+
   return (
     <>
-      <DesktopAuthenticatedNav />
+      <DesktopAuthenticatedNav location={location}/>
       <MobileAuthenticatedNav />
     </>
   );
 };
 
-const DesktopAuthenticatedNav = () => {
-  const [selected, setSelected] = useState<string>("Home");
+const DesktopAuthenticatedNav = ({ location = "/dashboard" }: {location: string}) => {
 
   const student = useAuthStore((state) => state.user as StudentResponse);
 
@@ -42,19 +45,23 @@ const DesktopAuthenticatedNav = () => {
           ))}
         </div>
         <ul className="flex gap-8 items-center">
-          {NAVBARSAUTHENTICATED.map((navs, index) => (
+          {NAVBARSAUTHENTICATED.map((navs, index) => { 
+             
+             const isActivate = location === navs.to;
+            
+            return (
             <Link
               to={navs.to}
               key={index}
               className={`relative cursor-pointer text-lg font-medium transition-all ${
-                selected === navs.name
+               isActivate
                   ? "text-white"
                   : "text-gray-400 hover:text-gray-200"
               }`}
-              onClick={() => setSelected(navs.name)}
+              onClick={() => console.log(navs.name)}
             >
               <div className="relative flex items-center">
-                {selected === navs.name && (
+                {isActivate && (
                   <>
                     <AnimatePresence mode="wait">
                       <motion.div
@@ -75,7 +82,7 @@ const DesktopAuthenticatedNav = () => {
                       />
                     </AnimatePresence>
 
-                    {selected === "Merchandise" && (
+                    {navs.name === "Merchandise" && (
                       <div
                         className="text-xs absolute top-16 left-0 w-62 p-4 space-y-1  text-white bg-white/5 backdrop-blur-xl rounded-2xl shadow-lg border border-purple-200/40
                           before:content-[''] before:absolute before:left-[-2px] before:border-l before:border-purple-200/40 before:rotate-180 before:z-100 before:top-1/2 before:-translate-y-1/2 before:w-[5px] before:h-8 before:bg-[#310d80] before:rounded-l-xs before:shadow-[inset_2px_0_4px_rgba(0,0,0,0.3)] z-100"
@@ -129,13 +136,14 @@ const DesktopAuthenticatedNav = () => {
                   </>
                 )}
 
-                {selected === navs.name && (
+                {isActivate && (
                   <img src={navs.icon} alt="" className="w-5 h-5 mr-2" />
                 )}
                 <span>{navs.name}</span>
               </div>
             </Link>
-          ))}
+          ) 
+          })}
           <PiGearSixLight className="text-3xl text-white/90 hover:text-white transition" />
         </ul>
       </nav>
