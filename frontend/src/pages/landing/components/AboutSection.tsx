@@ -3,9 +3,9 @@ import RAINBOWICON from "../../../assets/icons/rainbow.svg";
 import ROCKETICON from "../../../assets/icons/rocket.svg";
 import DeanAdviserSection from "./DeanAdviserSection";
 
-const AboutSection = () => {
+const AboutSection = ({ refer }: {refer: React.RefObject<HTMLDivElement>}) => {
   return (
-    <div className="w-full ">
+    <div className="w-full" ref={refer}>
       <div className="space-y-5">
         <p className="text-5xl font-semibold">Get to know CSP-S</p>
         <p className="md:w-[20rem] text-lg">

@@ -6,7 +6,7 @@ import Sample5 from "../../../assets/Dean 22.png";
 import BACKGROUNDCSSLOGO from "../../../assets/logos/Background_Logo.png";
 import { CardStack, type Card } from "../../../components/CardStack";
 
-const OfficersSection = () => {
+const OfficersSection = ({ refer }: {refer: React.RefObject<HTMLDivElement>}) => {
   const CARDS: Card[] = [
     { name: "John Carl Atillo", role: "VP - External, CSPS-S", image: Sample },
     { name: "John Carl Atillo", role: "VP - External, CSPS-S", image: Sample2 },
@@ -16,7 +16,7 @@ const OfficersSection = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col items-center mt-56 overflow-x-hidden xl:overflow-visible px-4 sm:px-6 md:px-10 gap-12 xl:flex-row xl:gap-16">
+    <div className="w-full flex flex-col items-center mt-56 overflow-x-hidden xl:overflow-visible px-4 sm:px-6 md:px-10 gap-12 xl:flex-row xl:gap-16" ref={refer}>
       <div className="relative w-full flex flex-col items-center xl:items-start justify-center xl:h-64">
         <img
           src={BACKGROUNDCSSLOGO}

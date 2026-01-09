@@ -14,6 +14,8 @@ import ProductViewPage from "../pages/merch/productView";
 import TransactionsPage from "../pages/merch/transactions";
 import CartPage from "../pages/merch/cart";
 import BulletinPage from "../pages/bulletin";
+import ShowcasePage from "../pages/showcase";
+import ForumPage from "../pages/forum";
 
 // Admin
 import AdminDashboardPage from "../pages/admin/dashboard";
