@@ -1,91 +1,100 @@
 import React, { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import Footer from "../../../components/Footer";
-import { getPurchaseByStudent } from "../../../api/purchase";
-import type { PurchaseResponse } from "../../../interfaces/purchase/PurchaseResponse";
-import { PurchaseItemStatus } from "../../../enums/PurchaseItemStatus";
 import { PurchaseCard } from "./components/PurchaseCard";
 import { PurchaseFilter } from "./components/PurchaseFilter";
+import Pagination from "./components/Pagination";
+import { getMyOrders } from "../../../api/order";
+import type {
+  OrderResponse,
+  PaginatedOrdersResponse,
+} from "../../../interfaces/order/OrderResponse";
+import { OrderStatus } from "../../../enums/OrderStatus";
+import type { PaginationParams } from "../../../interfaces/pagination_params";
 
 interface GroupedPurchases {
-  [date: string]: PurchaseResponse[];
+  [orderId: number]: OrderResponse;
 }
 
 const statusLabels = {
-  [PurchaseItemStatus.CLAIMED]: "Claimed",
-  [PurchaseItemStatus.NOT_PAID]: "Not paid",
-  [PurchaseItemStatus.TO_BE_CLAIMED]: "To be claimed",
+  [OrderStatus.CLAIMED]: "Claimed",
+  [OrderStatus.NOT_PAID]: "Not paid",
+  [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
+
+  [OrderStatus.PENDING]: "Pending",
 };
 
 const index = () => {
-  const [purchases, setPurchases] = useState<PurchaseResponse[]>([]);
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(1);
+  const [paginationInfo, setPaginationInfo] =
+    useState<PaginatedOrdersResponse | null>(null);
 
-  // Fetch purchases on component mount
+  // Fetch purchases on component mount and when page changes
   useEffect(() => {
-    const fetchPurchases = async () => {
+    const fetchOrders = async () => {
       try {
         setLoading(true);
-        const data = await getPurchaseByStudent();
-        setPurchases(data);
+        const response = await getMyOrders({
+          page: currentPage,
+          size: pageSize,
+        } as PaginationParams);
+
+        console.log("Fetched orders:", response);
+        setOrders(response.content || []);
+        setPaginationInfo(response);
         setError(null);
       } catch (err) {
         console.error("Failed to fetch purchases:", err);
         setError("Failed to load purchases. Please try again later.");
-        setPurchases([]);
+        setOrders([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPurchases();
-  }, []);
+    fetchOrders();
+  }, [currentPage, pageSize]);
 
-  // Group purchases by date and filter by status
+  // Group purchases by orderId and filter by status
   const groupedPurchases = useMemo(() => {
     const filtered =
       selectedStatus === "All"
-        ? purchases
-        : purchases.filter((purchase) =>
-            purchase.items.some(
+        ? orders
+        : orders.filter((purchase) =>
+            purchase.orderItems.some(
               (item) =>
-                (selectedStatus === PurchaseItemStatus.NOT_PAID &&
-                  item.status === PurchaseItemStatus.NOT_PAID) ||
-                (selectedStatus === PurchaseItemStatus.CLAIMED &&
-                  item.status === PurchaseItemStatus.CLAIMED) ||
-                (selectedStatus === PurchaseItemStatus.TO_BE_CLAIMED &&
-                  item.status === PurchaseItemStatus.TO_BE_CLAIMED)
+                (selectedStatus === OrderStatus.NOT_PAID &&
+                  purchase.orderStatus === OrderStatus.NOT_PAID) ||
+                (selectedStatus === OrderStatus.CLAIMED &&
+                  purchase.orderStatus === OrderStatus.CLAIMED) ||
+                (selectedStatus === OrderStatus.TO_BE_CLAIMED &&
+                  purchase.orderStatus === OrderStatus.TO_BE_CLAIMED)
             )
           );
 
     const grouped: GroupedPurchases = {};
     filtered.forEach((purchase) => {
-      const date = new Date(purchase.purchasedAt).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      if (!grouped[date]) {
-        grouped[date] = [];
-      }
-      grouped[date].push(purchase);
+      grouped[purchase.orderId] = purchase;
     });
 
     return grouped;
-  }, [purchases, selectedStatus]);
+  }, [orders, selectedStatus]);
 
   // Get available statuses for filter dropdown
   const availableStatuses = useMemo(() => {
     const statuses = new Set<string>(["All"]);
-    purchases.forEach((purchase) => {
-      purchase.items.forEach((item) => {
-        statuses.add(item.status);
+    orders.forEach((purchase) => {
+      purchase.orderItems.forEach((item) => {
+        statuses.add(purchase.orderStatus);
       });
     });
     return Array.from(statuses);
-  }, [purchases]);
+  }, [orders]);
 
   return (
     <>
@@ -114,7 +123,7 @@ const index = () => {
               </div>
             )}
 
-            {/* Empty State */}
+            {/* Purchases Grouped by OrderId */}
             {!loading &&
               !error &&
               Object.keys(groupedPurchases).length === 0 && (
@@ -123,26 +132,35 @@ const index = () => {
                 </div>
               )}
 
-            {/* Purchases Grouped by Date */}
             {!loading &&
               !error &&
-              Object.entries(groupedPurchases).map(([date, purchaseList]) => (
-                <div key={date} className="mb-8">
+              Object.entries(groupedPurchases).map(([orderId, purchase]) => (
+                <div key={orderId} className="mb-8">
                   <div className="px-4 mb-4">
                     <p className="text-lg font-semibold text-gray-300">
-                      {date}
+                      Order #{orderId}
                     </p>
                   </div>
                   <div className="px-4 space-y-5">
-                    {purchaseList.map((purchase) => (
-                      <PurchaseCard
-                        key={purchase.purchaseId}
-                        purchase={purchase}
-                      />
-                    ))}
+                    <PurchaseCard purchase={purchase} />
                   </div>
                 </div>
               ))}
+
+            {/* Pagination Controls */}
+            {!loading &&
+              !error &&
+              paginationInfo &&
+              paginationInfo.totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={paginationInfo.totalPages}
+                  pageNumber={paginationInfo.number}
+                  first={paginationInfo.first}
+                  last={paginationInfo.last}
+                  onPageChange={setCurrentPage}
+                />
+              )}
           </div>
         </div>
       </div>

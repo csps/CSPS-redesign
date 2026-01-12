@@ -1,54 +1,66 @@
 import React, { memo } from "react";
-import type { PurchaseResponse } from "../../../../interfaces/purchase/PurchaseResponse";
-import { PurchaseItemStatus } from "../../../../enums/PurchaseItemStatus";
+import type { OrderResponse } from "../../../../interfaces/order/OrderResponse";
 import { MerchType } from "../../../../enums/MerchType";
+import { OrderStatus } from "../../../../enums/OrderStatus";
+import { S3_BASE_URL } from "../../../../constant";
 
 const statusStyles = {
-  [PurchaseItemStatus.CLAIMED]: {
+  [OrderStatus.CLAIMED]: {
     color: "text-green-500",
     bg: "bg-green-500/10",
     border: "border-green-500/30",
   },
-  [PurchaseItemStatus.NOT_PAID]: {
+  [OrderStatus.NOT_PAID]: {
     color: "text-red-500",
     bg: "bg-red-500/10",
     border: "border-red-500/30",
   },
-  [PurchaseItemStatus.TO_BE_CLAIMED]: {
+  [OrderStatus.TO_BE_CLAIMED]: {
     color: "text-yellow-500",
     bg: "bg-yellow-500/10",
     border: "border-yellow-500/30",
   },
+  [OrderStatus.PENDING]: {
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/30",
+  },
 };
 
 const statusLabels = {
-  [PurchaseItemStatus.CLAIMED]: "Claimed",
-  [PurchaseItemStatus.NOT_PAID]: "Not paid",
-  [PurchaseItemStatus.TO_BE_CLAIMED]: "To be claimed",
+  [OrderStatus.CLAIMED]: "Claimed",
+  [OrderStatus.NOT_PAID]: "Not paid",
+  [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
+  [OrderStatus.PENDING]: "Pending",
 };
 
 interface PurchaseCardProps {
-  purchase: PurchaseResponse;
+  purchase: OrderResponse;
 }
 
 const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
   return (
     <>
-      {purchase.items.map((item, index) => {
-        const variant = item.items;
+      {purchase.orderItems.map((item, index) => {
         const isClothing = item.merchType === MerchType.CLOTHING;
+
+        console.log("isClothing:", isClothing);
         const statusStyle =
-          statusStyles[item.status as PurchaseItemStatus] ||
-          statusStyles[PurchaseItemStatus.NOT_PAID];
+          statusStyles[purchase.orderStatus as OrderStatus] ||
+          statusStyles[OrderStatus.NOT_PAID];
 
         return (
           <div
-            key={`${purchase.purchaseId}-${index}`}
+            key={`${purchase.orderId}-${index}`}
             className={`flex w-full  bg-white/10 justify-between items-center p-6 md:p-10 rounded-3xl transition-all duration-300`}
           >
             <div className="flex justify-center shrink-0">
-              <div className="w-[120px] sm:w-[150px] md:w-[180px] h-[180px] bg-gray-600 rounded flex items-center justify-center text-xs text-center px-2">
-                {item.merchType}
+              <div className="w-[120px] sm:w-[150px] md:w-[180px] h-[180px] rounded flex items-center justify-center text-xs text-center px-2">
+                <img
+                  src={S3_BASE_URL + item.s3ImageKey}
+                  alt={item.merchName}
+                  className="max-w-full max-h-full"
+                />
               </div>
             </div>
 
@@ -64,20 +76,20 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
                 {isClothing ? (
                   <div>
                     <p className="text-sm sm:text-lg text-gray-400">
-                      Size: {variant?.size || "N/A"}
+                      Size: {item.size || "N/A"}
                     </p>
                     <p className="text-sm sm:text-lg text-gray-400">
-                      Color: {variant?.color}
+                      Color: {item.color}
                     </p>
                   </div>
                 ) : (
                   <p className="text-sm sm:text-lg text-gray-400">
-                    Design: {variant?.design}
+                    Design: {item.design}
                   </p>
                 )}
 
                 <p className="text-sm sm:text-lg">
-                  ₱{variant?.price.toLocaleString()}
+                  ₱{item.totalPrice.toLocaleString()}
                 </p>
               </div>
 
@@ -88,7 +100,7 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
                 <p className="text-2xl font-medium text-white mb-2">
                   Status:{" "}
                   <span className={statusStyle.color}>
-                    {statusLabels[item.status as PurchaseItemStatus] ||
+                    {statusLabels[purchase.orderStatus as OrderStatus] ||
                       "Unknown"}
                   </span>
                 </p>
