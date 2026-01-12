@@ -49,7 +49,6 @@ const DesktopAuthenticatedNav = ({ location = "/dashboard" }: {location: string}
                   ? "text-white"
                   : "text-gray-400 hover:text-gray-200"
               }`}
-              onClick={() => console.log(navs.name)}
             >
               <div className="relative flex items-center">
                 {isActivate && (
@@ -178,11 +177,11 @@ const MobileAuthenticatedNav = () => {
                 <FaTimes size={30} />
               </button>
             </div>
-            <div className="mt-10">
+            <div className="mt-10 flex flex-colg">
               {NAVBARSAUTHENTICATED.map((name, index) => (
-                <p className="text-white text-xl mt-5" key={index}>
+                <Link to={name.to} className="text-white text-xl mt-5" key={index}>
                   {name.name}
-                </p>
+                </Link>
               ))}
               <div className="mt-8 flex gap-2">
                 <div className="h-16 w-16 bg-purple-700/40 rounded-md"></div>

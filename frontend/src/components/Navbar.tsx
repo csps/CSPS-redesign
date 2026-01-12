@@ -7,7 +7,8 @@ import { LOGOS } from "./nav.config";
 type NavProps = {
   LOGOS: string[];
   NAVBARS: { name: string }[];
-  scrollToDiv: (section: string) => void;
+  scrollToDiv?: (section: string) => void;
+  HandleNavigate?: (name: string) => void;
 };
 
 const Navbar = ({
@@ -15,6 +16,8 @@ const Navbar = ({
 }: {
   scrollToDiv: (section: string) => void;
 }) => {
+    const navigate = useNavigate();
+
   const NAVBARS: { name: string }[] = [
     { name: "Home" },
     { name: "About" },
@@ -22,18 +25,7 @@ const Navbar = ({
     { name: "Contact us" },
   ];
 
-  return (
-    <>
-      <DesktopNav LOGOS={LOGOS} NAVBARS={NAVBARS} scrollToDiv={scrollToDiv} />
-      <MobileNav LOGOS={LOGOS} NAVBARS={NAVBARS} scrollToDiv={scrollToDiv} />
-    </>
-  );
-};
-
-const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, scrollToDiv }) => {
-  const navigate = useNavigate();
-
-  const HandleNavigate = (name: string) => {
+    const HandleNavigate = (name: string) => {
     if (name !== "Contact us") {
       scrollToDiv(name.toLowerCase());
       return;
@@ -42,6 +34,18 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, scrollToDiv }) => {
     navigate("/contact-us");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  return (
+    <>
+      <DesktopNav LOGOS={LOGOS} NAVBARS={NAVBARS} HandleNavigate={HandleNavigate} />
+      <MobileNav LOGOS={LOGOS} NAVBARS={NAVBARS} HandleNavigate={HandleNavigate} />
+    </>
+  );
+};
+
+const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
+  const navigate = useNavigate();
+
   return (
     <nav className="sticky top-0 hidden  bg-white/4 backdrop-blur-lg border-1 border-white/20 rounded-[25px] shadow-lg py-4 px-8 max-w-full text-white lg:flex items-center justify-between">
       {/* Logos*/}
@@ -57,7 +61,7 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, scrollToDiv }) => {
             <li
               key={index}
               className="relative flex items-center justify-center hover:cursor-pointer"
-              onClick={() => HandleNavigate(navs.name)}
+              onClick={() => HandleNavigate && HandleNavigate(navs.name)}
             >
               <p>{navs.name}</p>
             </li>
@@ -77,8 +81,9 @@ const DesktopNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, scrollToDiv }) => {
   );
 };
 
-const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
+const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   return (
     <div className="flex justify-end lg:hidden  ">
@@ -111,12 +116,12 @@ const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS }) => {
             </div>
             <div className="mt-10">
               {NAVBARS.map((name, index) => (
-                <p className="text-white text-xl mt-5" key={index}>
+                <p className="text-white text-xl mt-5" key={index} onClick={() => HandleNavigate && HandleNavigate(name.name)}>
                   {name.name}
                 </p>
               ))}
               <div className="mt-8">
-                <button className=" bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-2 text-lg rounded-lg w-full ">
+                <button className=" bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-2 text-lg rounded-lg w-full " onClick={() => navigate('/login')}>
                   Login
                 </button>
               </div>
