@@ -1,10 +1,11 @@
 import React from "react";
-import { PurchaseItemStatus } from "../../../../enums/PurchaseItemStatus";
+import { OrderStatus } from "../../../../enums/OrderStatus";
 
 const statusLabels = {
-  [PurchaseItemStatus.CLAIMED]: "Claimed",
-  [PurchaseItemStatus.NOT_PAID]: "Not paid",
-  [PurchaseItemStatus.TO_BE_CLAIMED]: "To be claimed",
+  [OrderStatus.CLAIMED]: "Claimed",
+  [OrderStatus.NOT_PAID]: "Not paid",
+  [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
+  [OrderStatus.PENDING]: "Pending",
 };
 
 interface PurchaseFilterProps {
@@ -16,7 +17,7 @@ export const PurchaseFilter: React.FC<PurchaseFilterProps> = ({
   selectedStatus,
   onStatusChange,
 }) => {
-  const allStatuses = ["All", ...Object.values(PurchaseItemStatus)];
+  const allStatuses = ["All", ...Object.values(OrderStatus)];
 
   return (
     <div className="mb-6">
@@ -32,7 +33,7 @@ export const PurchaseFilter: React.FC<PurchaseFilterProps> = ({
           <option key={status} value={status} className="bg-black text-white">
             {status === "All"
               ? "All"
-              : statusLabels[status as PurchaseItemStatus] || status}
+              : statusLabels[status as OrderStatus] || status}
           </option>
         ))}
       </select>
