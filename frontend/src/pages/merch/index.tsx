@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
 import SAMPLE from "../../assets/image 8.png";
@@ -10,6 +10,7 @@ import {
   getMerchById,
   getMerchByType,
 } from "../../api/merch";
+import { S3_BASE_URL } from "../../constant";
 
 const prefetchCache = new Map<number, any>();
 
@@ -34,7 +35,6 @@ const Index = () => {
     }
   };
 
-  // Re-fetch whenever the activeTag changes
   useEffect(() => {
     fetchMerch(activeTag);
   }, [activeTag]);
@@ -77,21 +77,21 @@ const Index = () => {
           {merch.length > 0
             ? merch.map((c) => (
                 <Link
-                  to={`/merch/variant/${c.merchId}`}
+                  to={`/merch/${c.merchId}`}
                   key={c.merchId}
                   onMouseEnter={() => prefetchMerch(c.merchId)}
                   className="group w-full bg-[#290B54] p-4 flex flex-col justify-center border border-purple-200/40 rounded-2xl transition-transform duration-300 hover:scale-110 relative z-10 cursor-pointer"
                 >
                   <div className="w-full flex justify-center">
                     <img
-                      src={SAMPLE}
+                      src={c.s3ImageKey ? S3_BASE_URL + c.s3ImageKey : SAMPLE}
                       alt={c.merchName}
                       className="w-[70%] transition-transform duration-500 ease-out group-hover:scale-150 relative z-20"
                     />
                   </div>
                   <div className="mt-4">
                     <p className="font-bold">{c.merchName}</p>
-                    <p className="text-purple-300">₱{c.price}</p>
+                    <p className="text-purple-300">₱{c.basePrice}</p>
                     <button className="w-full bg-white rounded-full text-black py-2 mt-5 font-bold">
                       View Merch
                     </button>

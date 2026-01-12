@@ -1,7 +1,10 @@
 import SAMPLE from "../../../../assets/image 8.png";
+import { S3_BASE_URL } from "../../../../constant";
+import type { MerchVariantResponse } from "../../../../interfaces/merch_variant/MerchVariantResponse";
 
 type Props = {
   items: number[];
+  merchVariants: MerchVariantResponse[];
   activeIndex: number;
   setActiveIndex: (i: number) => void;
   getSlidePosition: (i: number) => any;
@@ -9,12 +12,19 @@ type Props = {
 
 const DesktopCarousel = ({
   items,
+  merchVariants,
   activeIndex,
   setActiveIndex,
   getSlidePosition,
 }: Props) => {
-  if (!items || items.length === 0) return null;
-  
+  if (
+    !items ||
+    items.length === 0 ||
+    !merchVariants ||
+    merchVariants.length === 0
+  )
+    return null;
+
   return (
     <div className="hidden lg:flex justify-center items-center gap-6 flex-shrink-0">
       {/* Pagination Dots */}
@@ -50,11 +60,25 @@ const DesktopCarousel = ({
               }}
             >
               <div
-                className={`w-[200px] h-[200px] rounded-2xl flex flex-col items-center justify-center ${
-                  isActive ? "bg-purple-200/20" : "bg-purple-200/5"
+                className={`w-[250px] h-[300px] rounded-2xl flex flex-col items-center justify-center ${
+                  isActive ? "bg-gray-50/45" : "bg-purple-200/5"
                 }`}
               >
-                <img src={SAMPLE} className={isActive ? "scale-150" : ""} />
+                <div
+                  className={`${
+                    isActive ? `h-[200px] w-[200px]` : `h-[80px] w-[80px]`
+                  } overflow-hidden flex items-center justify-center `}
+                >
+                  <img
+                    src={
+                      merchVariants[index]?.s3ImageKey
+                        ? S3_BASE_URL + merchVariants[index].s3ImageKey
+                        : SAMPLE
+                    }
+                    className={isActive ? "scale-150" : ""}
+                  />
+                </div>
+
                 <p className="text-sm mt-2 opacity-80">{n}</p>
               </div>
             </div>

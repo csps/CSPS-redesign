@@ -7,52 +7,87 @@ import DesktopCarousel from "./components/DesktopCarousel";
 import MobileCarousel from "./components/MobileCarousel";
 import { useParams } from "react-router-dom";
 import type { MerchVariantResponse } from "../../../interfaces/merch_variant/MerchVariantResponse";
-import { getMerchVariantByMerchId } from "../../../api/merch_variant";
 import type { MerchDetailedResponse } from "../../../interfaces/merch/MerchResponse";
 import { getMerchById } from "../../../api/merch";
 import { ClothingSizing } from "../../../enums/ClothingSizing";
 import type { CartItemRequest } from "../../../interfaces/cart/CartItemRequest";
+import type { CartItemResponse } from "../../../interfaces/cart/CartItemResponse";
 import { addCartItem } from "../../../api/cart";
+import { useNavigate } from "react-router-dom";
+import BuyNowModal from "./components/BuyNowModal";
 import { toast } from "sonner";
 import NotFoundPage from "../../notFound";
+import LoadingPage from "../../loading";
+import { S3_BASE_URL } from "../../../constant";
 
 const Index = () => {
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-
   const { merchId } = useParams<{ merchId: string }>();
+  const navigate = useNavigate();
+
+  // Data state
   const [merch, setMerch] = useState<MerchDetailedResponse | null>(null);
+  const [loading, setLoading] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
 
-  // quantity state
-  const [quantity, setQuantity] = useState<number>(1);
-
-  // Get selected merch variant ID based on active index
-  const selectedVariant = merch?.variants[activeIndex];
-  const selectedMerchVariantId = selectedVariant?.merchVariantId || null;
-
-  const design = merch?.variants[activeIndex]?.design || "";
-
-  useEffect(() => {
-    console.log("Selected Design:", design);
-  }, [design]);
-
-  //
-
-  // Clothing Size State
+  // Selection state
+  const [activeIndex, setActiveIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState<ClothingSizing | null>(null);
+  const [quantity, setQuantity] = useState(1);
 
-  const fetchMerch = async (merchId: number) => {
+  // Modal state
+  const [showBuyModal, setShowBuyModal] = useState(false);
+
+  // Computed values
+  const currentVariant = merch?.variants[activeIndex];
+  const availableSizes = currentVariant?.items || [];
+  const design = currentVariant?.design || "";
+
+  const selectedDesignItem = currentVariant?.items?.[0] || null;
+
+  // Get selected size item for pricing and stock
+  const selectedSizeItem = selectedSize
+    ? availableSizes.find((item) => item.size === selectedSize)
+    : null;
+
+  const selectedSizePrice = selectedSizeItem?.price;
+  const selectedDesignPrice = selectedDesignItem?.price;
+
+  const currentPrice =
+    selectedSizePrice || // For CLOTHING with size selected
+    selectedDesignPrice || // For NON-CLOTHING (stickers, etc.)
+    merch?.basePrice || // Fallback to base price
+    0;
+
+  const currentStock =
+    selectedSizeItem?.stockQuantity || currentVariant?.stockQuantity || 0;
+
+  const selectedMerchVariantItemId =
+    selectedSizeItem?.merchVariantItemId ||
+    selectedDesignItem?.merchVariantItemId ||
+    null;
+
+  // Validation for Buy Now button
+  const isValidForPurchase =
+    merch?.merchType === "CLOTHING"
+      ? !!selectedSize && !!currentVariant
+      : !!currentVariant;
+
+  const merchVariantIds = merch?.variants.map((v) => v.merchVariantId) || [];
+
+  // ========== Data Fetching ==========
+  const fetchMerch = async (id: number) => {
+    setLoading(true);
     try {
-      const getMerchResponse = await getMerchById(merchId);
-
-      setMerch(getMerchResponse);
-      setIsNotFound(false); // Reset if a subsequent fetch succeeds
+      const response = await getMerchById(id);
+      setMerch(response);
+      setIsNotFound(false);
       setActiveIndex(0);
       setSelectedSize(null);
     } catch (err) {
       console.error("Fetch failed:", err);
       setIsNotFound(true);
-      // Handle other network errors here if needed
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,64 +96,133 @@ const Index = () => {
       fetchMerch(Number(merchId));
     }
   }, [merchId]);
-  // Main render logic
 
-  // Logic for quantity
+  useEffect(() => {
+    // Reset size selection when variant changes
+    console.log(`MERCH: ${JSON.stringify(merch)}`);
+    console.log(
+      `SELECTED MERCH VARIANT ITEM ID: ${selectedMerchVariantItemId}`
+    );
+  }, [activeIndex]);
+
+  // ========== Selection Handlers ==========
+  useEffect(() => {
+    // Reset selections when variant changes
+    setSelectedSize(null);
+    setQuantity(1);
+  }, [activeIndex, merchId]);
+
+  const handleVariantClick = (index: number) => {
+    setActiveIndex(index);
+  };
+
+  const handleSizeSelect = (size: ClothingSizing) => {
+    setSelectedSize(size);
+  };
+
+  // ========== Quantity Handlers ==========
   const handleDecrement = () => {
     setQuantity((prev) => Math.max(1, prev - 1));
   };
 
   const handleIncrement = () => {
-    const maxStock = merch?.variants[activeIndex]?.stockQuantity || 1;
-    setQuantity((prev) => Math.min(maxStock, prev + 1));
+    setQuantity((prev) => Math.min(currentStock, prev + 1));
   };
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const maxStock = selectedVariant?.stockQuantity || 1;
 
     if (value === "") {
-      setQuantity(0); // Allow clearing the input temporarily
+      setQuantity(0);
       return;
     }
 
     const num = parseInt(value);
     if (!isNaN(num)) {
-      setQuantity(Math.min(Math.max(1, num), maxStock));
+      setQuantity(Math.min(Math.max(1, num), currentStock));
     }
   };
 
-  const handleBlur = () => {
-    if (quantity < 1) setQuantity(1); // Reset to 1 if left empty or 0
+  const handleQuantityBlur = () => {
+    if (quantity < 1) setQuantity(1);
   };
 
-  useEffect(() => {
-    setQuantity(1);
-  }, [activeIndex, merchId]);
+  // ========== Cart Actions ==========
+  const handleAddToCart = async (
+    cartItem: CartItemRequest
+  ): Promise<CartItemResponse | null> => {
+    if (!cartItem) return null;
 
-  const handleClick = (index: number) => {
-    setActiveIndex(index);
+    if (merch?.merchType === "CLOTHING" && !selectedSize) {
+      toast.error("Please select a size first");
+      return null;
+    }
+    toast.success("Item added to cart! 🛒");
+
+    try {
+      const response = await addCartItem(cartItem);
+      toast.success("Item added to cart! 🛒");
+      return response;
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong");
+      return null;
+    }
   };
 
-  const merchVariantIds = merch
-    ? merch.variants.map((v) => v.merchVariantId)
-    : [];
+  const handleBuyNow = () => {
+    if (!isValidForPurchase) {
+      toast.error(
+        merch?.merchType === "CLOTHING"
+          ? "Please select a size first"
+          : "Please select a variant"
+      );
+      return;
+    }
+    setShowBuyModal(true);
+  };
 
+  const handleConfirmBuy = async () => {
+    if (!selectedMerchVariantItemId) {
+      toast.error("No variant selected");
+      return;
+    }
+
+    if (merch?.merchType === "CLOTHING" && !selectedSize) {
+      toast.error("Please select a size first");
+      return;
+    }
+
+    try {
+      const cartItemRequest: CartItemRequest = {
+        merchVariantItemId: selectedMerchVariantItemId,
+        quantity,
+      };
+
+      console.log(`Cart Item Request: ${JSON.stringify(cartItemRequest)}`);
+
+      await handleAddToCart(cartItemRequest);
+      setShowBuyModal(false);
+      navigate("/merch/cart", {
+        state: { selectedMerchVariantItemId },
+      });
+    } catch (err) {
+      console.error("Error during Buy Now:", err);
+    }
+  };
+
+  // ========== Carousel Position Calculator ==========
   const getSlidePosition = (index: number) => {
     let diff = index - activeIndex;
-
-    // Circular logic: Adjust diff to find the shortest path in the circle
     const len = merchVariantIds.length;
+
     if (len > 0) {
       diff = ((((diff + len / 2) % len) + len) % len) - Math.floor(len / 2);
     }
 
-    // Configuration for spacing and scaling
-    const itemHeight = 120; // Distance between items
-    const scaleReduction = 0.15; // How much smaller items get as they move away
-    const opacityReduction = 0.3; // How much they fade
+    const itemHeight = 120;
+    const scaleReduction = 0.15;
+    const opacityReduction = 0.3;
 
-    // Calculate values dynamically
     return {
       translateY: diff * itemHeight,
       scale: Math.max(0, 1.1 - Math.abs(diff) * scaleReduction),
@@ -127,57 +231,43 @@ const Index = () => {
     };
   };
 
-  const handleAddToCart = async (cartItem: CartItemRequest) => {
-    if (!cartItem) return;
-
-    // Optional: Size validation for clothing
-    if (merch?.merchType === "CLOTHING" && !selectedSize) {
-      toast.error("Please select a size first");
-      return;
-    }
-
-    try {
-      console.log("Adding to cart:", cartItem);
-
-      const addToCartResponse = await addCartItem(cartItem);
-
-      // If we reach here, it was successful
-      toast.success("Item added to cart! 🛒");
-      console.log("Added to cart:", addToCartResponse);
-    } catch (err: any) {
-      // This catches the re-thrown error from the service layer
-      toast.error(err.message || "Something went wrong");
-    }
-  };
+  // ========== Render Guards ==========
+  if (loading || !merch) {
+    return <LoadingPage />;
+  }
 
   if (isNotFound) {
     return <NotFoundPage />;
   }
 
+  // ========== Main Render ==========
   return (
     <Layout>
       <AuthenticatedNav />
 
-      {/* === Main Layout === */}
-
       <div className="flex flex-col lg:flex-row gap-16">
-        {/* Left */}
+        {/* Left - Desktop Carousel */}
         <DesktopCarousel
           items={merchVariantIds}
+          merchVariants={merch.variants}
           activeIndex={activeIndex}
           setActiveIndex={setActiveIndex}
           getSlidePosition={getSlidePosition}
         />
 
+        {/* Center - Main Image */}
         <div className="flex-[2] flex flex-col items-center justify-center relative">
-          {/* Dynamic Image based on activeIndex */}
           <img
-            src={SAMPLE}
+            src={
+              currentVariant?.s3ImageKey
+                ? S3_BASE_URL + currentVariant.s3ImageKey
+                : SAMPLE
+            }
             alt="Preview"
             className="w-full max-w-[350px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:scale-105"
           />
 
-          {/* Mobile indicators/carousel shown only on small screens */}
+          {/* Mobile Carousel */}
           <div className="lg:hidden w-full mt-8">
             <MobileCarousel
               items={merchVariantIds}
@@ -187,19 +277,21 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Right  == Info*/}
+        {/* Right - Product Info */}
         <div className="flex flex-col gap-6 flex-1 text-left py-10 lg:py-20">
+          {/* Header */}
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold tracking-widest">
-              {merch?.merchName}
+              {merch.merchName}
             </h1>
-            <p className="text-lg text-purple-200">₱ {merch?.price}</p>
-            <p className="text-sm text-gray-300">
-              Stock: {merch?.variants[activeIndex]?.stockQuantity}
+            <p className="text-lg text-purple-200">
+              ₱ {currentPrice.toFixed(2)}
             </p>
+            <p className="text-sm text-gray-300">Stock: {currentStock}</p>
           </div>
 
-          {merch?.merchType === "CLOTHING" ? (
+          {/* Clothing-specific options */}
+          {merch.merchType === "CLOTHING" ? (
             <div className="space-y-6">
               {/* Color Selection */}
               <div className="flex flex-col gap-3">
@@ -207,15 +299,18 @@ const Index = () => {
                   Color
                 </p>
                 <div className="flex gap-3 flex-wrap">
-                  {["bg-white", "bg-blue-500"].map((color, idx) => (
+                  {merch.variants.map((variant, idx) => (
                     <button
-                      key={idx}
-                      className={`w-10 h-10 rounded-full border-2 transition-all ${
-                        idx === 0
-                          ? "border-purple-500 ring-2 ring-purple-500/20"
-                          : "border-transparent"
-                      } ${color}`}
-                    />
+                      key={variant.merchVariantId}
+                      onClick={() => handleVariantClick(idx)}
+                      className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                        activeIndex === idx
+                          ? "border-purple-500 ring-2 ring-purple-500/20 bg-purple-500/10"
+                          : "border-white/10 hover:border-purple-400"
+                      }`}
+                    >
+                      {variant.color}
+                    </button>
                   ))}
                 </div>
               </div>
@@ -226,24 +321,42 @@ const Index = () => {
                   Size
                 </p>
                 <div className="flex gap-2 flex-wrap">
-                  {Object.values(ClothingSizing).map((size) => {
-                    const isActive = selectedSize === size;
-                    return (
-                      <button
-                        key={size}
-                        onClick={() => setSelectedSize(size)} // Set active size
-                        className={`min-w-[56px] px-3 py-2 text-sm font-semibold border transition-all rounded-md 
-                                  ${
-                                    isActive
-                                      ? "bg-purple-600 border-purple-500 text-white shadow-lg scale-105"
-                                      : "border-white/10 text-gray-300 hover:border-purple-400"
-                                  }`}
-                      >
-                        {size}
-                      </button>
-                    );
-                  })}
+                  {availableSizes.length > 0 ? (
+                    availableSizes.map((sizeItem) => {
+                      const isActive = selectedSize === sizeItem.size;
+                      const isOutOfStock = sizeItem.stockQuantity === 0;
+
+                      return (
+                        <button
+                          key={sizeItem.merchVariantItemId}
+                          onClick={() =>
+                            !isOutOfStock && handleSizeSelect(sizeItem.size)
+                          }
+                          disabled={isOutOfStock}
+                          className={`min-w-[56px] px-3 py-2 text-sm font-semibold border transition-all rounded-md ${
+                            isActive
+                              ? "bg-purple-600 border-purple-500 text-white shadow-lg scale-105"
+                              : isOutOfStock
+                              ? "border-white/10 text-gray-500 cursor-not-allowed opacity-50 line-through"
+                              : "border-white/10 text-gray-300 hover:border-purple-400"
+                          }`}
+                        >
+                          <div>{sizeItem.size}</div>
+                          <div className="text-xs opacity-70">
+                            ({sizeItem.stockQuantity})
+                          </div>
+                        </button>
+                      );
+                    })
+                  ) : (
+                    <p className="text-gray-500 text-sm">No sizes available</p>
+                  )}
                 </div>
+                {selectedSize && currentStock > 0 && (
+                  <p className="text-sm text-green-400">
+                    ✓ {currentStock} items available
+                  </p>
+                )}
               </div>
             </div>
           ) : (
@@ -253,10 +366,10 @@ const Index = () => {
                 Design
               </p>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                {merch?.variants.map((variant, index) => (
+                {merch.variants.map((variant, index) => (
                   <button
                     key={variant.merchVariantId}
-                    onClick={() => handleClick(index)}
+                    onClick={() => handleVariantClick(index)}
                     className={`relative aspect-square overflow-hidden rounded-lg border-2 transition-all p-1 bg-white/5 ${
                       activeIndex === index
                         ? "border-purple-500 ring-2 ring-purple-500/20"
@@ -264,7 +377,11 @@ const Index = () => {
                     }`}
                   >
                     <img
-                      src={SAMPLE}
+                      src={
+                        variant.s3ImageKey
+                          ? S3_BASE_URL + variant.s3ImageKey
+                          : SAMPLE
+                      }
                       alt="variant"
                       className="w-full h-full object-cover rounded-md"
                     />
@@ -302,10 +419,9 @@ const Index = () => {
                   type="text"
                   value={quantity === 0 ? "" : quantity}
                   onChange={handleQuantityChange}
-                  onBlur={handleBlur}
+                  onBlur={handleQuantityBlur}
                   className="w-12 text-center bg-transparent border-none outline-none text-xl font-semibold appearance-none"
                 />
-                {/* Dynamic underline color to show focus */}
                 <div className="w-10 h-[1px] bg-gray-400 group-focus-within:bg-purple-500 transition-colors mt-1" />
               </div>
 
@@ -317,28 +433,46 @@ const Index = () => {
               </button>
             </div>
           </div>
+
+          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-5 mt-10">
             <button
-              onClick={() =>
+              onClick={() => {
                 handleAddToCart({
-                  merchVariantId: selectedMerchVariantId!,
-                  quantity,
-                })
-              }
+                  merchVariantItemId: selectedMerchVariantItemId!,
+                  quantity: quantity,
+                });
+              }}
               className="text-black bg-white flex items-center justify-center gap-2 px-4 py-3 rounded-full cursor-pointer hover:opacity-90 transition-all"
             >
               <BiSolidCartAdd className="text-xl" />
               <span className="font-semibold">Add to cart</span>
             </button>
 
-            <button className="text-black bg-[#FDE006] px-6 py-3 rounded-full cursor-pointer hover:bg-[#e6cc05] transition-all">
+            <button
+              onClick={handleBuyNow}
+              disabled={!isValidForPurchase}
+              className={`text-black bg-[#FDE006] px-6 py-3 rounded-full cursor-pointer hover:bg-[#e6cc05] transition-all ${
+                !isValidForPurchase ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
               Buy Now
             </button>
           </div>
         </div>
       </div>
+
+      {/* Buy Now Modal */}
+      <BuyNowModal
+        open={showBuyModal}
+        onClose={() => setShowBuyModal(false)}
+        onConfirm={() => handleConfirmBuy()}
+        merchName={merch.merchName}
+        design={design}
+        quantity={quantity}
+        size={selectedSize}
+      />
     </Layout>
   );
 };
-
 export default Index;
