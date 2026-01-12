@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 // removed unused imports
 import Layout from "../../../components/Layout";
 import ProductCard, { type ProductCardProps } from "./components/ProductCard";
 import OrderSummary from "./components/OrderSummary";
-import type { CartResponse } from "../../../interfaces/cart/CartResponse";
 import { getCart } from "../../../api/cart";
 import type { CartItemResponse } from "../../../interfaces/cart/CartItemResponse";
 
@@ -13,6 +13,19 @@ const index = () => {
   const [items, setItems] = useState<CartItemResponse[]>([]);
   // Use a Set for O(1) lookups and easy toggling
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  const location = useLocation();
+
+  // If navigated from Buy Now with a selected variant id, pre-select it
+  useEffect(() => {
+    const state = (location.state as any) || {};
+    const id: number | undefined = state.selectedMerchVariantItemId;
+
+    console.log(`Navigated with selectedMerchVariantId: ${id}`);
+    if (id) {
+      setSelectedIds(new Set([id]));
+    }
+  }, [location.state]);
 
   const fetchCart = async () => {
     const getCartResponse = await getCart();
@@ -36,10 +49,10 @@ const index = () => {
   // Optimized derived state: Only recalculates when items or selection changes
   const { selectedItems, totalSelectedPrice } = useMemo(() => {
     const selected = items.filter((item) =>
-      selectedIds.has(item.merchVariant.merchVariantId)
+      selectedIds.has(item.merchVariantItemId)
     );
     const total = selected.reduce(
-      (sum, item) => sum + item.merchVariant.price * item.quantity,
+      (sum, item) => sum + item.unitPrice * item.quantity,
       0
     );
     return { selectedItems: selected, totalSelectedPrice: total };
@@ -52,16 +65,23 @@ const index = () => {
         <div className="w-full lg:max-w-7xl space-y-6">
           {items.map((item) => (
             <ProductCard
-              key={item.merchVariant.merchVariantId}
+              key={item.merchVariantItemId}
               cartItem={item}
-              isSelected={selectedIds.has(item.merchVariant.merchVariantId)}
-              onToggle={() => toggleSelect(item.merchVariant.merchVariantId)}
+              isSelected={selectedIds.has(item.merchVariantItemId)}
+              onToggle={() => toggleSelect(item.merchVariantItemId)}
             />
           ))}
         </div>
 
         {/* Pass the optimized total to OrderSummary */}
-        <OrderSummary items={selectedItems} totalPrice={totalSelectedPrice} />
+        <OrderSummary
+          items={selectedItems}
+          totalPrice={totalSelectedPrice}
+          onOrderSuccess={() => {
+            fetchCart();
+            setSelectedIds(new Set());
+          }}
+        />
       </div>
     </Layout>
   );
