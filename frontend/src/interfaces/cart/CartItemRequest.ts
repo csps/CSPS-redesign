@@ -1,4 +1,4 @@
 export interface CartItemRequest {
-  merchVariantId: number;
+  merchVariantItemId: number;
   quantity: number;
 }

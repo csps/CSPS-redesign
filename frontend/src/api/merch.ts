@@ -5,21 +5,26 @@ import type {
 } from "../interfaces/merch/MerchResponse";
 import api from "./api";
 
-// Fetch all merch summaries without variants
+/**
+ * Get all merchandise summaries without variant details.
+ * Endpoint: GET /api/merch/summary
+ */
 export const getAllMerchWithoutVariants = async (): Promise<
   MerchSummaryResponse[]
 > => {
   try {
     const response = await api.get("/merch/summary");
-
     return response.data;
   } catch (err) {
-    console.error("Error fetching merch:", err);
+    console.error("Error fetching merch summaries:", err);
     throw err;
   }
 };
 
-// Fetch detailed merch by ID, including variants
+/**
+ * Get detailed merchandise by ID including all variants and items.
+ * Endpoint: GET /api/merch/{merchId}
+ */
 export const getMerchById = async (
   merchId: number
 ): Promise<MerchDetailedResponse> => {
@@ -35,6 +40,10 @@ export const getMerchById = async (
   }
 };
 
+/**
+ * Get merchandise by type.
+ * Endpoint: GET /api/merch/type/{type}
+ */
 export const getMerchByType = async (
   merchType: MerchType
 ): Promise<MerchSummaryResponse[]> => {
@@ -46,3 +55,18 @@ export const getMerchByType = async (
     throw err;
   }
 };
+
+/**
+ * Get all merchandise (for admin purposes).
+ * Endpoint: GET /api/merch
+ */
+export const getAllMerch = async (): Promise<MerchDetailedResponse[]> => {
+  try {
+    const response = await api.get("/merch");
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching all merch:", err);
+    throw err;
+  }
+};
+

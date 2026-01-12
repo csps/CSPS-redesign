@@ -1,12 +1,14 @@
-import type { ClothingSizing } from "../../enums/ClothingSizing";
+import type { MerchVariantItemResponse } from "../merch_variant_item/MerchVariantItemResponse";
 
+/**
+ * Merchandise variant with all items.
+ * Variants contain color/design and multiple size/quantity options.
+ */
 export interface MerchVariantResponse {
   merchVariantId: number;
-  color: string;
-  size: ClothingSizing;
-  price: number;
-  stockQuantity: number;
+  color?: string; // null for non-clothing
   design: string;
-
-  merchId: number;
+  s3ImageKey: string;
+  items: MerchVariantItemResponse[];
+  stockQuantity: number;
 }

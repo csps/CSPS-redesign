@@ -8,7 +8,7 @@ export const addCartItem = async (
   cartItem: CartItemRequest
 ): Promise<CartItemResponse> => {
   try {
-    if (!cartItem.merchVariantId || cartItem.quantity <= 0) {
+    if (!cartItem || !cartItem.merchVariantItemId || cartItem.quantity <= 0) {
       throw new Error("Invalid cart item data");
     }
 
