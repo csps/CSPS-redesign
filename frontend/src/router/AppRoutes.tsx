@@ -16,6 +16,7 @@ import CartPage from "../pages/merch/cart";
 import BulletinPage from "../pages/bulletin";
 import ShowcasePage from "../pages/showcase";
 import ForumPage from "../pages/forum";
+import SettingsPage from '../pages/settings'
 
 // Admin
 import AdminDashboardPage from "../pages/admin/dashboard";
@@ -44,6 +45,7 @@ const routers = [
   { path: "/bulletin", element: <BulletinPage /> },
   { path: "/forum", element: <ForumPage /> },
   { path: "/showcase", element: <ShowcasePage /> },
+  { path: "/settings", element: <SettingsPage />},
   { path: "/admin/dashboard", element: <AdminDashboardPage /> },
   { path: "/admin/event", element: <AdminEventPage /> },
   { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
