@@ -1,6 +1,8 @@
 import { useRoutes, Navigate } from "react-router-dom";
 import { Suspense } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../store/auth_store";
+import PageTransition from "../components/PageTransition";
 
 import LandingPage from "../pages/landing";
 import LoginPage from "../pages/login";
@@ -15,8 +17,6 @@ import ProductViewPage from "../pages/merch/productView";
 import TransactionsPage from "../pages/merch/transactions";
 import CartPage from "../pages/merch/cart";
 import BulletinPage from "../pages/bulletin";
-import ShowcasePage from "../pages/showcase";
-import ForumPage from "../pages/forum";
 
 // Admin
 import AdminDashboardPage from "../pages/admin/dashboard";
@@ -72,7 +72,7 @@ const routers = [
       { path: "/events", element: <EventsPage /> },
       { path: "/events/view/:id", element: <EventViewPage /> },
       { path: "/merch", element: <MerchPage /> },
-      { path: "/merch/variant/:merchId", element: <ProductViewPage /> },
+      { path: "/merch/:merchId", element: <ProductViewPage /> },
       { path: "/merch/transactions", element: <TransactionsPage /> },
       { path: "/merch/cart", element: <CartPage /> },
       { path: "/bulletin", element: <BulletinPage /> },
@@ -102,7 +102,11 @@ const AppRoutes = () => {
   const elements = useRoutes(routers);
   return (
     <div className="w-full min-h-screen bg-black">
-      <Suspense fallback={<LoadingPage />}>{elements}</Suspense>
+      <AnimatePresence mode="wait">
+        <PageTransition>
+          <Suspense fallback={<LoadingPage />}>{elements}</Suspense>
+        </PageTransition>
+      </AnimatePresence>
     </div>
   );
 };
