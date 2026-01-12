@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import SAMPLE from "../../../../assets/image 8.png";
 import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
 import { MerchType } from "../../../../enums/MerchType";
+import { S3_BASE_URL } from "../../../../constant";
 
 export type ProductCardProps = {
   cartItem: CartItemResponse;
@@ -12,8 +13,6 @@ export type ProductCardProps = {
 // Wrap the component in memo to prevent unnecessary re-renders
 const ProductCard = memo(
   ({ cartItem, isSelected, onToggle }: ProductCardProps) => {
-    const { merchVariant } = cartItem;
-
     const isClothing = cartItem.merchType === MerchType.CLOTHING;
 
     return (
@@ -42,7 +41,7 @@ const ProductCard = memo(
         >
           <div className="flex justify-center shrink-0">
             <img
-              src={SAMPLE}
+              src={`${S3_BASE_URL}${cartItem.s3ImageKey}` || SAMPLE}
               alt={cartItem.merchName}
               className="w-[120px] sm:w-[150px] md:w-[180px] h-auto object-contain"
             />
@@ -60,23 +59,25 @@ const ProductCard = memo(
               {isClothing ? (
                 <div>
                   <p className="text-sm sm:text-lg text-gray-400">
-                    Size: {merchVariant.size || "N/A"}
+                    Size: {cartItem.size || "N/A"}
                   </p>
                   <p className="text-sm sm:text-lg text-gray-400">
-                    Color: {merchVariant.color}
+                    Color: {cartItem.color}
                   </p>
                 </div>
               ) : (
                 <p className="text-sm sm:text-lg text-gray-400">
-                  Design: {merchVariant.design}
+                  Design: {cartItem.design}
                 </p>
               )}
 
-              <p className="text-sm sm:text-lg">Price: ₱{merchVariant.price}</p>
+              <p className="text-sm sm:text-lg">
+                Price: ₱{cartItem.unitPrice.toFixed(2)}
+              </p>
             </div>
 
             <div className="mt-4 md:mt-8 text-xl lg:text-3xl font-bold text-white">
-              <p>₱{merchVariant.price * cartItem.quantity}</p>
+              <p>₱{(cartItem.unitPrice * cartItem.quantity).toFixed(2)}</p>
             </div>
           </div>
         </div>
