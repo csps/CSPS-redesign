@@ -1,50 +1,45 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { getUpcomingEvents } from "../../../api/event";
+import type { EventResponse } from "../../../interfaces/event/EventResponse";
+import { S3_BASE_URL } from "../../../constant";
+import EventDetailModal from "./EventDetailModal";
+import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 
 const UpcomingEvents = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
+    null
+  );
+  const [events, setEvents] = useState<EventResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const data = await getUpcomingEvents();
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch upcoming events:", err);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed inset-0 z-40 flex items-center justify-center bg-[rgba(0,0,0,0.5)]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsOpen(false)}
-          >
-            <motion.div
-              className="bg-[#0F033C] w-full max-w-md rounded-xl p-6 relative z-50"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-lg font-semibold text-white mb-4">
-                Modal Title
-              </h2>
-              <p className="text-gray-300 mb-6">
-                This is a modal content example. Click outside to close.
-              </p>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 bg-gray-600 rounded-md text-white"
-                >
-                  Close
-                </button>
-                <button className="px-4 py-2 bg-purple-600 rounded-md text-white">
-                  Action
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <EventDetailModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        event={selectedEvent}
+      />
 
       <p className="text-lg md:text-2xl lg:text-3xl font-semibold mb-10">
         Upcoming Events
@@ -55,15 +50,45 @@ const UpcomingEvents = () => {
         pagination={{ clickable: true }}
         modules={[Pagination]}
       >
-        {[1, 2, 3, 4, 5].map((index) => (
-          <SwiperSlide
-            key={index}
-            className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200  rounded-lg "
-            onClick={() => setIsOpen(true)}
-          >
-            Slide {index}
+        {loading ? (
+          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200 rounded-lg flex items-center justify-center">
+            <p className="text-gray-400">Loading...</p>
           </SwiperSlide>
-        ))}
+        ) : events.length === 0 ? (
+          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200 rounded-lg flex items-center justify-center">
+            <p className="text-gray-400">No upcoming events</p>
+          </SwiperSlide>
+        ) : (
+          events.map((event) => (
+            <SwiperSlide
+              key={event.eventId}
+              className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[350px] !h-70 bg-[#0F033C] border border-gray-200 rounded-lg overflow-hidden group relative cursor-pointer"
+              onClick={() => {
+                setSelectedEvent(event);
+                setIsOpen(true);
+              }}
+            >
+              {event.s3ImageKey && (
+                <img
+                  src={`${S3_BASE_URL}${event.s3ImageKey}`}
+                  alt={event.eventName}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-100 group-hover:opacity-0 transition-opacity duration-300 flex flex-col justify-end p-3">
+                <p className="text-white font-semibold text-sm line-clamp-2 ">
+                  {event.eventName}
+                </p>
+                <p className="text-white font-light text-sm line-clamp-2">
+                  {formatDate(event.eventDate)}
+                </p>
+                <p className="text-white font-light text-sm line-clamp-2">
+                  {formatTimeRange(event.startTime, event.endTime)}
+                </p>
+              </div>
+            </SwiperSlide>
+          ))
+        )}
       </Swiper>
     </div>
   );
