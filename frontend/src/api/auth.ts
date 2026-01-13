@@ -90,7 +90,7 @@ export const profile = async (): Promise<AuthUser> => {
 
     const res = await api.get<UserResponse>(endpoint);
 
-    if (!res?.data || typeof res.data.userId !== "number") {
+    if (!res?.data) {
       useAuthStore.getState().clearAuth();
       throw new Error("Invalid admin profile response");
     }
