@@ -68,7 +68,7 @@ const routers = [
     element: <ProtectedRoute allowedRole="STUDENT" />,
     children: [
       { path: "/dashboard", element: <DashboardPage /> },
-      { path: "/resources", element: <ResourcesPage /> },
+      // { path: "/resources", element: <ResourcesPage /> },
       { path: "/events", element: <EventsPage /> },
       { path: "/events/view/:id", element: <EventViewPage /> },
       { path: "/merch", element: <MerchPage /> },
@@ -86,7 +86,7 @@ const routers = [
       { path: "/admin/dashboard", element: <AdminDashboardPage /> },
       { path: "/admin/event", element: <AdminEventPage /> },
       { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
-      { path: "/admin/products", element: <AdminProductsPage /> },
+      { path: "/admin/merch/products", element: <AdminProductsPage /> },
       { path: "/admin/sales", element: <AdminSalesPage /> },
       { path: "/admin/forum", element: <AdminForumPage /> },
       { path: "/admin/merch", element: <AdminMerchPage /> },

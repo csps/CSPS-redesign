@@ -35,21 +35,23 @@ const ANIMATION_CONFIG = {
 };
 
 const isRouteActive = (
-  navName: string,
+  _navName: string,
   currentLocation: string,
   navTo: string
 ): boolean => {
-  if (navName === "Merchandise") {
-    return currentLocation.startsWith("/merch");
-  }
-  return currentLocation === navTo;
+  if (!navTo) return false;
+  if (currentLocation === navTo) return true;
+  return currentLocation.startsWith(`${navTo}/`);
 };
 
 const getMerchandiseActiveStates = (location: string) => ({
   isProductsActive:
-    location === "/merch" || location.startsWith("/merch/variant"),
+    location === "/merch" ||
+    location.startsWith("/merch/variant") ||
+    location === "/admin/merch/products",
   isTransactionsActive: location.startsWith("/merch/transactions"),
   isCartActive: location.startsWith("/merch/cart"),
+  isOrderActive: location.startsWith("/admin/merch/orders"),
 });
 
 // ============================================================================
@@ -71,75 +73,128 @@ const ActiveIndicator: React.FC = () => (
   </AnimatePresence>
 );
 
-const MerchandiseDropdown: React.FC<{ location: string }> = ({ location }) => {
-  const { isProductsActive, isTransactionsActive, isCartActive } =
-    getMerchandiseActiveStates(location);
+const MerchandiseDropdown: React.FC<{ location: string; isAdmin: boolean }> = ({
+  location,
+  isAdmin,
+}) => {
+  const {
+    isProductsActive,
+    isTransactionsActive,
+    isCartActive,
+    isOrderActive,
+  } = getMerchandiseActiveStates(location);
 
-  const menuItems = [
-    {
-      to: "/merch",
-      label: "Products",
-      isActive: isProductsActive,
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-          />
-        </svg>
-      ),
-    },
-    {
-      to: "/merch/transactions",
-      label: "Transaction",
-      isActive: isTransactionsActive,
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-5h-8m0 0l3 3m-3-3l3-3"
-          />
-        </svg>
-      ),
-    },
-    {
-      to: "/merch/cart",
-      label: "Cart",
-      isActive: isCartActive,
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 3h18l-1 9H4L3 3zm0 9h18v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm5 7h8"
-          />
-        </svg>
-      ),
-    },
-  ];
+  // For admins we show admin merch entries (Products + Orders)
+  const menuItems = isAdmin
+    ? [
+        {
+          to: "/admin/merch/products",
+          label: "Products",
+          isActive: isProductsActive,
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+          ),
+        },
+        {
+          to: "/admin/merch/orders",
+          label: "Orders",
+          isActive: isOrderActive,
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-5h-8m0 0l3 3m-3-3l3-3"
+              />
+            </svg>
+          ),
+        },
+      ]
+    : [
+        {
+          to: "/merch",
+          label: "Products",
+          isActive: isProductsActive,
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+              />
+            </svg>
+          ),
+        },
+        {
+          to: "/merch/transactions",
+          label: "Transaction",
+          isActive: isTransactionsActive,
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m4-5h-8m0 0l3 3m-3-3l3-3"
+              />
+            </svg>
+          ),
+        },
+        {
+          to: "/merch/cart",
+          label: "Cart",
+          isActive: isCartActive,
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h18l-1 9H4L3 3zm0 9h18v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm5 7h8"
+              />
+            </svg>
+          ),
+        },
+      ];
 
   return (
     <motion.div
@@ -213,7 +268,10 @@ const SettingsIcon: React.FC = () => (
 // ============================================================================
 
 const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
-  const student = useAuthStore((state) => state.user as StudentResponse);
+  // reactive access to auth user
+  const user = useAuthStore((state) => state.user);
+  const student = user as StudentResponse;
+  const isAdmin = user?.role === "ADMIN";
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   if (!student) {
@@ -222,6 +280,7 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
 
   const handleMerchandiseClick = (e: React.MouseEvent) => {
     e.preventDefault();
+
     setOpenDropdown(openDropdown === "Merchandise" ? null : "Merchandise");
   };
 
@@ -230,10 +289,20 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
       <nav className="w-full max-w-7xl bg-white/5 backdrop-blur-lg border border-white/20 rounded-[25px] shadow-lg py-4 px-8 flex items-center justify-between text-white relative z-40">
         <LogoSection />
 
-        <ul className="flex gap-8 items-center">
+        <ul className="flex gap-10 justify-center flex-1">
           {NAVBARSAUTHENTICATED.map((navItem, index) => {
-            const isActive = isRouteActive(navItem.name, location, navItem.to);
             const isMerchandise = navItem.name === "Merchandise";
+            // base active detection (matches nav.to or nested paths)
+            let isActive = isRouteActive(navItem.name, location, navItem.to);
+
+            // explicit override: treat Merchandise active for admin merch routes
+            if (
+              isMerchandise &&
+              (location.startsWith("/merch") ||
+                (isAdmin && location.startsWith("/admin/merch")))
+            ) {
+              isActive = true;
+            }
 
             if (isMerchandise) {
               return (
@@ -259,7 +328,10 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
                   </div>
                   <AnimatePresence>
                     {openDropdown === "Merchandise" && (
-                      <MerchandiseDropdown location={location} />
+                      <MerchandiseDropdown
+                        location={location}
+                        isAdmin={isAdmin}
+                      />
                     )}
                   </AnimatePresence>
                 </li>
@@ -285,9 +357,6 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
               </li>
             );
           })}
-          <li>
-            <SettingsIcon />
-          </li>
         </ul>
       </nav>
       <StudentProfile student={student} />
@@ -300,6 +369,8 @@ const MobileAuthenticatedNav: React.FC = () => {
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
     null
   );
+
+  const isAdmin = useAuthStore.getState().user?.role === "ADMIN";
   const { pathname } = useLocation();
   const student = useAuthStore((state) => state.user as StudentResponse);
 
@@ -372,14 +443,23 @@ const MobileAuthenticatedNav: React.FC = () => {
                               transition={{ duration: 0.2 }}
                               className="mt-3 ml-4 space-y-2 border-l border-purple-200/40 pl-4"
                             >
-                              {[
-                                { to: "/merch", label: "Products" },
-                                {
-                                  to: "/merch/transactions",
-                                  label: "Transaction",
-                                },
-                                { to: "/merch/cart", label: "Cart" },
-                              ].map((item) => (
+                              {(isAdmin
+                                ? [
+                                    { to: "/admin/merch", label: "Products" },
+                                    {
+                                      to: "/admin/merch/orders",
+                                      label: "Orders",
+                                    },
+                                  ]
+                                : [
+                                    { to: "/merch", label: "Products" },
+                                    {
+                                      to: "/merch/transactions",
+                                      label: "Transaction",
+                                    },
+                                    { to: "/merch/cart", label: "Cart" },
+                                  ]
+                              ).map((item) => (
                                 <Link
                                   key={item.to}
                                   to={item.to}

@@ -16,7 +16,7 @@ const Navbar = ({
 }: {
   scrollToDiv: (section: string) => void;
 }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const NAVBARS: { name: string }[] = [
     { name: "Home" },
@@ -25,7 +25,7 @@ const Navbar = ({
     { name: "Contact us" },
   ];
 
-    const HandleNavigate = (name: string) => {
+  const HandleNavigate = (name: string) => {
     if (name !== "Contact us") {
       scrollToDiv(name.toLowerCase());
       return;
@@ -37,8 +37,16 @@ const Navbar = ({
 
   return (
     <>
-      <DesktopNav LOGOS={LOGOS} NAVBARS={NAVBARS} HandleNavigate={HandleNavigate} />
-      <MobileNav LOGOS={LOGOS} NAVBARS={NAVBARS} HandleNavigate={HandleNavigate} />
+      <DesktopNav
+        LOGOS={LOGOS}
+        NAVBARS={NAVBARS}
+        HandleNavigate={HandleNavigate}
+      />
+      <MobileNav
+        LOGOS={LOGOS}
+        NAVBARS={NAVBARS}
+        HandleNavigate={HandleNavigate}
+      />
     </>
   );
 };
@@ -86,7 +94,7 @@ const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex justify-end lg:hidden  ">
+    <div className="flex  lg:hidden  ">
       {/* Toggle button */}
       <button onClick={() => setIsOpen(!isOpen)} className="text-2xl p-2">
         {<FaBars />}
@@ -116,12 +124,19 @@ const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
             </div>
             <div className="mt-10">
               {NAVBARS.map((name, index) => (
-                <p className="text-white text-xl mt-5" key={index} onClick={() => HandleNavigate && HandleNavigate(name.name)}>
+                <p
+                  className="text-white text-xl mt-5"
+                  key={index}
+                  onClick={() => HandleNavigate && HandleNavigate(name.name)}
+                >
                   {name.name}
                 </p>
               ))}
               <div className="mt-8">
-                <button className=" bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-2 text-lg rounded-lg w-full " onClick={() => navigate('/login')}>
+                <button
+                  className=" bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-2 text-lg rounded-lg w-full "
+                  onClick={() => navigate("/login")}
+                >
                   Login
                 </button>
               </div>

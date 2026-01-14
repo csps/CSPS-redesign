@@ -4,6 +4,7 @@ import sampleTshirt from "../../../../assets/carrot 1.png";
 
 import { Chart } from "./components/Chart";
 import RadialChart from "./components/RadialChart";
+import AuthenticatedNav from "../../../../components/AuthenticatedNav";
 
 const Index = () => {
   const sampleProducts = [
@@ -45,7 +46,7 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
       <div className="relative w-full max-w-[90rem] p-4 md:p-6 text-white">
-        <Navbar />
+        <AuthenticatedNav />
 
         <div className="py-5">
           {/* Charts Row */}
@@ -225,7 +226,7 @@ const Index = () => {
                       <p className="before:w-[2px] before:bg-[#A000FF] before:absolute before:h-full before:left-0 relative px-2">
                         Non-Member
                       </p>
-                      <p>25%</p>  
+                      <p>25%</p>
                     </div>
                   </div>
                 </div>
