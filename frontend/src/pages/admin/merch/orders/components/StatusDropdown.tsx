@@ -7,19 +7,30 @@ const options = [
   { label: "Claimed", value: "claimed", color: "text-green-500" },
 ];
 
-export default function StatusDropdown() {
+type StatusOption = (typeof options)[0];
+
+interface StatusDropdownProps {
+  selected: StatusOption;
+  onSelect: (option: StatusOption) => void;
+}
+
+export default function StatusDropdown({
+  selected,
+  onSelect,
+}: StatusDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(options[0]);
 
   return (
-    <div className="relative inline-block text-sm">
+    <div className="relative inline-block text-m">
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-xl bg-[#2a2456] px-4 py-2 text-white"
+        className="flex items-center gap-2 rounded-xl bg-[#2a2456] px-4 py-4 text-white"
       >
         <span className="opacity-80">Status:</span>
-        <span className={`font-semibold ${selected.color}  inline-block w-[110px]`}>
+        <span
+          className={`font-semibold ${selected.color}  inline-block w-[130px]`}
+        >
           {selected.label}
         </span>
         <span className="ml-1 text-gray-300">▾</span>
@@ -33,13 +44,13 @@ export default function StatusDropdown() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 mt-2 w-full rounded-xl bg-[#2a2456] p-1 shadow-lg"
+            className="absolute left-0 mt-2 w-full rounded-xl bg-[#2a2456] p-3 shadow-lg"
           >
             {options.map((option) => (
               <button
                 key={option.value}
                 onClick={() => {
-                  setSelected(option);
+                  onSelect(option);
                   setOpen(false);
                 }}
                 className={`
