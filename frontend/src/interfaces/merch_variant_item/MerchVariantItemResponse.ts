@@ -19,4 +19,5 @@ export interface MerchVariantItemResponse {
   size: ClothingSizing; //
   stockQuantity: number;
   price: number;
+  s3ImageKey: string;
 }

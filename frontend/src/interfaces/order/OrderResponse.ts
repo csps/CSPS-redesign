@@ -4,6 +4,8 @@ import type { OrderStatus } from "../../enums/OrderStatus";
 export interface OrderItemResponse {
   orderItemId: number;
   orderId: number;
+  studentId: string;
+  studentName: string;
   merchName: string;
   color?: string | null;
   design?: string | null;
@@ -12,6 +14,7 @@ export interface OrderItemResponse {
   totalPrice: number;
   s3ImageKey?: string | null;
   merchType: MerchType;
+  orderStatus: OrderStatus;
   createdAt: string;
   updatedAt: string;
 }

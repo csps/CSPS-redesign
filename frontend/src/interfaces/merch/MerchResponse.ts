@@ -26,5 +26,5 @@ export interface MerchSummaryResponse {
   merchType: MerchType;
   basePrice: number;
   s3ImageKey: string;
-  totalStock?: number;
+  totalStockQuantity?: number;
 }
