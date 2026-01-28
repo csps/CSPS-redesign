@@ -30,7 +30,7 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
       <div className="w-full max-w-[90rem] p-6 text-white">
-        <Navbar />
+        <Navbar  />
 
          {/* MAIN CARD */}
         <div className="mt-6 bg-[#0F033C] rounded-xl p-4 sm:p-8 space-y-10">
