@@ -18,7 +18,7 @@ const ORDER_ITEMS = "order-items";
  * Endpoint: POST /api/orders
  */
 export const createOrder = async (
-  payload?: OrderPostRequest
+  payload?: OrderPostRequest,
 ): Promise<OrderResponse> => {
   try {
     const response = await api.post<OrderResponse>(ORDERS, payload ?? {});
@@ -58,7 +58,7 @@ export const getOrderById = async (orderId: number): Promise<OrderResponse> => {
 };
 
 export const getMyOrders = async (
-  paginationParams?: PaginationParams
+  paginationParams?: PaginationParams,
 ): Promise<PaginatedOrdersResponse> => {
   try {
     const params = new URLSearchParams();
@@ -90,6 +90,40 @@ export const getMyOrders = async (
 };
 
 /**
+ * Get all orders (admin) with pagination.
+ * Endpoint: GET /api/orders
+ */
+export const getOrders = async (
+  paginationParams?: PaginationParams,
+): Promise<PaginatedOrdersResponse> => {
+  try {
+    const params = new URLSearchParams();
+
+    if (paginationParams) {
+      if (paginationParams.page !== undefined) {
+        params.append("page", paginationParams.page.toString());
+      }
+      if (paginationParams.size !== undefined) {
+        params.append("size", paginationParams.size.toString());
+      }
+      if (paginationParams.sort) {
+        params.append("sort", paginationParams.sort);
+      }
+    }
+
+    const url = params.toString() ? `${ORDERS}?${params.toString()}` : ORDERS;
+
+    const response = await api.get<PaginatedOrdersResponse>(url);
+
+    console.log("getOrders response:", response);
+    return response.data.data;
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    throw err;
+  }
+};
+
+/**
  * Delete an order.
  * Endpoint: DELETE /api/orders/{orderId}
  */
@@ -109,7 +143,7 @@ export const deleteOrder = async (orderId: number): Promise<void> => {
  * Endpoint: POST /api/order-items
  */
 export const createOrderItem = async (
-  payload: OrderItemRequest
+  payload: OrderItemRequest,
 ): Promise<OrderItemResponse> => {
   try {
     const response = await api.post<OrderItemResponse>(ORDER_ITEMS, payload);
@@ -125,7 +159,7 @@ export const createOrderItem = async (
  * Endpoint: GET /api/order-items/{id}
  */
 export const getOrderItemById = async (
-  id: number
+  id: number,
 ): Promise<OrderItemResponse> => {
   try {
     const response = await api.get<OrderItemResponse>(`${ORDER_ITEMS}/${id}`);
@@ -141,7 +175,7 @@ export const getOrderItemById = async (
  * Endpoint: GET /api/order-items?orderId={orderId}
  */
 export const getOrderItemsByOrderId = async (
-  orderId: number
+  orderId: number,
 ): Promise<OrderItemResponse[]> => {
   try {
     const response = await api.get<OrderItemResponse[]>(ORDER_ITEMS, {
@@ -160,13 +194,13 @@ export const getOrderItemsByOrderId = async (
  */
 export const updateOrderItemStatus = async (
   id: number,
-  status: string
+  status: string,
 ): Promise<OrderItemResponse> => {
   try {
     const response = await api.patch<OrderItemResponse>(
       `${ORDER_ITEMS}/${id}/status`,
       null,
-      { params: { status } }
+      { params: { status } },
     );
     return response.data;
   } catch (err) {
@@ -193,6 +227,7 @@ export default {
   getAllOrders,
   getOrderById,
   getMyOrders,
+  getOrders,
   deleteOrder,
   createOrderItem,
   getOrderItemById,
