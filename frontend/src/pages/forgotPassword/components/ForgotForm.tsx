@@ -1,4 +1,3 @@
-import React from "react";
 import { FaEnvelope, FaHashtag } from "react-icons/fa";
 
 const ForgotForm = () => {

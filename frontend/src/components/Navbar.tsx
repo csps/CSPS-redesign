@@ -14,7 +14,7 @@ type NavProps = {
 const Navbar = ({
   scrollToDiv,
 }: {
-  scrollToDiv: (section: string) => void;
+  scrollToDiv?: (section: string) => void;
 }) => {
   const navigate = useNavigate();
 
@@ -27,7 +27,7 @@ const Navbar = ({
 
   const HandleNavigate = (name: string) => {
     if (name !== "Contact us") {
-      scrollToDiv(name.toLowerCase());
+      if (scrollToDiv) scrollToDiv(name.toLowerCase());
       return;
     }
 

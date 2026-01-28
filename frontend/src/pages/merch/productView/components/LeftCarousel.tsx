@@ -1,9 +1,5 @@
-import React from 'react'
-
 const LeftCarousel = () => {
-  return (
-    <div>LeftCarousel</div>
-  )
-}
+  return <div>LeftCarousel</div>;
+};
 
-export default LeftCarousel
+export default LeftCarousel;

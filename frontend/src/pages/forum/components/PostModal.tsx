@@ -6,7 +6,6 @@ import {
   FaPaperPlane,
 } from "react-icons/fa";
 
-
 interface CommentType {
   id: number;
   author: string;
@@ -24,7 +23,7 @@ const PostModal = ({
   postData: any;
 }) => {
   // Enhanced mock data to demonstrate deep nesting (Reddit style)
-  const [comments, setComments] = useState<CommentType[]>([
+  const [comments] = useState<CommentType[]>([
     {
       id: 1,
       author: "JC Atillo",

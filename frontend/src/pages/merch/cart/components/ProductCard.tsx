@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import SAMPLE from "../../../../assets/image 8.png";
 import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
 import { MerchType } from "../../../../enums/MerchType";
@@ -83,7 +83,7 @@ const ProductCard = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export default ProductCard;

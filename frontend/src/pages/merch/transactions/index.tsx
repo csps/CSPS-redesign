@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import Footer from "../../../components/Footer";
 import { PurchaseCard } from "./components/PurchaseCard";
@@ -15,14 +15,6 @@ import type { PaginationParams } from "../../../interfaces/pagination_params";
 interface GroupedPurchases {
   [orderId: number]: OrderResponse;
 }
-
-const statusLabels = {
-  [OrderStatus.CLAIMED]: "Claimed",
-  [OrderStatus.NOT_PAID]: "Not paid",
-  [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
-
-  [OrderStatus.PENDING]: "Pending",
-};
 
 const index = () => {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
@@ -67,14 +59,14 @@ const index = () => {
         ? orders
         : orders.filter((purchase) =>
             purchase.orderItems.some(
-              (item) =>
+              (_item) =>
                 (selectedStatus === OrderStatus.NOT_PAID &&
                   purchase.orderStatus === OrderStatus.NOT_PAID) ||
                 (selectedStatus === OrderStatus.CLAIMED &&
                   purchase.orderStatus === OrderStatus.CLAIMED) ||
                 (selectedStatus === OrderStatus.TO_BE_CLAIMED &&
-                  purchase.orderStatus === OrderStatus.TO_BE_CLAIMED)
-            )
+                  purchase.orderStatus === OrderStatus.TO_BE_CLAIMED),
+            ),
           );
 
     const grouped: GroupedPurchases = {};
@@ -84,17 +76,6 @@ const index = () => {
 
     return grouped;
   }, [orders, selectedStatus]);
-
-  // Get available statuses for filter dropdown
-  const availableStatuses = useMemo(() => {
-    const statuses = new Set<string>(["All"]);
-    orders.forEach((purchase) => {
-      purchase.orderItems.forEach((item) => {
-        statuses.add(purchase.orderStatus);
-      });
-    });
-    return Array.from(statuses);
-  }, [orders]);
 
   return (
     <>

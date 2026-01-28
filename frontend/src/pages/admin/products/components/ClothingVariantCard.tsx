@@ -2,6 +2,13 @@ import React, { type ChangeEvent } from "react";
 import { FaTrash, FaCloudUploadAlt } from "react-icons/fa";
 import type { ClothingVariant } from "../../../../hooks/useMerchForm";
 import type { ValidationErrors } from "../util/validation";
+import { ClothingSizing } from "../../../../enums/ClothingSizing";
+
+type SizeStockData = {
+  size: ClothingSizing | "";
+  stock: number | "";
+  checked: boolean;
+};
 
 interface ClothingVariantCardProps {
   variant: ClothingVariant;
@@ -28,7 +35,7 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
 }) => {
   const handleImageUpload = (
     imageIndex: number,
-    e: ChangeEvent<HTMLInputElement>
+    e: ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
     if (file) {

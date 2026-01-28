@@ -1,4 +1,3 @@
-import React from "react";
 import LineChart from "./components/LineChart";
 import Navbar from "../../../components/Navbar";
 import { FaClockRotateLeft } from "react-icons/fa6";
@@ -30,11 +29,10 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
       <div className="w-full max-w-[90rem] p-6 text-white">
-        <Navbar  />
+        <Navbar />
 
-         {/* MAIN CARD */}
+        {/* MAIN CARD */}
         <div className="mt-6 bg-[#0F033C] rounded-xl p-4 sm:p-8 space-y-10">
-
           {/* ================= SALES / CHART ================= */}
           <div>
             <div className="w-full h-[240px] sm:h-[300px]">
@@ -99,7 +97,7 @@ const Index = () => {
 
                     <div className="flex gap-2">
                       <button className="w-6 h-6 rounded-full border  text-red-400 flex items-center justify-center">
-                        <IoClose className="text-xl"/>
+                        <IoClose className="text-xl" />
                       </button>
                       <button className="w-6 h-6 rounded-full border text-green-400 flex items-center justify-center">
                         <FaCheck />
@@ -110,7 +108,6 @@ const Index = () => {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>

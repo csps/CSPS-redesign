@@ -1,5 +1,4 @@
 import CIRCLELOGO from "../../../assets/icons/circol.svg";
-import ROCKETLOGO from "../../../assets/icons/rocket.svg";
 import RAINBOWLOGO from "../../../assets/icons/rainbow.svg";
 import HANDSHAKELOGO from "../../../assets/icons/Vector(1).svg";
 import TARGETLOGO from "../../../assets/icons/Vector(2).svg";

@@ -1,5 +1,4 @@
 import React from "react";
-import { FaExclamationTriangle } from "react-icons/fa";
 import type { MerchDetailedResponse } from "../../../../../interfaces/merch/MerchResponse";
 
 interface ConfirmationModalProps {

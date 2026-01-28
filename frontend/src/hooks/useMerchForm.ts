@@ -3,7 +3,8 @@ import { ClothingSizing } from "../enums/ClothingSizing";
 import { MerchType } from "../enums/MerchType";
 import type { MerchRequest } from "../interfaces/merch/MerchRequest";
 
-export interface MerchFormState extends MerchRequest {
+export interface MerchFormState extends Omit<MerchRequest, "merchType"> {
+  merchType: MerchType | "";
   merchImagePreview?: string;
   merchImageFile?: File | null;
   imageThumbnails: string[];
@@ -45,7 +46,7 @@ export const convertFormStateToMerchRequest = (
     thumbnailFiles?: (File | null)[];
     clothingVariants?: ClothingVariant[];
     nonClothingVariants?: NonClothingVariant[];
-  }
+  },
 ): MerchRequest => {
   const { ...merchRequest } = formState;
 
@@ -78,15 +79,16 @@ export const useMerchForm = () => {
     setFormState((prev) => ({ ...prev, description: desc.slice(0, 500) }));
   }, []);
 
-  const setMerchType = useCallback((type: MerchType) => {
+  const setMerchType = useCallback((type: MerchType | "") => {
     setFormState((prev) => ({
       ...prev,
-      merchType: MerchType[type] as MerchType,
+      merchType: type,
     }));
   }, []);
 
-  const setBasePrice = useCallback((price: number) => {
-    setFormState((prev) => ({ ...prev, basePrice: price }));
+  const setBasePrice = useCallback((price: string) => {
+    const numPrice = parseFloat(price) || 0;
+    setFormState((prev) => ({ ...prev, basePrice: numPrice }));
   }, []);
 
   const handleMerchImageUpload = useCallback((index: number, file: File) => {
@@ -147,7 +149,7 @@ export const useMerchForm = () => {
         return { ...prev, clothingVariants: updated };
       });
     },
-    []
+    [],
   );
 
   const handleSizeCheckChange = useCallback(
@@ -161,7 +163,7 @@ export const useMerchForm = () => {
         return { ...prev, clothingVariants: updated };
       });
     },
-    []
+    [],
   );
 
   const handleStockQuantityChange = useCallback(
@@ -175,7 +177,7 @@ export const useMerchForm = () => {
         return { ...prev, clothingVariants: updated };
       });
     },
-    []
+    [],
   );
 
   const handleDeleteClothingVariant = useCallback((index: number) => {
@@ -190,7 +192,7 @@ export const useMerchForm = () => {
       type: "clothing" | "nonClothing",
       variantIndex: number,
       imageIndex: number,
-      file: File
+      file: File,
     ) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -227,7 +229,7 @@ export const useMerchForm = () => {
       };
       reader.readAsDataURL(file);
     },
-    []
+    [],
   );
 
   // --- Non-Clothing Variant Handlers ---
@@ -262,14 +264,14 @@ export const useMerchForm = () => {
         return { ...prev, nonClothingVariants: updated };
       });
     },
-    []
+    [],
   );
 
   const handleDeleteNonClothingVariant = useCallback((index: number) => {
     setFormState((prev) => ({
       ...prev,
       nonClothingVariants: prev.nonClothingVariants.filter(
-        (_, i) => i !== index
+        (_, i) => i !== index,
       ),
     }));
   }, []);

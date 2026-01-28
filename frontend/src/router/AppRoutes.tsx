@@ -9,7 +9,6 @@ import LoginPage from "../pages/login";
 import ContactUsPage from "../pages/contact";
 import ForgotPasswordPage from "../pages/forgotPassword";
 import DashboardPage from "../pages/dashboard";
-import ResourcesPage from "../pages/resources";
 import EventsPage from "../pages/events";
 import EventViewPage from "../pages/events/eventView";
 import MerchPage from "../pages/merch";

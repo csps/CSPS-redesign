@@ -1,4 +1,3 @@
-import React from "react";
 import { Chart as ChartJS, ArcElement } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
@@ -8,7 +7,7 @@ ChartJS.register(ArcElement);
 // Center text plugin
 const centerTextPlugin = {
   id: "centerText",
-  beforeDraw(chart: { ctx: any; width: any; height: any; }) {
+  beforeDraw(chart: { ctx: any; width: any; height: any }) {
     const { ctx, width, height } = chart;
 
     ctx.save();
@@ -18,11 +17,7 @@ const centerTextPlugin = {
     ctx.fillStyle = "#a5a5c9";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(
-      "Computer Science Students",
-      width / 2,
-      height / 2 - 18
-    );
+    ctx.fillText("Computer Science Students", width / 2, height / 2 - 18);
 
     // Main value
     ctx.font = "bold 36px Inter, sans-serif";
@@ -39,8 +34,8 @@ const data = {
     {
       data: [75, 25], // progress vs remainder
       backgroundColor: [
-        "#FDE006",           // yellow progress
-        "#A000FF" // purple remainder
+        "#FDE006", // yellow progress
+        "#A000FF", // purple remainder
       ],
       borderWidth: 0,
       cutout: "85%",
@@ -67,11 +62,7 @@ export default function RadialChart() {
         padding: 20,
       }}
     >
-      <Doughnut
-        data={data}
-        options={options}
-        plugins={[centerTextPlugin]}
-      />
+      <Doughnut data={data} options={options} plugins={[centerTextPlugin]} />
     </div>
   );
 }

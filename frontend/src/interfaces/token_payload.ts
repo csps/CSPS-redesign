@@ -1,5 +1,4 @@
 import type { UserRole } from "../enums/UserRole";
-import type { UserResponse } from "./user/UserResponse";
 
 export interface TokenPayload {
   studentId: string;

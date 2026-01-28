@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
 import { MerchType } from "../../../../enums/MerchType";
@@ -8,7 +8,6 @@ import type {
 } from "../../../../interfaces/order/OrderRequest";
 import { createOrder } from "../../../../api/order";
 import { toast } from "sonner";
-import { m } from "framer-motion";
 import ConfirmOrderModal from "./ConfirmOrderModal";
 
 const OrderSummary = ({
@@ -35,7 +34,7 @@ const OrderSummary = ({
       setError(null);
 
       // Call the API
-      const response = await createOrder(orderRequest);
+      await createOrder(orderRequest);
 
       toast.success("Order created successfully!");
 

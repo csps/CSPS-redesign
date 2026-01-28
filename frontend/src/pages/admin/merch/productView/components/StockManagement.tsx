@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaPlus, FaBox, FaTshirt } from "react-icons/fa";
+import { FaPlus, FaBox } from "react-icons/fa";
 import { ClothingSizing } from "../../../../../enums/ClothingSizing";
 import type { MerchVariantResponse } from "../../../../../interfaces/merch_variant/MerchVariantResponse";
 
@@ -11,7 +11,7 @@ interface StockManagementProps {
   onStockChange: (
     variantIdx: number,
     sizeOrId: string,
-    quantity: number
+    quantity: number,
   ) => void;
   onPriceChange: (variantIdx: number, sizeOrId: string, price: number) => void;
   onAddSize?: (variantIdx: number, size: string) => void;
@@ -34,10 +34,10 @@ const StockManagement: React.FC<StockManagementProps> = ({
   const variantPrices = editedPrices[variantIndex];
   const allClothingSizes = Object.values(ClothingSizing);
   const existingSizes = new Set(
-    variant.items.map((item) => item.size).filter(Boolean)
+    variant.items.map((item) => item.size).filter(Boolean),
   );
   const availableSizes = allClothingSizes.filter(
-    (size) => !existingSizes.has(size)
+    (size) => !existingSizes.has(size),
   );
 
   const handleQuantityChange = (sizeOrId: string, value: string) => {
@@ -83,7 +83,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
 
   const totalStock = Object.values(variantStocks || {}).reduce(
     (a, b) => a + b,
-    0
+    0,
   );
 
   return (
@@ -160,9 +160,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
                   {/* Stock Column */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-400">
-                        Stock:
-                      </span>
+                      <span className="text-sm text-gray-400">Stock:</span>
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold ${
                           hasChanged
@@ -188,9 +186,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
                   {/* Price Column */}
                   <div>
                     <div className="flex  items-center justify-between mb-2">
-                      <span className="text-sm text-gray-400">
-                        Price:
-                      </span>
+                      <span className="text-sm text-gray-400">Price:</span>
                       <span
                         className={`px-2 py-1 rounded text-xs font-semibold ${
                           getPriceValue(sizeOrId) !== item.price

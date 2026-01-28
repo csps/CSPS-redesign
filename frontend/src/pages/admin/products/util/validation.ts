@@ -5,7 +5,7 @@ export interface ValidationErrors {
 }
 
 export const validateMerchInfo = (
-  formState: MerchFormState
+  formState: MerchFormState,
 ): { isValid: boolean; errors: ValidationErrors } => {
   const errors: ValidationErrors = {};
 
@@ -43,7 +43,7 @@ export const validateMerchInfo = (
 };
 
 export const validateVariants = (
-  formState: MerchFormState
+  formState: MerchFormState,
 ): { isValid: boolean; errors: ValidationErrors } => {
   const errors: ValidationErrors = {};
   const { merchType, clothingVariants, nonClothingVariants } = formState;
@@ -70,7 +70,7 @@ export const validateVariants = (
         });
       });
     }
-  } else if (merchType !== "") {
+  } else {
     if (nonClothingVariants.length === 0) {
       errors.variants = "At least one variant is required";
     } else {

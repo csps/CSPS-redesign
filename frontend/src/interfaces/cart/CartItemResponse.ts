@@ -1,5 +1,4 @@
 import type { MerchType } from "../../enums/MerchType";
-import type { MerchVariantResponse } from "../merch_variant/MerchVariantResponse";
 
 export interface CartItemResponse {
   merchVariantItemId: number;

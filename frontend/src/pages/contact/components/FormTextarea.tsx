@@ -1,5 +1,3 @@
-import React from "react";
-
 type FormTextAreaProps = {
   label: string;
   id: string;

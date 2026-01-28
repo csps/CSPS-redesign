@@ -13,7 +13,7 @@ const EVENTS = "event";
  */
 export const getAllEvents = async (): Promise<EventResponse[]> => {
   try {
-    const response = await api.get<EventResponse[]>(`${EVENTS}/all`);
+    const response = await api.get<{ data: EventResponse[] }>(`${EVENTS}/all`);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching all events:", err);
@@ -176,7 +176,9 @@ export const deleteEvent = async (id: number): Promise<void> => {
 
 export const getUpcomingEvents = async (): Promise<EventResponse[]> => {
   try {
-    const response = await api.get<EventResponse[]>(`${EVENTS}/upcoming`);
+    const response = await api.get<{ data: EventResponse[] }>(
+      `${EVENTS}/upcoming`,
+    );
 
     return response.data.data;
   } catch (err) {
@@ -190,7 +192,7 @@ export const getEventByMonth = async (
   year: number,
 ): Promise<EventResponse[]> => {
   try {
-    const response = await api.get<EventResponse[]>(
+    const response = await api.get<{ data: EventResponse[] }>(
       `${EVENTS}/by-month?year=${year}&month=${month}`,
     );
     return response.data.data;
@@ -202,7 +204,7 @@ export const getEventByMonth = async (
 
 export const getPastEvents = async (): Promise<EventResponse[]> => {
   try {
-    const response = await api.get<EventResponse[]>(`${EVENTS}/past`);
+    const response = await api.get<{ data: EventResponse[] }>(`${EVENTS}/past`);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching past events:", err);

@@ -1,4 +1,3 @@
-import React from "react";
 import sampleTshirt from "../../../assets/carrot 1.png";
 import sampleProfile from "../../../assets/logos/csps_logo 1.png";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";

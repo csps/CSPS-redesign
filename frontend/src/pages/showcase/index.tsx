@@ -1,4 +1,3 @@
-import React from "react";
 import Layout from "../../components/Layout";
 import AuthenticatedNav from "../../components/AuthenticatedNav";
 import Carousel from "./Carousel";
@@ -32,10 +31,7 @@ const index = () => {
               </p>
             </div>
           </Carousel>
-
-          
         </div>
-       
       </div>
     </Layout>
   );

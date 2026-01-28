@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { PiGearSixLight } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
 import { useAuthStore } from "../store/auth_store";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
@@ -37,7 +36,7 @@ const ANIMATION_CONFIG = {
 const isRouteActive = (
   _navName: string,
   currentLocation: string,
-  navTo: string
+  navTo: string,
 ): boolean => {
   if (!navTo) return false;
   if (currentLocation === navTo) return true;
@@ -259,10 +258,6 @@ const StudentProfile: React.FC<{ student: StudentResponse }> = ({
   </div>
 );
 
-const SettingsIcon: React.FC = () => (
-  <PiGearSixLight className="text-3xl text-white/90 hover:text-white transition cursor-pointer" />
-);
-
 // ============================================================================
 // Main Navigation Components
 // ============================================================================
@@ -367,11 +362,10 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
 const MobileAuthenticatedNav: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
-    null
+    null,
   );
 
   const isAdmin = useAuthStore.getState().user?.role === "ADMIN";
-  const { pathname } = useLocation();
   const student = useAuthStore((state) => state.user as StudentResponse);
 
   const toggleMenu = () => setIsOpen((prev) => !prev);

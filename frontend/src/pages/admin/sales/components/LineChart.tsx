@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +15,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Filler
+  Filler,
 );
 
 const LineChart = () => {
@@ -32,7 +31,7 @@ const LineChart = () => {
         tension: 0.45,
         pointRadius: 0,
         fill: true,
-        backgroundColor: (context: { chart: { ctx: any; chartArea: any; }; }) => {
+        backgroundColor: (context: { chart: { ctx: any; chartArea: any } }) => {
           const { ctx, chartArea } = context.chart;
           if (!chartArea) return;
 
@@ -40,7 +39,7 @@ const LineChart = () => {
             0,
             chartArea.top,
             0,
-            chartArea.bottom
+            chartArea.bottom,
           );
 
           gradient.addColorStop(0, "rgba(255, 213, 74, 0.35)");
@@ -63,7 +62,7 @@ const LineChart = () => {
         bodyColor: "#FFD54A",
         displayColors: false,
         callbacks: {
-          label: (ctx: { raw: any; }) => `₱${ctx.raw}.00`,
+          label: (ctx: { raw: any }) => `₱${ctx.raw}.00`,
         },
       },
     },

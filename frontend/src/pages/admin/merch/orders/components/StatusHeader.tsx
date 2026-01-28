@@ -1,4 +1,3 @@
-import React from "react";
 import GlassIcon from "../../../../../assets/icons/glass.svg";
 
 const StatusHeader = () => {
@@ -19,7 +18,11 @@ const StatusHeader = () => {
           placeholder="Search..."
           className="border border-white outline-none p-2 pl-8 rounded-lg w-full"
         />
-        <img src={GlassIcon} alt="glass" className="absolute top-2.5 left-2.5 w-5 h-5" />
+        <img
+          src={GlassIcon}
+          alt="glass"
+          className="absolute top-2.5 left-2.5 w-5 h-5"
+        />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getPastEvents } from "../../../api/event";
@@ -12,7 +12,7 @@ const RecentEvents = () => {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
-    null
+    null,
   );
 
   useEffect(() => {

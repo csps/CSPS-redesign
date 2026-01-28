@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import { BsCameraVideo } from "react-icons/bs";
 import { CiLocationOn } from "react-icons/ci";
 import { getEventByMonth, getUpcomingEvents } from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
-import { S3_BASE_URL } from "../../../constant";
 import AllEventsModal from "./AllEventsModal";
 
 const getEventIcon = (eventLocation: string) => {
@@ -26,15 +25,12 @@ const getEventColor = (index: number) => {
 const GlassCalendar = () => {
   const [value, setValue] = useState<Date>(new Date());
   const [events, setEvents] = useState<EventResponse[]>([]);
-  const [calendarLoading, setCalendarLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [upcomingEvents, setUpcomingEvents] = useState<EventResponse[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(true);
   const [showAllEvents, setShowAllEvents] = useState(false);
 
   const fetchEventsByMonth = async (date: Date) => {
     try {
-      setCalendarLoading(true);
       const month = date.getMonth() + 1; // getMonth() returns 0-11
       const year = date.getFullYear();
 
@@ -42,13 +38,9 @@ const GlassCalendar = () => {
 
       const data = await getEventByMonth(month, year);
       setEvents(data);
-      setError(null);
     } catch (err) {
       console.error("Failed to fetch events by month:", err);
-      setError("Failed to load events");
       setEvents([]);
-    } finally {
-      setCalendarLoading(false);
     }
   };
 
@@ -71,7 +63,7 @@ const GlassCalendar = () => {
 
   useEffect(() => {
     console.log(
-      `Fetching events for: ${value.getFullYear()}-${value.getMonth() + 1}`
+      `Fetching events for: ${value.getFullYear()}-${value.getMonth() + 1}`,
     );
     fetchEventsByMonth(value);
   }, [value.getFullYear(), value.getMonth()]);
@@ -93,7 +85,7 @@ const GlassCalendar = () => {
               onChange={(e) => {
                 const newDate = new Date(
                   parseInt(e.target.value),
-                  value.getMonth()
+                  value.getMonth(),
                 );
                 setValue(newDate);
               }}
@@ -125,12 +117,12 @@ const GlassCalendar = () => {
                       const eventDate = parseEventDate(event.eventDate);
                       return eventDate.toDateString() === date.toDateString();
                     })
-                    .map((event, i) => (
+                    .map((_event, i) => (
                       <div className="-my-1">
                         <div
                           key={i}
                           className={`w-1.5 h-1.5 rounded-full  ${getEventColor(
-                            i
+                            i,
                           )}`}
                         ></div>
                       </div>

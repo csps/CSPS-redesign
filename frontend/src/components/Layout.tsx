@@ -1,6 +1,5 @@
 import React from "react";
 import Footer from "./Footer";
-import PageTransition from "./PageTransition";
 
 type LayoutProps = {
   children: React.ReactNode;

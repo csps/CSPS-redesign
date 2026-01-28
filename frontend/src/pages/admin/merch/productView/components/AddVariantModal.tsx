@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { ClothingSizing } from "../../../../../enums/ClothingSizing";
-import type { MerchVariantResponse } from "../../../../../interfaces/merch_variant/MerchVariantResponse";
-import type { MerchVariantItemResponse } from "../../../../../interfaces/merch_variant_item/MerchVariantItemResponse";
 import type {
   ClothingVariant,
   NonClothingVariant,
@@ -67,7 +65,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
     });
   };
 
-  const handleClothingImageUpload = (imageIndex: number, file: File) => {
+  const handleClothingImageUpload = (_imageIndex: number, file: File) => {
     setClothingVariant({ ...clothingVariant, imageFile: file });
 
     const reader = new FileReader();
@@ -82,7 +80,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   const handleClothingSizeCheckChange = (
     sizeIndex: number,
-    checked: boolean
+    checked: boolean,
   ) => {
     const updatedSizeStock = [...clothingVariant.sizeStock];
     updatedSizeStock[sizeIndex].checked = checked;
@@ -91,7 +89,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   const handleClothingStockQuantityChange = (
     sizeIndex: number,
-    value: string
+    value: string,
   ) => {
     const updatedSizeStock = [...clothingVariant.sizeStock];
     updatedSizeStock[sizeIndex].stock =
@@ -110,7 +108,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
     });
   };
 
-  const handleNonClothingImageUpload = (imageIndex: number, file: File) => {
+  const handleNonClothingImageUpload = (_imageIndex: number, file: File) => {
     setNonClothingVariant({ ...nonClothingVariant, imageFile: file });
 
     const reader = new FileReader();

@@ -1,4 +1,3 @@
-import React from "react";
 import BACKGROUNDCSSLOGO from "../../../assets/logos/Background_Logo.png";
 
 const BackgroundLogos = () => {

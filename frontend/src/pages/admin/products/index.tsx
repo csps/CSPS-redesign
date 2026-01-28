@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; // 1. Import useState
+import { useEffect, useState } from "react"; // 1. Import useState
 import Footer from "../../../components/Footer";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
@@ -6,15 +6,9 @@ import { IoMdAdd } from "react-icons/io";
 import ProductModal from "./components/ProductModal"; // 2. Import your Modal Component\i
 import { MerchType } from "../../../enums/MerchType";
 import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchResponse";
-import {
-  getAllMerchWithoutVariants,
-  getMerchById,
-  getMerchByType,
-} from "../../../api/merch";
-import { Link, useNavigate } from "react-router-dom";
+import { getAllMerchWithoutVariants, getMerchByType } from "../../../api/merch";
+import { useNavigate } from "react-router-dom";
 import { S3_BASE_URL } from "../../../constant";
-
-const prefetchCache = new Map<number, any>();
 
 const Index = () => {
   // 3. Create state to track if modal is open or closed
@@ -51,11 +45,6 @@ const Index = () => {
   useEffect(() => {
     console.log(`MERCH: ${JSON.stringify(merch)}`);
   }, [merch]);
-
-  const prefetchMerch = (id: number) => {
-    if (!id || prefetchCache.has(id)) return;
-    getMerchById(id).then((data) => prefetchCache.set(id, data));
-  };
 
   return (
     <>

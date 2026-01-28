@@ -38,7 +38,7 @@ export const getAllMerchWithoutVariants = async (): Promise<
  * Endpoint: GET /api/merch/{merchId}
  */
 export const getMerchById = async (
-  merchId: number
+  merchId: number,
 ): Promise<MerchDetailedResponse> => {
   try {
     const response = await api.get(`/merch/${merchId}`);
@@ -57,7 +57,7 @@ export const getMerchById = async (
  * Endpoint: GET /api/merch/type/{type}
  */
 export const getMerchByType = async (
-  merchType: MerchType
+  merchType: MerchType,
 ): Promise<MerchSummaryResponse[]> => {
   try {
     const response = await api.get(`/merch/type/${merchType}`);
@@ -83,7 +83,7 @@ export const getAllMerch = async (): Promise<MerchDetailedResponse[]> => {
 };
 
 export const createMerch = async (
-  formState: MerchFormState
+  formState: MerchFormState,
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   try {
     console.log(`Creating merch with form state:`, formState);
@@ -102,7 +102,7 @@ export const createMerch = async (
     }
 
     // Add thumbnail images
-    formState.thumbnailFiles.forEach((file, index) => {
+    formState.thumbnailFiles.forEach((file) => {
       if (file) {
         formData.append(`thumbnailImages`, file);
       }
@@ -135,7 +135,7 @@ export const createMerch = async (
               price: Number(variant.price),
             },
           ],
-        })
+        }),
       );
     }
 
@@ -175,7 +175,7 @@ export const createMerch = async (
 
 export const addVariantToMerch = async (
   merchId: number,
-  variantRequest: MerchVariantRequest
+  variantRequest: MerchVariantRequest,
 ): Promise<MerchVariantResponse> => {
   try {
     const formData = new FormData();
@@ -195,7 +195,7 @@ export const addVariantToMerch = async (
         // Assuming your item has stockQuantity, price, and optional size
         formData.append(
           `variantItems[${index}].stockQuantity`,
-          item.stockQuantity.toString()
+          item.stockQuantity.toString(),
         );
         formData.append(`variantItems[${index}].price`, item.price.toString());
         if (item.size) {
@@ -208,7 +208,7 @@ export const addVariantToMerch = async (
 
     console.log(
       `FormData entries before sending:`,
-      Object.fromEntries(formData.entries())
+      Object.fromEntries(formData.entries()),
     );
     const response = await api.post(`/merch-variant/${merchId}/add`, formData, {
       headers: {

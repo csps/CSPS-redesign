@@ -1,13 +1,16 @@
-import React from 'react'
-
 type ForminpoutProps = {
-    label: string;
-    id: string;
-    type?: string;
-    placeholder?: string;
-}
+  label: string;
+  id: string;
+  type?: string;
+  placeholder?: string;
+};
 
-const FormInput = ({ label, id, type = "text", placeholder }: ForminpoutProps) => {
+const FormInput = ({
+  label,
+  id,
+  type = "text",
+  placeholder,
+}: ForminpoutProps) => {
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={id}>{label}</label>
@@ -18,7 +21,7 @@ const FormInput = ({ label, id, type = "text", placeholder }: ForminpoutProps) =
         placeholder={placeholder}
       />
     </div>
-  )
-}
+  );
+};
 
-export default FormInput
+export default FormInput;

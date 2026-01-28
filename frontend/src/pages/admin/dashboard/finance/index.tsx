@@ -1,5 +1,3 @@
-import React from "react";
-import Navbar from "../../../../components/Navbar";
 import sampleTshirt from "../../../../assets/carrot 1.png";
 
 import { Chart } from "./components/Chart";

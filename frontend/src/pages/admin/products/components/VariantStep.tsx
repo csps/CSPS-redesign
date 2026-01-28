@@ -1,4 +1,4 @@
-import React, { type ChangeEvent } from "react";
+import React from "react";
 import { FaChevronLeft, FaPlus } from "react-icons/fa";
 import { MerchType } from "../../../../enums/MerchType";
 import type {
@@ -19,29 +19,29 @@ interface VariantStepProps {
   onAddNonClothingVariant: () => void;
   onClothingVariantChange: (
     index: number,
-    field: "color",
-    value: string
+    field: "color" | "price",
+    value: string,
   ) => void;
   onNonClothingVariantChange: (
     index: number,
-    field: "design" | "stock",
-    value: string
+    field: "design" | "stock" | "price",
+    value: string,
   ) => void;
   onSizeCheckChange: (
     variantIndex: number,
     sizeIndex: number,
-    checked: boolean
+    checked: boolean,
   ) => void;
   onStockQuantityChange: (
     variantIndex: number,
     sizeIndex: number,
-    value: string
+    value: string,
   ) => void;
   onVariantImageUpload: (
     type: "clothing" | "nonClothing",
     variantIndex: number,
     imageIndex: number,
-    file: File
+    file: File,
   ) => void;
   onDeleteClothingVariant: (index: number) => void;
   onDeleteNonClothingVariant: (index: number) => void;
@@ -64,18 +64,6 @@ const VariantStep: React.FC<VariantStepProps> = ({
   onDeleteNonClothingVariant,
   onSubmit,
 }) => {
-  const handleVariantImageUpload = (
-    type: "clothing" | "nonClothing",
-    variantIndex: number,
-    imageIndex: number,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      onVariantImageUpload(type, variantIndex, imageIndex, file);
-    }
-  };
-
   const canSubmit =
     (formState.merchType === MerchType.CLOTHING &&
       formState.clothingVariants.length > 0) ||
@@ -117,7 +105,7 @@ const VariantStep: React.FC<VariantStepProps> = ({
                       "clothing",
                       variantIndex,
                       imageIndex,
-                      file
+                      file,
                     )
                   }
                   onSizeCheckChange={(sizeIndex, checked) =>
@@ -128,7 +116,7 @@ const VariantStep: React.FC<VariantStepProps> = ({
                   }
                   onDelete={() => onDeleteClothingVariant(variantIndex)}
                 />
-              )
+              ),
             )
           )}
 
@@ -166,7 +154,7 @@ const VariantStep: React.FC<VariantStepProps> = ({
                         "nonClothing",
                         variantIndex,
                         imageIndex,
-                        file
+                        file,
                       )
                     }
                     onStockChange={(value) =>
@@ -174,7 +162,7 @@ const VariantStep: React.FC<VariantStepProps> = ({
                     }
                     onDelete={() => onDeleteNonClothingVariant(variantIndex)}
                   />
-                )
+                ),
               )
             )}
 

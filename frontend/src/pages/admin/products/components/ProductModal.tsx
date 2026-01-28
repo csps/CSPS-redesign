@@ -1,9 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { FaTimes } from "react-icons/fa";
-import {
-  convertFormStateToMerchRequest,
-  useMerchForm,
-} from "../../../../hooks/useMerchForm";
+import { useMerchForm } from "../../../../hooks/useMerchForm";
 import { validateMerchInfo, validateVariants } from "../util/validation";
 import { createMerch } from "../../../../api/merch";
 import VariantStep from "./VariantStep";
@@ -29,7 +26,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
   const {
     formState,
-    getMerchRequest,
     setMerchName,
     setDescription,
     setMerchType,
@@ -82,7 +78,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
 
     console.log(`Submitting form state: ${JSON.stringify(formState)}`);
 
-    const result = await createMerch(convertFormStateToMerchRequest(formState));
+    const result = await createMerch(formState);
 
     if (result.success) {
       resetForm();

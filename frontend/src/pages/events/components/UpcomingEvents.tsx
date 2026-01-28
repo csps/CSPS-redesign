@@ -1,5 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getUpcomingEvents } from "../../../api/event";
@@ -11,7 +10,7 @@ import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 const UpcomingEvents = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
-    null
+    null,
   );
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);

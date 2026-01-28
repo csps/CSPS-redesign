@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import type { OrderResponse } from "../../../../interfaces/order/OrderResponse";
 import { MerchType } from "../../../../enums/MerchType";
 import { OrderStatus } from "../../../../enums/OrderStatus";

@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "../../../components/Navbar";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow } from "swiper/modules";
 import SAMPLEIMAGE from "../../../assets/sampleImage.png";
 
 const Index = () => {
-
-
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
@@ -31,7 +29,7 @@ const Index = () => {
             modules={[EffectCoverflow]}
             className="w-full pt-[50px] pb-[20px]"
           >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((img, index) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_img, index) => (
               <SwiperSlide
                 key={index}
                 className="

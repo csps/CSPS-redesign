@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 import { BiSolidCartAdd } from "react-icons/bi";
@@ -6,7 +6,6 @@ import Layout from "../../../components/Layout";
 import DesktopCarousel from "./components/DesktopCarousel";
 import MobileCarousel from "./components/MobileCarousel";
 import { useParams } from "react-router-dom";
-import type { MerchVariantResponse } from "../../../interfaces/merch_variant/MerchVariantResponse";
 import type { MerchDetailedResponse } from "../../../interfaces/merch/MerchResponse";
 import { getMerchById } from "../../../api/merch";
 import { ClothingSizing } from "../../../enums/ClothingSizing";
@@ -101,7 +100,7 @@ const Index = () => {
     // Reset size selection when variant changes
     console.log(`MERCH: ${JSON.stringify(merch)}`);
     console.log(
-      `SELECTED MERCH VARIANT ITEM ID: ${selectedMerchVariantItemId}`
+      `SELECTED MERCH VARIANT ITEM ID: ${selectedMerchVariantItemId}`,
     );
   }, [activeIndex]);
 
@@ -149,7 +148,7 @@ const Index = () => {
 
   // ========== Cart Actions ==========
   const handleAddToCart = async (
-    cartItem: CartItemRequest
+    cartItem: CartItemRequest,
   ): Promise<CartItemResponse | null> => {
     if (!cartItem) return null;
 
@@ -174,7 +173,7 @@ const Index = () => {
       toast.error(
         merch?.merchType === "CLOTHING"
           ? "Please select a size first"
-          : "Please select a variant"
+          : "Please select a variant",
       );
       return;
     }
@@ -337,8 +336,8 @@ const Index = () => {
                             isActive
                               ? "bg-purple-600 border-purple-500 text-white shadow-lg scale-105"
                               : isOutOfStock
-                              ? "border-white/10 text-gray-500 cursor-not-allowed opacity-50 line-through"
-                              : "border-white/10 text-gray-300 hover:border-purple-400"
+                                ? "border-white/10 text-gray-500 cursor-not-allowed opacity-50 line-through"
+                                : "border-white/10 text-gray-300 hover:border-purple-400"
                           }`}
                         >
                           <div>{sizeItem.size}</div>

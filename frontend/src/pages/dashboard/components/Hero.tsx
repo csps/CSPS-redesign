@@ -1,4 +1,3 @@
-import React from "react";
 import BACKGROUNDCSSLOGO from "../../../assets/logos/Background_Logo.png";
 import { useAuthStore } from "../../../store/auth_store";
 import type { StudentResponse } from "../../../interfaces/student/StudentResponse";

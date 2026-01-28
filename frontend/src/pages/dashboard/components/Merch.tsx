@@ -1,4 +1,3 @@
-import React from "react";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import TSHIRT from "../../../assets/carrot 1.png";
@@ -43,7 +42,7 @@ const Merch = () => {
           modules={[Pagination]}
           className="mySwiper"
         >
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((t, index) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((_t, index) => (
             <SwiperSlide
               key={index}
               className={`

@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import SAMPLE from "../../../assets/image 8.png";
 // removed unused imports
 import Layout from "../../../components/Layout";
-import ProductCard, { type ProductCardProps } from "./components/ProductCard";
+import ProductCard from "./components/ProductCard";
 import OrderSummary from "./components/OrderSummary";
 import { getCart } from "../../../api/cart";
 import type { CartItemResponse } from "../../../interfaces/cart/CartItemResponse";
@@ -49,11 +48,11 @@ const index = () => {
   // Optimized derived state: Only recalculates when items or selection changes
   const { selectedItems, totalSelectedPrice } = useMemo(() => {
     const selected = items.filter((item) =>
-      selectedIds.has(item.merchVariantItemId)
+      selectedIds.has(item.merchVariantItemId),
     );
     const total = selected.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,
-      0
+      0,
     );
     return { selectedItems: selected, totalSelectedPrice: total };
   }, [items, selectedIds]);

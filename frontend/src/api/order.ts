@@ -79,7 +79,7 @@ export const getMyOrders = async (
       ? `${ORDERS}/my-orders?${params.toString()}`
       : `${ORDERS}/my-orders`;
 
-    const response = await api.get<OrderResponse[]>(url);
+    const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
 
     console.log("getMyOrders response:", response);
     return response.data.data;
@@ -113,7 +113,7 @@ export const getOrders = async (
 
     const url = params.toString() ? `${ORDERS}?${params.toString()}` : ORDERS;
 
-    const response = await api.get<PaginatedOrdersResponse>(url);
+    const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
 
     console.log("getOrders response:", response);
     return response.data.data;

@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
 import SAMPLE from "../../../../assets/image 8.png";
 import Layout from "../../../../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
-import type { MerchVariantResponse } from "../../../../interfaces/merch_variant/MerchVariantResponse";
 import type { MerchVariantRequest } from "../../../../interfaces/merch_variant/MerchVariantRequest";
 import type { MerchDetailedResponse } from "../../../../interfaces/merch/MerchResponse";
 import { getMerchById, addVariantToMerch } from "../../../../api/merch";
-import { ClothingSizing } from "../../../../enums/ClothingSizing";
 import { toast } from "sonner";
 import NotFoundPage from "../../../notFound";
 import LoadingPage from "../../../loading";
@@ -33,7 +31,6 @@ const AdminMerchProductView = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showAddVariantModal, setShowAddVariantModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [isAddingVariant, setIsAddingVariant] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   // Edited stock state
@@ -117,7 +114,7 @@ const AdminMerchProductView = () => {
   const handleStockChange = (
     variantIdx: number,
     sizeOrId: string,
-    quantity: number
+    quantity: number,
   ) => {
     setEditedStocks((prev) => {
       const newStocks = { ...prev };
@@ -132,7 +129,7 @@ const AdminMerchProductView = () => {
   const handlePriceChange = (
     variantIdx: number,
     sizeOrId: string,
-    price: number
+    price: number,
   ) => {
     setEditedPrices((prev) => {
       const newPrices = { ...prev };
@@ -152,12 +149,11 @@ const AdminMerchProductView = () => {
   }) => {
     if (!merchId) return;
 
-    setIsAddingVariant(true);
     try {
       const variantRequest: MerchVariantRequest = {
         color: data.color,
         design: data.design,
-        variantItems: data.variantItems,
+        variantItems: data.variantItems as any,
         variantImage: data.imageFile,
       };
 
@@ -173,8 +169,6 @@ const AdminMerchProductView = () => {
       const errorMessage =
         err?.response?.data?.message || "Failed to add variant";
       toast.error(errorMessage);
-    } finally {
-      setIsAddingVariant(false);
     }
   };
 
@@ -191,7 +185,7 @@ const AdminMerchProductView = () => {
         price: 0,
       };
 
-      variant.items.push(newItem);
+      variant.items.push(newItem as any);
       variant.stockQuantity += 0;
 
       setMerch(updatedMerch);
@@ -235,7 +229,7 @@ const AdminMerchProductView = () => {
           const item = merch!.variants[variantIdx].items.find(
             (i) =>
               i.size === sizeOrId ||
-              i.merchVariantItemId.toString() === sizeOrId
+              i.merchVariantItemId.toString() === sizeOrId,
           );
           if (item) {
             const originalStock = item.stockQuantity;
@@ -244,12 +238,12 @@ const AdminMerchProductView = () => {
 
             if (quantity !== originalStock) {
               updatePromises.push(
-                updateItemStock(item.merchVariantItemId, quantity)
+                updateItemStock(item.merchVariantItemId, quantity),
               );
             }
             if (newPrice !== undefined && newPrice !== originalPrice) {
               updatePromises.push(
-                updateItemPrice(item.merchVariantItemId, newPrice)
+                updateItemPrice(item.merchVariantItemId, newPrice),
               );
             }
           }
