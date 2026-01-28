@@ -40,7 +40,7 @@ export const getEventById = async (id: number): Promise<EventResponse> => {
  * Endpoint: GET /api/event?eventDate={date}
  */
 export const getEventsByDate = async (
-  eventDate: string
+  eventDate: string,
 ): Promise<EventResponse[]> => {
   try {
     const response = await api.get<EventResponse[]>(EVENTS, {
@@ -58,11 +58,11 @@ export const getEventsByDate = async (
  * Endpoint: GET /api/event/image/{s3ImageKey}
  */
 export const getEventByS3ImageKey = async (
-  s3ImageKey: string
+  s3ImageKey: string,
 ): Promise<EventResponse> => {
   try {
     const response = await api.get<EventResponse>(
-      `${EVENTS}/image/${s3ImageKey}`
+      `${EVENTS}/image/${s3ImageKey}`,
     );
     return response.data;
   } catch (err) {
@@ -77,7 +77,7 @@ export const getEventByS3ImageKey = async (
  */
 export const createEvent = async (
   eventData: EventRequest,
-  image?: File
+  image?: File,
 ): Promise<EventResponse> => {
   try {
     const formData = new FormData();
@@ -91,9 +91,12 @@ export const createEvent = async (
         "Content-Type": "multipart/form-data",
       },
     });
+
+    console.log(`RESPONSE: ${response}`);
     return response.data;
   } catch (err) {
     console.error("Error creating event:", err);
+
     throw err;
   }
 };
@@ -105,7 +108,7 @@ export const createEvent = async (
 export const updateEvent = async (
   id: number,
   eventData: EventRequest,
-  image?: File
+  image?: File,
 ): Promise<EventResponse> => {
   try {
     const formData = new FormData();
@@ -133,7 +136,7 @@ export const updateEvent = async (
 export const patchEvent = async (
   id: number,
   eventData: Partial<EventUpdateRequest>,
-  image?: File
+  image?: File,
 ): Promise<EventResponse> => {
   try {
     const formData = new FormData();
@@ -149,7 +152,7 @@ export const patchEvent = async (
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return response.data;
   } catch (err) {
@@ -184,11 +187,11 @@ export const getUpcomingEvents = async (): Promise<EventResponse[]> => {
 
 export const getEventByMonth = async (
   month: number,
-  year: number
+  year: number,
 ): Promise<EventResponse[]> => {
   try {
     const response = await api.get<EventResponse[]>(
-      `${EVENTS}/by-month?year=${year}&month=${month}`
+      `${EVENTS}/by-month?year=${year}&month=${month}`,
     );
     return response.data.data;
   } catch (err) {
