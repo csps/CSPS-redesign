@@ -82,7 +82,7 @@ const Index = () => {
                   onMouseEnter={() => prefetchMerch(c.merchId)}
                   className="group w-full bg-[#290B54] p-4 flex flex-col justify-center border border-purple-200/40 rounded-2xl transition-transform duration-300 hover:scale-110 relative z-10 cursor-pointer"
                 >
-                  <div className="w-full flex justify-center">
+                  <div className="flex justify-center aspect-[4/3] overflow-hidden">
                     <img
                       src={c.s3ImageKey ? S3_BASE_URL + c.s3ImageKey : SAMPLE}
                       alt={c.merchName}

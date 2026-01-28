@@ -264,7 +264,7 @@ const Index = () => {
                 : SAMPLE
             }
             alt="Preview"
-            className="w-full max-w-[350px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:scale-105"
+            className="w-full max-w-[350px] h-full max-h-[400px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)] transition-transform duration-500 hover:scale-105"
           />
 
           {/* Mobile Carousel */}

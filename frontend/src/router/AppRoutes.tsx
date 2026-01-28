@@ -33,6 +33,7 @@ import NotFoundPage from "../pages/notFound";
 import LoadingPage from "../pages/loading";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
+import AdminMerchProductView from "../pages/admin/merch/productView";
 
 // Home route component - redirects authenticated users to dashboard
 const HomeRoute = () => {
@@ -91,6 +92,7 @@ const routers = [
       { path: "/admin/forum", element: <AdminForumPage /> },
       { path: "/admin/merch", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
+      { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
     ],
   },
 
