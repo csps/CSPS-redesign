@@ -2,11 +2,26 @@ import React, { useState } from "react";
 import StatusCardModal from "./StatusCardModal";
 import type { OrderItemResponse } from "../../../../../interfaces/order/OrderResponse";
 import { S3_BASE_URL } from "../../../../../constant";
+import { updateOrderItemStatus } from "../../../../../api/order";
+import { OrderStatus } from "../../../../../enums/OrderStatus";
+import { AnimatePresence, motion } from "framer-motion";
 
 const options = [
-  { label: "To be claimed", value: "toBeClaimed", color: "text-yellow-400" },
-  { label: "Pending", value: "pending", color: "text-red-500" },
-  { label: "Claimed", value: "claimed", color: "text-green-500" },
+  {
+    label: "TO BE CLAIMED",
+    value: OrderStatus.TO_BE_CLAIMED,
+    color: "text-yellow-400",
+  },
+  {
+    label: OrderStatus.PENDING,
+    value: OrderStatus.PENDING,
+    color: "text-red-500",
+  },
+  {
+    label: OrderStatus.CLAIMED,
+    value: OrderStatus.CLAIMED,
+    color: "text-green-500",
+  },
 ];
 
 interface StatusCardProps {
@@ -14,13 +29,38 @@ interface StatusCardProps {
 }
 
 const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(options[0]);
-  const [tempStatus, setTempStatus] = useState(selectedStatus);
+  const getInitialStatus = () => {
+    switch (orderItem.orderStatus) {
+      case OrderStatus.TO_BE_CLAIMED:
+        return options[0];
+      case OrderStatus.PENDING:
+        return options[1];
+      case OrderStatus.CLAIMED:
+        return options[2];
+      default:
+        return options[1];
+    }
+  };
 
-  const handleSave = () => {
-    setSelectedStatus(tempStatus);
-    setModalOpen(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(getInitialStatus());
+  const [tempStatus, setTempStatus] = useState(selectedStatus);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const handleSave = async () => {
+    try {
+      await updateOrderItemStatus(
+        orderItem.orderItemId,
+        tempStatus.value as OrderStatus,
+      );
+      setSelectedStatus(tempStatus);
+      setModalOpen(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      // Perhaps show an error message
+    }
   };
 
   const handleCancel = () => {
@@ -32,7 +72,10 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
     <>
       <div
         className="w-full bg-[#170657] border border-gray-500/90 relative rounded-lg px-6 py-4 cursor-pointer  hover:bg-[#1f096b] transition-colors"
-        onClick={() => setModalOpen(true)}
+        onClick={() => {
+          setTempStatus(selectedStatus);
+          setModalOpen(true);
+        }}
       >
         {/* Index Number - Absolute Position Top Left */}
         <p className="text-white text-base font-bold absolute top-4 left-4">
@@ -112,6 +155,24 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-4 right-4 z-50"
+          >
+            <div className="bg-green-500/90 border border-green-500 rounded-lg px-6 py-3 text-white text-center shadow-lg">
+              <p className="text-sm font-semibold">
+                Status updated successfully!
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <StatusCardModal
         isOpen={modalOpen}

@@ -25,11 +25,22 @@ export interface OrderResponse {
   totalPrice: number;
   orderDate: string;
   orderItems: OrderItemResponse[];
-  orderStatus: OrderStatus;
 }
 
 export interface PaginatedOrdersResponse {
   content: OrderResponse[];
+  totalPages: number;
+  totalElements: number;
+  number: number;
+  size: number;
+  numberOfElements: number;
+  last: boolean;
+  first: boolean;
+  empty: boolean;
+}
+
+export interface PaginatedOrderItemsResponse {
+  content: OrderItemResponse[];
   totalPages: number;
   totalElements: number;
   number: number;

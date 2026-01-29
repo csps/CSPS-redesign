@@ -4,16 +4,18 @@ import Footer from "../../../../components/Footer";
 import StatusCard from "./components/StatusCard";
 import { PurchaseFilter } from "../../../merch/transactions/components/PurchaseFilter";
 import Pagination from "../../../merch/transactions/components/Pagination";
-import { getOrders } from "../../../../api/order";
+import { getOrders, getOrderItemByStatus } from "../../../../api/order";
 import type {
   OrderResponse,
   PaginatedOrdersResponse,
+  OrderItemResponse,
 } from "../../../../interfaces/order/OrderResponse";
 import type { PaginationParams } from "../../../../interfaces/pagination_params";
 import { FiSearch } from "react-icons/fi";
+import { OrderStatus } from "../../../../enums/OrderStatus";
 
 const Index = () => {
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
+  const [items, setItems] = useState<OrderItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
@@ -23,57 +25,80 @@ const Index = () => {
     useState<PaginatedOrdersResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Fetch orders on component mount and when page changes
+  // Reset page when status changes
   useEffect(() => {
-    const fetchOrders = async () => {
+    setCurrentPage(0);
+  }, [selectedStatus]);
+
+  // Fetch orders on component mount and when page or status changes
+  useEffect(() => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await getOrders({
-          page: currentPage,
-          size: pageSize,
-        } as PaginationParams);
+        if (selectedStatus === "All") {
+          const response = await getOrders({
+            page: currentPage,
+            size: pageSize,
+          } as PaginationParams);
 
-        console.log("Fetched orders:", response.content);
-        setOrders(response.content || []);
-        setPaginationInfo(response);
+          console.log("Fetched orders:", response.content);
+          const orderItems = Array.isArray(response.content)
+            ? response.content.flatMap((order) => order.orderItems || [])
+            : [];
+          setItems(orderItems);
+          setPaginationInfo(response);
+        } else {
+          const fetchedItems = await getOrderItemByStatus(
+            selectedStatus as OrderStatus,
+          );
+          setItems(fetchedItems.content || []);
+          setPaginationInfo(fetchedItems as any);
+        }
         setError(null);
       } catch (err) {
         console.error("Failed to fetch orders:", err);
         setError("Failed to load orders. Please try again later.");
-        setOrders([]);
+        setItems([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrders();
-  }, [currentPage, pageSize]);
+    fetchData();
+  }, [currentPage, pageSize, selectedStatus]);
 
-  // Filter orders by status and search
+  // Filter items by search and group by orderId
   const filteredOrders = useMemo(() => {
-    let filtered = orders;
+    if (!Array.isArray(items)) return [];
 
-    if (selectedStatus !== "All") {
-      filtered = filtered.filter(
-        (order) => order.orderStatus === selectedStatus,
-      );
-    }
+    let filteredItems = items;
 
     if (searchQuery) {
-      filtered = filtered.filter((order) =>
-        order.orderItems.some(
-          (item) =>
-            item.merchName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.studentName
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            item.studentId.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
+      filteredItems = filteredItems.filter(
+        (item) =>
+          item.merchName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.studentId.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
-    return filtered;
-  }, [orders, selectedStatus, searchQuery]);
+    const grouped: { [orderId: number]: OrderResponse } = {};
+    filteredItems.forEach((item) => {
+      if (!grouped[item.orderId]) {
+        grouped[item.orderId] = {
+          orderId: item.orderId,
+          studentName: item.studentName,
+          totalPrice: 0,
+          orderDate: item.createdAt,
+          orderItems: [],
+        };
+      }
+      grouped[item.orderId].orderItems.push(item);
+      grouped[item.orderId].totalPrice += item.totalPrice;
+    });
+
+    return Object.values(grouped);
+  }, [items, searchQuery]);
 
   return (
     <>
@@ -127,6 +152,12 @@ const Index = () => {
               !error &&
               filteredOrders.map((order) => (
                 <div key={order.orderId} className="mb-8">
+                  <div className="px-4 mb-4 flex justify-between">
+                    <p className="text-lg font-semibold text-gray-300">
+                      Order #{order.orderId}
+                    </p>
+                    <p></p>
+                  </div>
                   <div className="px-4 space-y-5">
                     {order.orderItems.map((item) => (
                       <StatusCard key={item.orderItemId} orderItem={item} />

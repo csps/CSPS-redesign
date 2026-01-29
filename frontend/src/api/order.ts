@@ -2,6 +2,7 @@ import type {
   OrderResponse,
   OrderItemResponse,
   PaginatedOrdersResponse,
+  PaginatedOrderItemsResponse,
 } from "../interfaces/order/OrderResponse";
 import type {
   OrderPostRequest,
@@ -9,6 +10,7 @@ import type {
 } from "../interfaces/order/OrderRequest";
 import api from "./api";
 import type { PaginationParams } from "../interfaces/pagination_params";
+import type { OrderStatus } from "../enums/OrderStatus";
 
 const ORDERS = "orders";
 const ORDER_ITEMS = "order-items";
@@ -189,12 +191,41 @@ export const getOrderItemsByOrderId = async (
 };
 
 /**
+ * Get order item by status
+ *
+ * @param status
+ * @returns
+ */
+export const getOrderItemByStatus = async (
+  status: OrderStatus,
+): Promise<PaginatedOrderItemsResponse> => {
+  try {
+    const response = await api.get<{ data: PaginatedOrderItemsResponse }>(
+      `${ORDER_ITEMS}/status`,
+      {
+        params: { status },
+      },
+    );
+
+    console.log(
+      `Fetched order items with status ${status}:`,
+      response.data.data,
+    );
+
+    return response.data.data;
+  } catch (err) {
+    console.error(`Error fetching order items with status ${status}:`, err);
+    throw err;
+  }
+};
+
+/**
  * Update order item status.
  * Endpoint: PATCH /api/order-items/{id}/status?status={STATUS}
  */
 export const updateOrderItemStatus = async (
   id: number,
-  status: string,
+  status: OrderStatus,
 ): Promise<OrderItemResponse> => {
   try {
     const response = await api.patch<OrderItemResponse>(
@@ -231,6 +262,7 @@ export default {
   deleteOrder,
   createOrderItem,
   getOrderItemById,
+  getOrderItemByStatus,
   getOrderItemsByOrderId,
   updateOrderItemStatus,
   deleteOrderItem,

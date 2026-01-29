@@ -3,13 +3,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import StatusDropdown from "./StatusDropdown";
 import type { OrderItemResponse } from "../../../../../interfaces/order/OrderResponse";
 import { S3_BASE_URL } from "../../../../../constant";
+import { OrderStatus } from "../../../../../enums/OrderStatus";
 
 const options = [
-  { label: "To be claimed", value: "toBeClaimed", color: "text-yellow-400" },
-  { label: "Pending", value: "pending", color: "text-red-500" },
-  { label: "Claimed", value: "claimed", color: "text-green-500" },
+  {
+    label: "TO BE CLAIMED",
+    value: OrderStatus.TO_BE_CLAIMED,
+    color: "text-yellow-400",
+  },
+  {
+    label: OrderStatus.PENDING,
+    value: OrderStatus.PENDING,
+    color: "text-red-500",
+  },
+  {
+    label: OrderStatus.CLAIMED,
+    value: OrderStatus.CLAIMED,
+    color: "text-green-500",
+  },
 ];
-
+  
 export type StatusOption = (typeof options)[0];
 
 interface StatusCardModalProps {

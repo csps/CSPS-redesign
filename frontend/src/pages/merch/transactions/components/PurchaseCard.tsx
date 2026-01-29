@@ -4,16 +4,11 @@ import { MerchType } from "../../../../enums/MerchType";
 import { OrderStatus } from "../../../../enums/OrderStatus";
 import { S3_BASE_URL } from "../../../../constant";
 
-const statusStyles = {
+export const statusStyles = {
   [OrderStatus.CLAIMED]: {
     color: "text-green-500",
     bg: "bg-green-500/10",
     border: "border-green-500/30",
-  },
-  [OrderStatus.NOT_PAID]: {
-    color: "text-red-500",
-    bg: "bg-red-500/10",
-    border: "border-red-500/30",
   },
   [OrderStatus.TO_BE_CLAIMED]: {
     color: "text-yellow-500",
@@ -29,7 +24,6 @@ const statusStyles = {
 
 const statusLabels = {
   [OrderStatus.CLAIMED]: "Claimed",
-  [OrderStatus.NOT_PAID]: "Not paid",
   [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
   [OrderStatus.PENDING]: "Pending",
 };
@@ -45,9 +39,7 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
         const isClothing = item.merchType === MerchType.CLOTHING;
 
         console.log("isClothing:", isClothing);
-        const statusStyle =
-          statusStyles[purchase.orderStatus as OrderStatus] ||
-          statusStyles[OrderStatus.NOT_PAID];
+        const statusStyle = statusStyles[item.orderStatus as OrderStatus];
 
         return (
           <div
@@ -100,8 +92,7 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
                 <p className="text-2xl font-medium text-white mb-2">
                   Status:{" "}
                   <span className={statusStyle.color}>
-                    {statusLabels[purchase.orderStatus as OrderStatus] ||
-                      "Unknown"}
+                    {statusLabels[item.orderStatus as OrderStatus]}
                   </span>
                 </p>
               </div>
