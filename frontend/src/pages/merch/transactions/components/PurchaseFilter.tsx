@@ -3,7 +3,6 @@ import { OrderStatus } from "../../../../enums/OrderStatus";
 
 const statusLabels = {
   [OrderStatus.CLAIMED]: "Claimed",
-  [OrderStatus.NOT_PAID]: "Not paid",
   [OrderStatus.TO_BE_CLAIMED]: "To be claimed",
   [OrderStatus.PENDING]: "Pending",
 };
