@@ -78,6 +78,20 @@ const Index = () => {
     setLoading(true);
     try {
       const response = await getMerchById(id);
+
+      // Sort items by size order
+      response.variants.forEach((variant) => {
+        variant.items.sort((a, b) => {
+          if (!a.size && !b.size) return 0;
+          if (!a.size) return 1;
+          if (!b.size) return -1;
+          const order = Object.values(ClothingSizing);
+          const aIndex = order.indexOf(a.size as ClothingSizing);
+          const bIndex = order.indexOf(b.size as ClothingSizing);
+          return aIndex - bIndex;
+        });
+      });
+
       setMerch(response);
       setIsNotFound(false);
       setActiveIndex(0);

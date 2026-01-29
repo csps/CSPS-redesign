@@ -16,7 +16,9 @@ import ConfirmationModal from "./components/ConfirmationModal";
 import {
   updateItemStock,
   updateItemPrice,
+  addItemToVariant,
 } from "../../../../api/merch_variant_item";
+import { ClothingSizing } from "../../../../enums/ClothingSizing";
 
 const AdminMerchProductView = () => {
   const { merchId } = useParams<{ merchId: string }>();
@@ -32,6 +34,7 @@ const AdminMerchProductView = () => {
   const [showAddVariantModal, setShowAddVariantModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isAddingVariant, setIsAddingVariant] = useState(false);
 
   // Edited stock state
   const [editedStocks, setEditedStocks] = useState<{
@@ -74,6 +77,20 @@ const AdminMerchProductView = () => {
     setLoading(true);
     try {
       const response = await getMerchById(id);
+
+      // Sort items by size order
+      response.variants.forEach((variant) => {
+        variant.items.sort((a, b) => {
+          if (!a.size && !b.size) return 0;
+          if (!a.size) return 1;
+          if (!b.size) return -1;
+          const order = Object.values(ClothingSizing);
+          const aIndex = order.indexOf(a.size as ClothingSizing);
+          const bIndex = order.indexOf(b.size as ClothingSizing);
+          return aIndex - bIndex;
+        });
+      });
+
       setMerch(response);
       setIsNotFound(false);
       setActiveIndex(0);
@@ -149,6 +166,7 @@ const AdminMerchProductView = () => {
   }) => {
     if (!merchId) return;
 
+    setIsAddingVariant(true);
     try {
       const variantRequest: MerchVariantRequest = {
         color: data.color,
@@ -162,13 +180,15 @@ const AdminMerchProductView = () => {
       // Refetch the merch data to get updated state from backend
       await fetchMerch(Number(merchId));
 
-      toast.success("Variant added successfully!");
       setShowAddVariantModal(false);
+      toast.success("Variant added successfully!");
     } catch (err: any) {
       console.error("Error adding variant:", err);
       const errorMessage =
         err?.response?.data?.message || "Failed to add variant";
       toast.error(errorMessage);
+    } finally {
+      setIsAddingVariant(false);
     }
   };
 
@@ -179,13 +199,25 @@ const AdminMerchProductView = () => {
 
       // Create new item for this size
       const newItem = {
-        merchVariantItemId: Math.random() * 10000, // Placeholder ID
+        merchVariantItemId: -1, // Negative ID to mark as new
         size,
         stockQuantity: 0,
         price: 0,
       };
 
       variant.items.push(newItem as any);
+
+      // Sort items by size order
+      variant.items.sort((a, b) => {
+        if (!a.size && !b.size) return 0;
+        if (!a.size) return 1;
+        if (!b.size) return -1;
+        const order = Object.values(ClothingSizing);
+        const aIndex = order.indexOf(a.size as ClothingSizing);
+        const bIndex = order.indexOf(b.size as ClothingSizing);
+        return aIndex - bIndex;
+      });
+
       variant.stockQuantity += 0;
 
       setMerch(updatedMerch);
@@ -202,7 +234,7 @@ const AdminMerchProductView = () => {
       setEditedStocks(newStocks);
       setEditedPrices(newPrices);
 
-      toast.success(`Size ${size} added successfully!`);
+      toast.success(`Size ${size} added! Remember to save changes.`);
     }
   };
 
@@ -220,6 +252,7 @@ const AdminMerchProductView = () => {
     try {
       // Update stocks and prices via API
       const updatePromises: Promise<any>[] = [];
+      const addPromises: Promise<any>[] = [];
 
       Object.entries(editedStocks).forEach(([variantIdxStr, stockMap]) => {
         const variantIdx = Number(variantIdxStr);
@@ -236,21 +269,35 @@ const AdminMerchProductView = () => {
             const originalPrice = item.price;
             const newPrice = priceMap[sizeOrId];
 
-            if (quantity !== originalStock) {
-              updatePromises.push(
-                updateItemStock(item.merchVariantItemId, quantity),
+            if (item.merchVariantItemId === -1) {
+              // New item, add it
+              const variant = merch!.variants[variantIdx];
+              const addItem = {
+                size: item.size as any,
+                stockQuantity: quantity,
+                price: newPrice !== undefined ? newPrice : item.price,
+              };
+              addPromises.push(
+                addItemToVariant(variant.merchVariantId, addItem),
               );
-            }
-            if (newPrice !== undefined && newPrice !== originalPrice) {
-              updatePromises.push(
-                updateItemPrice(item.merchVariantItemId, newPrice),
-              );
+            } else {
+              // Existing item, update
+              if (quantity !== originalStock) {
+                updatePromises.push(
+                  updateItemStock(item.merchVariantItemId, quantity),
+                );
+              }
+              if (newPrice !== undefined && newPrice !== originalPrice) {
+                updatePromises.push(
+                  updateItemPrice(item.merchVariantItemId, newPrice),
+                );
+              }
             }
           }
         });
       });
 
-      await Promise.all(updatePromises);
+      await Promise.all([...updatePromises, ...addPromises]);
 
       // Refetch to get updated data
       await fetchMerch(Number(merchId));
@@ -410,6 +457,7 @@ const AdminMerchProductView = () => {
         onClose={() => setShowAddVariantModal(false)}
         onConfirm={handleAddVariant}
         merchType={merch.merchType}
+        isAddingVariant={isAddingVariant}
       />
 
       {/* Confirmation Modal */}

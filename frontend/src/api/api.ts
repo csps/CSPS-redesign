@@ -4,7 +4,6 @@ import { refresh, profile } from "./auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000,
   withCredentials: true,
 });
 
@@ -38,10 +37,9 @@ api.interceptors.response.use(
         if (!accessToken) {
           useAuthStore.getState().clearAuth();
           return Promise.reject(
-            new Error("No access token returned from refresh")
+            new Error("No access token returned from refresh"),
           );
         }
-
 
         try {
           await profile();
@@ -61,7 +59,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

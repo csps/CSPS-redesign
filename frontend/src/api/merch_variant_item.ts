@@ -10,14 +10,14 @@ import api from "./api";
  */
 export const addItemToVariant = async (
   merchVariantId: number,
-  item: MerchVariantItemRequest
+  item: MerchVariantItemRequest,
 ): Promise<MerchVariantItemResponse> => {
   try {
     const response = await api.post(
       `/merch-variant-item/${merchVariantId}/add`,
-      item
+      item,
     );
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error(`Error adding item to variant ${merchVariantId}:`, err);
     throw err;
@@ -30,18 +30,56 @@ export const addItemToVariant = async (
  */
 export const addMultipleItemsToVariant = async (
   merchVariantId: number,
-  items: MerchVariantItemRequest[]
+  items: MerchVariantItemRequest[],
 ): Promise<MerchVariantItemResponse[]> => {
   try {
     const response = await api.post(
       `/merch-variant-item/${merchVariantId}/add-multiple`,
-      items
+      items,
     );
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error(
       `Error adding multiple items to variant ${merchVariantId}:`,
-      err
+      err,
+    );
+    throw err;
+  }
+};
+
+/**
+ * Get item by ID.
+ * Endpoint: GET /api/merch-variant-item/{id}
+ */
+export const getItemById = async (
+  id: number,
+): Promise<MerchVariantItemResponse> => {
+  try {
+    const response = await api.get(`/merch-variant-item/${id}`);
+    return response.data.data;
+  } catch (err) {
+    console.error(`Error fetching item ${id}:`, err);
+    throw err;
+  }
+};
+
+/**
+ * Get item by variant and size.
+ * Endpoint: GET /api/merch-variant-item/variant/{merchVariantId}/size/{size}
+ */
+export const getItemByVariantAndSize = async (
+  merchVariantId: number,
+  size: string,
+): Promise<MerchVariantItemResponse> => {
+  try {
+    const response = await api.get(
+      `/merch-variant-item/variant/${merchVariantId}/size/${size}`,
+    );
+    return response.data.data;
+  } catch (err) {
+    console.error(
+      `Error fetching item for variant ${merchVariantId} and size ${size}:`,
+      err,
     );
     throw err;
   }
@@ -49,14 +87,16 @@ export const addMultipleItemsToVariant = async (
 
 /**
  * Get all items for a variant.
- * Endpoint: GET /api/merch-variant-item/{merchVariantId}
+ * Endpoint: GET /api/merch-variant-item/variant/{merchVariantId}
  */
 export const getItemsByVariant = async (
-  merchVariantId: number
+  merchVariantId: number,
 ): Promise<MerchVariantItemResponse[]> => {
   try {
-    const response = await api.get(`/merch-variant-item/${merchVariantId}`);
-    return response.data;
+    const response = await api.get(
+      `/merch-variant-item/variant/${merchVariantId}`,
+    );
+    return response.data.data;
   } catch (err) {
     console.error(`Error fetching items for variant ${merchVariantId}:`, err);
     throw err;
@@ -65,17 +105,19 @@ export const getItemsByVariant = async (
 
 /**
  * Update stock quantity for an item.
- * Endpoint: PUT /api/merch-variant-item/{merchVariantItemId}/stock?quantity={quantity}
+ * Endpoint: PATCH /api/merch-variant-item/{merchVariantItemId}/stock?quantity={quantity}
  */
 export const updateItemStock = async (
   merchVariantItemId: number,
-  quantity: number
+  quantity: number,
 ): Promise<MerchVariantItemResponse> => {
   try {
-    const response = await api.put(
-      `/merch-variant-item/${merchVariantItemId}/stock?quantity=${quantity}`
+    const response = await api.patch(
+      `/merch-variant-item/${merchVariantItemId}/stock`,
+      null,
+      { params: { quantity } },
     );
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error(`Error updating stock for item ${merchVariantItemId}:`, err);
     throw err;
@@ -84,17 +126,19 @@ export const updateItemStock = async (
 
 /**
  * Update price for an item.
- * Endpoint: PUT /api/merch-variant-item/{merchVariantItemId}/price?price={price}
+ * Endpoint: PATCH /api/merch-variant-item/{merchVariantItemId}/price?price={price}
  */
 export const updateItemPrice = async (
   merchVariantItemId: number,
-  price: number
+  price: number,
 ): Promise<MerchVariantItemResponse> => {
   try {
-    const response = await api.put(
-      `/merch-variant-item/${merchVariantItemId}/price?price=${price}`
+    const response = await api.patch(
+      `/merch-variant-item/${merchVariantItemId}/price`,
+      null,
+      { params: { price } },
     );
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error(`Error updating price for item ${merchVariantItemId}:`, err);
     throw err;
@@ -112,4 +156,15 @@ export const deleteItem = async (merchVariantItemId: number): Promise<void> => {
     console.error(`Error deleting item ${merchVariantItemId}:`, err);
     throw err;
   }
+};
+
+export default {
+  addItemToVariant,
+  addMultipleItemsToVariant,
+  getItemById,
+  getItemsByVariant,
+  getItemByVariantAndSize,
+  updateItemStock,
+  updateItemPrice,
+  deleteItem,
 };

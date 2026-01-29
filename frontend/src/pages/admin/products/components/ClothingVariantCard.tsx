@@ -7,6 +7,7 @@ import { ClothingSizing } from "../../../../enums/ClothingSizing";
 type SizeStockData = {
   size: ClothingSizing | "";
   stock: number | "";
+  price: number | "";
   checked: boolean;
 };
 
@@ -19,6 +20,7 @@ interface ClothingVariantCardProps {
   onImageUpload: (imageIndex: number, file: File) => void;
   onSizeCheckChange: (sizeIndex: number, checked: boolean) => void;
   onStockQuantityChange: (sizeIndex: number, value: string) => void;
+  onPriceChangeForSize?: (sizeIndex: number, value: string) => void;
   onDelete: () => void;
 }
 
@@ -31,6 +33,7 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
   onImageUpload,
   onSizeCheckChange,
   onStockQuantityChange,
+  onPriceChangeForSize,
   onDelete,
 }) => {
   const handleImageUpload = (
@@ -181,8 +184,20 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
                 onChange={(e) =>
                   onStockQuantityChange(sizeIndex, e.target.value)
                 }
-                placeholder="0"
+                placeholder="Stock"
                 min="0"
+                className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed"
+              />
+              <input
+                type="number"
+                disabled={!item.checked}
+                value={item.price}
+                onChange={(e) =>
+                  onPriceChangeForSize?.(sizeIndex, e.target.value)
+                }
+                placeholder="Price"
+                min="0"
+                step="0.01"
                 className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed"
               />
             </div>

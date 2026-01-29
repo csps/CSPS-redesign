@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import type { MerchType } from "../../../../../enums/MerchType";
 
 interface AddVariantModalProps {
+  isAddingVariant: boolean;
   open: boolean;
   onClose: () => void;
   onConfirm: (data: {
@@ -22,6 +23,7 @@ interface AddVariantModalProps {
 }
 
 const AddVariantModal: React.FC<AddVariantModalProps> = ({
+  isAddingVariant,
   open,
   onClose,
   onConfirm,
@@ -37,6 +39,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
     sizeStock: Object.values(ClothingSizing).map((size) => ({
       size,
       stock: "",
+      price: "",
       checked: false,
     })),
   });
@@ -94,6 +97,16 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
     const updatedSizeStock = [...clothingVariant.sizeStock];
     updatedSizeStock[sizeIndex].stock =
       value === "" ? "" : parseInt(value) || "";
+    setClothingVariant({ ...clothingVariant, sizeStock: updatedSizeStock });
+  };
+
+  const handleClothingPriceChangeForSize = (
+    sizeIndex: number,
+    value: string,
+  ) => {
+    const updatedSizeStock = [...clothingVariant.sizeStock];
+    updatedSizeStock[sizeIndex].price =
+      value === "" ? "" : parseFloat(value) || "";
     setClothingVariant({ ...clothingVariant, sizeStock: updatedSizeStock });
   };
 
@@ -156,6 +169,10 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           toast.error(`Please enter stock quantity for ${size.size}`);
           return;
         }
+        if (size.price === "" || size.price <= 0) {
+          toast.error(`Please enter price for ${size.size}`);
+          return;
+        }
       }
 
       setIsSubmitting(true);
@@ -166,7 +183,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           variantItems: checkedSizes.map((item) => ({
             size: item.size,
             stockQuantity: item.stock as number,
-            price: clothingVariant.price as number,
+            price: item.price as number,
           })),
           imageFile: clothingVariant.imageFile!,
         };
@@ -186,6 +203,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           sizeStock: Object.values(ClothingSizing).map((size) => ({
             size,
             stock: "",
+            price: "",
             checked: false,
           })),
         });
@@ -268,6 +286,16 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   if (!open) return null;
 
+  if (isAddingVariant)
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div className="bg-[#242050] border border-purple-500/20 rounded-lg p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p className="text-purple-200 text-lg">Adding variant...</p>
+        </div>
+      </div>
+    );
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-[#242050] rounded-2xl border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
@@ -293,6 +321,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
             onImageUpload={handleClothingImageUpload}
             onSizeCheckChange={handleClothingSizeCheckChange}
             onStockQuantityChange={handleClothingStockQuantityChange}
+            onPriceChangeForSize={handleClothingPriceChangeForSize}
             onDelete={() => {}}
           />
         ) : (

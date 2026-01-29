@@ -23,6 +23,7 @@ export interface ClothingVariant {
   sizeStock: Array<{
     size: ClothingSizing | "";
     stock: number | "";
+    price: number | "";
     checked: boolean;
   }>;
 }
@@ -125,6 +126,7 @@ export const useMerchForm = () => {
       sizeStock: Object.values(ClothingSizing).map((size) => ({
         size,
         stock: "",
+        price: "",
         checked: false,
       })),
     };
@@ -173,6 +175,20 @@ export const useMerchForm = () => {
         updated[variantIndex].sizeStock[sizeIndex] = {
           ...updated[variantIndex].sizeStock[sizeIndex],
           stock: value === "" ? "" : Number(value),
+        };
+        return { ...prev, clothingVariants: updated };
+      });
+    },
+    [],
+  );
+
+  const handlePriceChangeForSize = useCallback(
+    (variantIndex: number, sizeIndex: number, value: string) => {
+      setFormState((prev) => {
+        const updated = [...prev.clothingVariants];
+        updated[variantIndex].sizeStock[sizeIndex] = {
+          ...updated[variantIndex].sizeStock[sizeIndex],
+          price: value === "" ? "" : Number(value),
         };
         return { ...prev, clothingVariants: updated };
       });
@@ -309,6 +325,7 @@ export const useMerchForm = () => {
     handleClothingVariantChange,
     handleSizeCheckChange,
     handleStockQuantityChange,
+    handlePriceChangeForSize,
     handleDeleteClothingVariant,
     handleVariantImageUpload,
     handleAddNonClothingVariant,
