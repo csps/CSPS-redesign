@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { PiGearSixLight } from "react-icons/pi";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
 
 const AuthenticatedNav = () => {
@@ -19,7 +19,7 @@ const AuthenticatedNav = () => {
 };
 
 const DesktopAuthenticatedNav = ({ location = "/dashboard" }: {location: string}) => {
-
+  const navigate = useNavigate();
   
   return (
     <div className="hidden lg:flex w-full justify-center px-6 py-4">
@@ -134,7 +134,7 @@ const DesktopAuthenticatedNav = ({ location = "/dashboard" }: {location: string}
             </Link>
           ) 
           })}
-          <PiGearSixLight className="text-3xl text-white/90 hover:text-white transition" />
+          <PiGearSixLight className="text-3xl text-white/90 hover:text-white transition" onClick={() => navigate('/settings')}/>
         </ul>
       </nav>
       <div className="hidden lg:flex items-center ml-4 mt-2">
