@@ -76,68 +76,69 @@ const Index = () => {
         </div>
 
         {/* Grid Display - Refined spacing and 4-column desktop layout */}
-        <div
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-500 ${
-            loading ? "opacity-40" : "opacity-100"
-          }`}
-        >
-          {merch.length > 0
-            ? merch.map((c) => (
-                <Link
-                  to={`/merch/${c.merchId}`}
-                  key={c.merchId}
-                  onMouseEnter={() => prefetchMerch(c.merchId)}
-                  className="group flex flex-col"
-                >
-                  {/* Image Container - Updated to CSPS Glassmorphism Style */}
-                  <div className="relative aspect-square bg-[#242050] border border-white/10 rounded-[2rem] overflow-hidden flex items-center justify-center p-8 transition-all duration-300 group-hover:border-purple-500/50 group-hover:shadow-2xl group-hover:shadow-purple-900/40">
-                    {/* Subtle Gradient Glow behind the image */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {loading ? (
+            <div className="col-span-full flex flex-col items-center justify-center py-32">
+              <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
+              <p className="text-white font-medium">Loading products...</p>
+            </div>
+          ) : merch.length > 0 ? (
+            merch.map((c) => (
+              <Link
+                to={`/merch/${c.merchId}`}
+                key={c.merchId}
+                onMouseEnter={() => prefetchMerch(c.merchId)}
+                className="group flex flex-col"
+              >
+                {/* Image Container - Updated to CSPS Glassmorphism Style */}
+                <div className="relative aspect-square bg-[#242050] border border-white/10 rounded-[2rem] overflow-hidden flex items-center justify-center p-8 transition-all duration-300 group-hover:border-purple-500/50 group-hover:shadow-2xl group-hover:shadow-purple-900/40">
+                  {/* Subtle Gradient Glow behind the image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                    <img
-                      src={c.s3ImageKey ? S3_BASE_URL + c.s3ImageKey : SAMPLE}
-                      alt={c.merchName}
-                      className="w-full h-full object-contain relative z-10 transition-transform duration-500 ease-out group-hover:scale-110"
-                    />
+                  <img
+                    src={c.s3ImageKey ? S3_BASE_URL + c.s3ImageKey : SAMPLE}
+                    alt={c.merchName}
+                    className="w-full h-full object-contain relative z-10 transition-transform duration-500 ease-out group-hover:scale-110"
+                  />
 
-                    {/* Floating Action Button - Glass Style */}
-                    <div className="absolute top-4 right-4 w-10 h-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0">
-                      <span className="text-white text-lg">♡</span>
-                    </div>
+                  {/* Floating Action Button - Glass Style */}
+                  <div className="absolute top-4 right-4 w-10 h-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0">
+                    <span className="text-white text-lg">♡</span>
                   </div>
-
-                  {/* Info Section - Clean and left-aligned */}
-                  <div className="mt-5 px-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-white/60 text-xs font-medium uppercase tracking-wider mb-1">
-                          CSPS Official
-                        </p>
-                        <h3 className="text-white font-semibold text-lg leading-tight group-hover:text-[#FDE006] transition-colors">
-                          {c.merchName}
-                        </h3>
-                      </div>
-                      <p className="text-white font-bold text-lg">
-                        ₱{c.basePrice}
-                      </p>
-                    </div>
-
-                    {/* Primary Action Button from Design System */}
-                    <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
-                      <div className="w-full bg-[#FDE006] text-black text-center py-3 rounded-xl font-bold text-sm">
-                        View Details
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))
-            : !loading && (
-                <div className="col-span-full flex flex-col items-center justify-center py-32 bg-white/4 rounded-3xl border border-white/10 border-dashed">
-                  <p className="text-[#D2D2D2] italic">
-                    No items found in {activeTag.toLowerCase()}.
-                  </p>
                 </div>
-              )}
+
+                {/* Info Section - Clean and left-aligned */}
+                <div className="mt-5 px-1">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-white/60 text-xs font-medium uppercase tracking-wider mb-1">
+                        CSPS Official
+                      </p>
+                      <h3 className="text-white font-semibold text-lg leading-tight group-hover:text-[#FDE006] transition-colors">
+                        {c.merchName}
+                      </h3>
+                    </div>
+                    <p className="text-white font-bold text-lg">
+                      ₱{c.basePrice}
+                    </p>
+                  </div>
+
+                  {/* Primary Action Button from Design System */}
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
+                    <div className="w-full bg-[#FDE006] text-black text-center py-3 rounded-xl font-bold text-sm">
+                      View Details
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-32 bg-white/4 rounded-3xl border border-white/10 border-dashed">
+              <p className="text-[#D2D2D2] italic">
+                No items found in {activeTag.toLowerCase()}.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

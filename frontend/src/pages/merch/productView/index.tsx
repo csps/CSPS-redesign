@@ -172,178 +172,244 @@ const Index = () => {
         <div className="flex flex-col lg:flex-row gap-12 xl:gap-20 items-start">
           {/* Left: Desktop Variant Selector */}
           <div className="hidden lg:block shrink-0">
-            <DesktopCarousel
-              items={merchVariantIds}
-              merchVariants={merch?.variants || []}
-              activeIndex={activeIndex}
-              setActiveIndex={setActiveIndex}
-              getSlidePosition={getSlidePosition}
-            />
+            {loading ? (
+              <div className="w-[180px] h-[500px] bg-[#242050]/50 border border-white/10 rounded-[2rem] animate-pulse" />
+            ) : (
+              <DesktopCarousel
+                items={merchVariantIds}
+                merchVariants={merch?.variants || []}
+                activeIndex={activeIndex}
+                setActiveIndex={setActiveIndex}
+                getSlidePosition={getSlidePosition}
+              />
+            )}
           </div>
 
           {/* Center: Main Product Showcase */}
           <div className="flex-[1.5] w-full group">
-            <div className="  aspect-square flex items-center justify-center p-12 overflow-hidden relative transition-all duration-500 hover:border-purple-500/30">
-              {/* Internal Glow Effect */}
-              <div className="absolute inset-0 via-transparent to-transparent opacity-50" />
-              <img
-                src={
-                  currentVariant?.s3ImageKey
-                    ? S3_BASE_URL + currentVariant.s3ImageKey
-                    : SAMPLE
-                }
-                alt="Product Preview"
-                className="w-full h-full object-contain relative z-10 transition-transform duration-700 ease-out group-hover:scale-110"
-              />
-            </div>
+            {loading ? (
+              <div className="aspect-square bg-[#242050]/50 border border-white/10 rounded-[2rem] animate-pulse flex items-center justify-center">
+                <div className="w-20 h-20 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="aspect-square flex items-center justify-center p-12 overflow-hidden relative transition-all duration-500 hover:border-purple-500/30">
+                {/* Internal Glow Effect */}
+                <div className="absolute inset-0 via-transparent to-transparent opacity-50" />
+                <img
+                  src={
+                    currentVariant?.s3ImageKey &&
+                    S3_BASE_URL + currentVariant.s3ImageKey
+                  }
+                  alt="Product Preview"
+                  className="w-full h-full object-contain relative z-10 transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+              </div>
+            )}
 
             {/* Mobile Variant Selector */}
             <div className="lg:hidden mt-8">
-              <MobileCarousel
-                items={merchVariantIds}
-                activeIndex={activeIndex}
-                setActiveIndex={setActiveIndex}
-              />
+              {loading ? (
+                <div className="h-20 bg-[#242050]/50 border border-white/10 rounded-[2rem] animate-pulse" />
+              ) : (
+                <MobileCarousel
+                  items={merchVariantIds}
+                  activeIndex={activeIndex}
+                  setActiveIndex={setActiveIndex}
+                />
+              )}
             </div>
           </div>
 
           {/* Right: Interaction & Details */}
           <div className="flex-1 w-full flex flex-col gap-8">
-            <header className="space-y-3">
-              <div className="inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/50 uppercase">
-                CSPS Official • {merch?.merchType}
-              </div>
-              <h1 className="text-4xl xl:text-5xl font-bold text-white ">
-                {merch?.merchName}
-              </h1>
-              <div className="flex items-center gap-4">
-                <p className="text-3xl font-bold text-white">
-                  ₱{currentPrice.toFixed(2)}
-                </p>
-                <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded border ${currentStock > 0 ? "border-green-500/20 text-green-400 bg-green-500/5" : "border-red-500/20 text-red-400 bg-red-500/5"}`}
-                >
-                  {currentStock > 0
-                    ? `${currentStock} IN STOCK`
-                    : "OUT OF STOCK"}
-                </span>
-              </div>
-            </header>
-
-            <div className="h-[1px] bg-white/5 w-full" />
-
-            {/* Selection Controls */}
-            <div className="space-y-8">
-              {/* Variant Style Selection */}
-              <div className="space-y-4">
-                <p className="text-[10px] font-bold text-white/40 uppercase]">
-                  Select Style
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {merch?.variants.map((variant, idx) => (
-                    <button
-                      key={variant.merchVariantId}
-                      onClick={() => setActiveIndex(idx)}
-                      className={`px-5 py-2.5 rounded-xl border-2 transition-all duration-300 text-sm font-semibold ${
-                        activeIndex === idx
-                          ? "bg-white/10 border-purple-500 text-white shadow-lg shadow-purple-500/20"
-                          : "bg-transparent border-white/5 text-white/40 hover:border-white/20 hover:text-white"
-                      }`}
-                    >
-                      {variant.color || variant.design}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Size Selection */}
-              {merch?.merchType === "CLOTHING" && (
-                <div className="space-y-4">
-                  <p className="text-[10px] font-bold text-white/40 uppercase ">
-                    Choose Size
-                  </p>
-                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                    {availableSizes.map((sizeItem) => {
-                      const isActive = selectedSize === sizeItem.size;
-                      const isOutOfStock = sizeItem.stockQuantity === 0;
-                      return (
-                        <button
-                          key={sizeItem.merchVariantItemId}
-                          disabled={isOutOfStock}
-                          onClick={() =>
-                            setSelectedSize(sizeItem.size as ClothingSizing)
-                          }
-                          className={`h-11 rounded-xl border-2 transition-all font-bold text-sm ${
-                            isActive
-                              ? "bg-white text-black border-white shadow-xl"
-                              : isOutOfStock
-                                ? "opacity-20 cursor-not-allowed border-white/5 line-through"
-                                : "bg-white/5 border-white/5 text-white hover:border-purple-400"
-                          }`}
-                        >
-                          {sizeItem.size}
-                        </button>
-                      );
-                    })}
+            {loading ? (
+              <>
+                {/* Skeleton Header */}
+                <div className="space-y-3">
+                  <div className="h-6 w-48 bg-white/10 rounded-full animate-pulse" />
+                  <div className="h-12 w-80 bg-white/10 rounded-lg animate-pulse" />
+                  <div className="flex items-center gap-4">
+                    <div className="h-8 w-24 bg-white/10 rounded animate-pulse" />
+                    <div className="h-6 w-20 bg-green-500/20 rounded animate-pulse" />
                   </div>
                 </div>
-              )}
 
-              {/* Quantity Selector */}
-              <div className="space-y-4">
-                <p className="text-[10px] font-bold text-white/40 uppercase">
-                  Quantity
-                </p>
-                <div className="flex items-center gap-6 bg-white/5 border border-white/10 w-fit rounded-2xl p-1.5">
+                <div className="h-[1px] bg-white/5 w-full" />
+
+                {/* Skeleton Controls */}
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="h-4 w-20 bg-white/10 rounded animate-pulse" />
+                    <div className="flex gap-2">
+                      <div className="h-10 w-20 bg-white/5 rounded-xl animate-pulse" />
+                      <div className="h-10 w-20 bg-white/5 rounded-xl animate-pulse" />
+                      <div className="h-10 w-20 bg-white/5 rounded-xl animate-pulse" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="h-4 w-16 bg-white/10 rounded animate-pulse" />
+                    <div className="grid grid-cols-5 gap-2">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-11 bg-white/5 rounded-xl animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="h-4 w-16 bg-white/10 rounded animate-pulse" />
+                    <div className="h-14 w-32 bg-white/5 rounded-2xl animate-pulse" />
+                  </div>
+                </div>
+
+                {/* Skeleton CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <div className="flex-[2] h-14 bg-yellow-400/50 rounded-2xl animate-pulse" />
+                  <div className="flex-1 h-14 bg-white/5 rounded-2xl animate-pulse" />
+                </div>
+              </>
+            ) : (
+              <>
+                <header className="space-y-3">
+                  <div className="inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/50 uppercase">
+                    CSPS Official • {merch?.merchType}
+                  </div>
+                  <h1 className="text-4xl xl:text-5xl font-bold text-white ">
+                    {merch?.merchName}
+                  </h1>
+                  <div className="flex items-center gap-4">
+                    <p className="text-3xl font-bold text-white">
+                      ₱{currentPrice.toFixed(2)}
+                    </p>
+                    <span
+                      className={`text-xs font-bold px-2 py-0.5 rounded border ${currentStock > 0 ? "border-green-500/20 text-green-400 bg-green-500/5" : "border-red-500/20 text-red-400 bg-red-500/5"}`}
+                    >
+                      {currentStock > 0
+                        ? `${currentStock} IN STOCK`
+                        : "OUT OF STOCK"}
+                    </span>
+                  </div>
+                </header>
+
+                <div className="h-[1px] bg-white/5 w-full" />
+
+                {/* Selection Controls */}
+                <div className="space-y-8">
+                  {/* Variant Style Selection */}
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-bold text-white/40 uppercase]">
+                      Select Style
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {merch?.variants.map((variant, idx) => (
+                        <button
+                          key={variant.merchVariantId}
+                          onClick={() => setActiveIndex(idx)}
+                          className={`px-5 py-2.5 rounded-xl border-2 transition-all duration-300 text-sm font-semibold ${
+                            activeIndex === idx
+                              ? "bg-white/10 border-purple-500 text-white shadow-lg shadow-purple-500/20"
+                              : "bg-transparent border-white/5 text-white/40 hover:border-white/20 hover:text-white"
+                          }`}
+                        >
+                          {variant.color || variant.design}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Size Selection */}
+                  {merch?.merchType === "CLOTHING" && (
+                    <div className="space-y-4">
+                      <p className="text-[10px] font-bold text-white/40 uppercase ">
+                        Choose Size
+                      </p>
+                      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+                        {availableSizes.map((sizeItem) => {
+                          const isActive = selectedSize === sizeItem.size;
+                          const isOutOfStock = sizeItem.stockQuantity === 0;
+                          return (
+                            <button
+                              key={sizeItem.merchVariantItemId}
+                              disabled={isOutOfStock}
+                              onClick={() =>
+                                setSelectedSize(sizeItem.size as ClothingSizing)
+                              }
+                              className={`h-11 rounded-xl border-2 transition-all font-bold text-sm ${
+                                isActive
+                                  ? "bg-white text-black border-white shadow-xl"
+                                  : isOutOfStock
+                                    ? "opacity-20 cursor-not-allowed border-white/5 line-through"
+                                    : "bg-white/5 border-white/5 text-white hover:border-purple-400"
+                              }`}
+                            >
+                              {sizeItem.size}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quantity Selector */}
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-bold text-white/40 uppercase">
+                      Quantity
+                    </p>
+                    <div className="flex items-center gap-6 bg-white/5 border border-white/10 w-fit rounded-2xl p-1.5">
+                      <button
+                        onClick={handleDecrement}
+                        className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="text"
+                        value={quantity}
+                        onChange={handleQuantityChange}
+                        className="w-8 text-center bg-transparent border-none outline-none font-bold text-lg"
+                      />
+                      <button
+                        onClick={handleIncrement}
+                        className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Group */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <button
-                    onClick={handleDecrement}
-                    className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                    onClick={handleBuyNow}
+                    disabled={
+                      !isValidForPurchase || currentStock === 0 || processingBuy
+                    }
+                    className="flex-[2] bg-[#FDE006] text-black font-bold py-5 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale"
                   >
-                    -
+                    {processingBuy ? "Processing..." : "Buy Now"}
                   </button>
-                  <input
-                    type="text"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    className="w-8 text-center bg-transparent border-none outline-none font-bold text-lg"
-                  />
                   <button
-                    onClick={handleIncrement}
-                    className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                    onClick={() =>
+                      handleAddToCart({
+                        merchVariantItemId: selectedMerchVariantItemId!,
+                        quantity,
+                      })
+                    }
+                    disabled={
+                      addingToCart || !isValidForPurchase || currentStock === 0
+                    }
+                    className="flex-1 bg-white/5 border border-white/10 backdrop-blur-xl text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale"
                   >
-                    +
+                    <BiSolidCartAdd className="text-2xl" />
+                    {addingToCart ? "Adding..." : "Add"}
                   </button>
                 </div>
-              </div>
-            </div>
-
-            {/* CTA Group */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button
-                onClick={handleBuyNow}
-                disabled={
-                  !isValidForPurchase || currentStock === 0 || processingBuy
-                }
-                className="flex-[2] bg-[#FDE006] text-black font-bold py-5 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale"
-              >
-                {processingBuy ? "Processing..." : "Buy Now"}
-              </button>
-              <button
-                onClick={() =>
-                  handleAddToCart({
-                    merchVariantItemId: selectedMerchVariantItemId!,
-                    quantity,
-                  })
-                }
-                disabled={
-                  addingToCart || !isValidForPurchase || currentStock === 0
-                }
-                className="flex-1 bg-white/5 border border-white/10 backdrop-blur-xl text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale"
-              >
-                <BiSolidCartAdd className="text-2xl" />
-                {addingToCart ? "Adding..." : "Add"}
-              </button>
-            </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -358,16 +424,6 @@ const Index = () => {
         size={selectedSize}
         isProcessing={processingBuy}
       />
-
-      {/* Loading Modal for initial fetch */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
-            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white font-medium text-lg">Loading product...</p>
-          </div>
-        </div>
-      )}
 
       {/* Loading Modal for adding to cart */}
       {addingToCart && (
