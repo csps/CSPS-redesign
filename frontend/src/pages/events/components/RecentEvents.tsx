@@ -33,7 +33,7 @@ const RecentEvents = () => {
   }, []);
 
   return (
-    <div>
+    <div className="mt-10">
       <EventDetailModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}

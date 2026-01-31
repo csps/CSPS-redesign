@@ -56,7 +56,7 @@ const MobileCarousel = ({ items, activeIndex, setActiveIndex }: Props) => {
             />
           ))}
         </div>
-        <span className="text-[10px] font-bold text-white/40 tracking-widest uppercase">
+        <span className="text-[10px] font-bold text-white/40 uppercase">
           {activeIndex + 1} / {items.length}
         </span>
       </div>

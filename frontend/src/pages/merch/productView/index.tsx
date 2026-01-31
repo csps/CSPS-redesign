@@ -204,10 +204,10 @@ const Index = () => {
           {/* Right: Interaction & Details */}
           <div className="flex-1 w-full flex flex-col gap-8">
             <header className="space-y-3">
-              <div className="inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/50 uppercase tracking-widest">
+              <div className="inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/50 uppercase">
                 CSPS Official • {merch.merchType}
               </div>
-              <h1 className="text-4xl xl:text-5xl font-bold text-white tracking-tight leading-tight">
+              <h1 className="text-4xl xl:text-5xl font-bold text-white ">
                 {merch.merchName}
               </h1>
               <div className="flex items-center gap-4">
@@ -230,7 +230,7 @@ const Index = () => {
             <div className="space-y-8">
               {/* Variant Style Selection */}
               <div className="space-y-4">
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold text-white/40 uppercase]">
                   Select Style
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -253,7 +253,7 @@ const Index = () => {
               {/* Size Selection */}
               {merch.merchType === "CLOTHING" && (
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">
+                  <p className="text-[10px] font-bold text-white/40 uppercase ">
                     Choose Size
                   </p>
                   <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
@@ -285,7 +285,7 @@ const Index = () => {
 
               {/* Quantity Selector */}
               <div className="space-y-4">
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">
+                <p className="text-[10px] font-bold text-white/40 uppercase">
                   Quantity
                 </p>
                 <div className="flex items-center gap-6 bg-white/5 border border-white/10 w-fit rounded-2xl p-1.5">

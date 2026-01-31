@@ -13,28 +13,27 @@ import type {
 import { OrderStatus } from "../../../enums/OrderStatus";
 import type { PaginationParams } from "../../../interfaces/pagination_params";
 import { FiSearch } from "react-icons/fi";
+import Layout from "../../../components/Layout";
 
 interface GroupedPurchaseItem {
   [orderId: number]: OrderResponse;
 }
 
-const index = () => {
+const Index = () => {
   const [items, setItems] = useState<OrderItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(2);
   const [paginationInfo, setPaginationInfo] =
     useState<PaginatedOrdersResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Reset page when status changes
   useEffect(() => {
     setCurrentPage(0);
   }, [selectedStatus]);
 
-  // Fetch purchases on component mount and when page or status changes
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,8 +43,6 @@ const index = () => {
             page: currentPage,
             size: pageSize,
           } as PaginationParams);
-
-          console.log("Fetched orders:", response);
           setItems(response.content.flatMap((order) => order.orderItems));
           setPaginationInfo(response);
         } else {
@@ -57,21 +54,17 @@ const index = () => {
         }
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch purchases:", err);
         setError("Failed to load purchases. Please try again later.");
         setItems([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [currentPage, pageSize, selectedStatus]);
 
-  // Group purchases by orderId and filter by search
   const filteredOrders = useMemo(() => {
     if (!Array.isArray(items)) return [];
-
     let filteredItems = items;
 
     if (searchQuery) {
@@ -102,89 +95,109 @@ const index = () => {
   }, [items, searchQuery]);
 
   return (
-    <>
-      <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
-        <div className="relative w-full max-w-[90rem] p-6 text-white">
-          <AuthenticatedNav />
+    <Layout>
+      <AuthenticatedNav />
 
-          <div className="mt-8">
-            {/* Filter Section */}
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6">
-              <PurchaseFilter
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
-              />
-              <div>
-                <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
-                  <input
-                    type="text"
-                    placeholder="Search by merch name, student name, or order item ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-white/40"
-                  />
-                </div>
-              </div>
-            </div>
+      {/* Responsive padding: px-4 for mobile, px-6 for desktop */}
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 py-6 sm:py-10 lg:py-16">
+        {/* Page Header - Centered on mobile */}
+        <header className="mb-8 sm:mb-12 text-center sm:text-left">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            My Purchases
+          </h1>
+          <p className="text-white/40 mt-2 font-medium uppercase tracking-[0.2em] text-[10px] sm:text-xs">
+            Transaction History
+          </p>
+        </header>
 
-            {/* Loading State */}
-            {loading && (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-              </div>
-            )}
+        {/* Filter & Search Bar - Responsive stacking */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 bg-white/5 border border-white/10 p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] backdrop-blur-md">
+          {/* PurchaseFilter should ideally be responsive internally, 
+              but here we ensure it doesn't break the parent layout */}
+          <div className="w-full lg:flex-1 overflow-x-auto no-scrollbar">
+            <PurchaseFilter
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
+            />
+          </div>
 
-            {/* Error State */}
-            {error && (
-              <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-6">
-                <p className="text-red-300">{error}</p>
-              </div>
-            )}
-
-            {/* Purchases Grouped by OrderId */}
-            {!loading && !error && Object.keys(filteredOrders).length === 0 && (
-              <div className="text-center py-20">
-                <p className="text-gray-400 text-lg">No purchases found</p>
-              </div>
-            )}
-
-            {!loading &&
-              !error &&
-              filteredOrders.map((purchase) => (
-                <div key={purchase.orderId} className="mb-8">
-                  <div className="px-4 mb-4 flex justify-between">
-                    <p className="text-lg font-semibold text-gray-300">
-                      Order #{purchase.orderId}
-                    </p>
-                    <p></p>
-                  </div>
-                  <div className="px-4 space-y-5">
-                    <PurchaseCard purchase={purchase} />
-                  </div>
-                </div>
-              ))}
-
-            {/* Pagination Controls */}
-            {!loading &&
-              !error &&
-              paginationInfo &&
-              paginationInfo.totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={paginationInfo.totalPages}
-                  pageNumber={paginationInfo.number}
-                  first={paginationInfo.first}
-                  last={paginationInfo.last}
-                  onPageChange={setCurrentPage}
-                />
-              )}
+          <div className="relative w-full lg:max-w-md">
+            <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/30" />
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 bg-black/20 border border-white/5 rounded-xl sm:rounded-2xl text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all text-sm font-medium"
+            />
           </div>
         </div>
+
+        {/* States Section */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-24 sm:py-32 space-y-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+            <p className="text-white/40 font-bold uppercase tracking-widest text-[10px]">
+              Loading Records
+            </p>
+          </div>
+        ) : error ? (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl sm:rounded-[2rem] p-6 sm:p-8 text-center">
+            <p className="text-red-400 text-sm sm:font-medium">{error}</p>
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="bg-[#242050]/50 border border-white/5 rounded-2xl sm:rounded-[3rem] py-24 sm:py-32 text-center">
+            <p className="text-white/20 text-lg sm:text-xl font-bold italic px-4">
+              No records found.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-8 sm:space-y-12">
+            {filteredOrders.map((purchase) => (
+              <section key={purchase.orderId} className="group">
+                {/* Responsive Header: Stacks price and ID on mobile if needed */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between px-2 mb-4 gap-2">
+                  <div className="flex items-center gap-3">
+    
+                    <div className="h-[1px] flex-1 min-w-[20px] bg-white/5 sm:hidden" />
+                  </div>
+
+                  <div className="hidden sm:block h-[1px] flex-1 mx-6 bg-white/5" />
+
+                  <p className="text-white/60 text-xs sm:text-sm font-semibold">
+                    Total:{" "}
+                    <span className="text-white font-bold">
+                      ₱{purchase.totalPrice.toFixed(2)}
+                    </span>
+                  </p>
+                </div>
+
+                <PurchaseCard purchase={purchase} />
+              </section>
+            ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!loading &&
+          !error &&
+          paginationInfo &&
+          paginationInfo.totalPages > 1 && (
+            <div className="mt-12 sm:mt-16 flex justify-center scale-90 sm:scale-100">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={paginationInfo.totalPages}
+                pageNumber={paginationInfo.number}
+                first={paginationInfo.first}
+                last={paginationInfo.last}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
       </div>
       <Footer />
-    </>
+    </Layout>
   );
 };
 
-export default index;
+export default Index;

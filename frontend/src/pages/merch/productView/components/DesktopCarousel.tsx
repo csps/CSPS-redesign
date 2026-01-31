@@ -86,7 +86,7 @@ const DesktopCarousel = ({
               <div
                 className={`mt-3 text-center transition-opacity duration-500 ${isActive ? "opacity-100" : "opacity-0"}`}
               >
-                <p className="text-[10px] font-bold text-purple-400 uppercase tracking-widest">
+                <p className="text-[10px] font-bold text-purple-400 uppercase">
                   {merchVariants[index]?.color || "Select"}
                 </p>
               </div>

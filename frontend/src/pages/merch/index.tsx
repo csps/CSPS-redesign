@@ -52,7 +52,7 @@ const Index = () => {
         {/* Header Section mimicking the "Popular products" style */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <h2 className="text-[2rem] font-bold text-white tracking-tight">
-            Popular products
+            CSPS Products
           </h2>
 
           <div className="flex flex-wrap gap-3">
