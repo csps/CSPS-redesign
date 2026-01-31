@@ -1,11 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import StudentTable from "./components/StudentTable";
-import AddStudentModal from "./components/AddStudentModal";
+import StudentTable from "../merch/components/StudentTable";
+import AddStudentModal from "../merch/components/AddStudentModal";
+import { getStudents } from "../../../api/student";
+import type { StudentResponse } from "../../../interfaces/student/StudentResponse";
 
 const StudentsPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [students, setStudents] = useState<StudentResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const fetchStudents = async (page: number) => {
+    setLoading(true);
+    try {
+      const response = await getStudents({ page: page - 1, size: 7 });
+      console.log("Fetched students:", response);
+
+      setStudents(response.content);
+      setTotalPages(response.totalPages);
+      setTotalElements(response.totalElements);
+    } catch (error) {
+      console.error("Failed to fetch students:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents(1);
+  }, []);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchStudents(page);
+  };
 
   const handleExportCSV = () => {
     console.log("Exporting CSV...");
@@ -42,7 +74,17 @@ const StudentsPage = () => {
 
         {/* Table Component */}
         <div className="w-full">
-          <StudentTable />
+          {loading ? (
+            <div className="text-white">Loading students...</div>
+          ) : (
+            <StudentTable
+              students={students}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalElements={totalElements}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </div>
 

@@ -25,7 +25,7 @@ import AdminProductsPage from "../pages/admin/products";
 import AdminSalesPage from "../pages/admin/sales";
 
 import AdminForumPage from "../pages/admin/forum";
-import AdminMerchPage from "../pages/admin/merch";
+import AdminMerchPage from "../pages/admin/student";
 import AdminMercheOrdersPage from "../pages/admin/merch/orders";
 
 import NotFoundPage from "../pages/notFound";
@@ -89,7 +89,7 @@ const routers = [
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
       { path: "/admin/sales", element: <AdminSalesPage /> },
       { path: "/admin/forum", element: <AdminForumPage /> },
-      { path: "/admin/merch", element: <AdminMerchPage /> },
+      { path: "/admin/students", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
       { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
     ],

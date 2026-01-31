@@ -4,7 +4,11 @@ import Footer from "../../../../components/Footer";
 import StatusCard from "./components/StatusCard";
 import { PurchaseFilter } from "../../../merch/transactions/components/PurchaseFilter";
 import Pagination from "../../../merch/transactions/components/Pagination";
-import { getOrders, getOrderItemByStatus } from "../../../../api/order";
+import {
+  getOrders,
+  getOrderItemByStatus,
+  getOrdersByDate,
+} from "../../../../api/order";
 import type {
   OrderResponse,
   PaginatedOrdersResponse,
@@ -20,7 +24,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(1);
+  const [pageSize] = useState(3);
   const [paginationInfo, setPaginationInfo] =
     useState<PaginatedOrdersResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -36,7 +40,7 @@ const Index = () => {
       try {
         setLoading(true);
         if (selectedStatus === "All") {
-          const response = await getOrders({
+          const response = await getOrdersByDate({
             page: currentPage,
             size: pageSize,
           } as PaginationParams);
@@ -151,13 +155,8 @@ const Index = () => {
             {!loading &&
               !error &&
               filteredOrders.map((order) => (
-                <div key={order.orderId} className="mb-8">
-                  <div className="px-4 mb-4 flex justify-between">
-                    <p className="text-lg font-semibold text-gray-300">
-                      Order #{order.orderId}
-                    </p>
-                    <p></p>
-                  </div>
+                <div key={order.orderId}>
+                  <div className="px-4 mb-4 flex justify-between"></div>
                   <div className="px-4 space-y-5">
                     {order.orderItems.map((item) => (
                       <StatusCard key={item.orderItemId} orderItem={item} />

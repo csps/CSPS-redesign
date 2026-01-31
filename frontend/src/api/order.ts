@@ -164,8 +164,12 @@ export const getOrderItemById = async (
   id: number,
 ): Promise<OrderItemResponse> => {
   try {
-    const response = await api.get<OrderItemResponse>(`${ORDER_ITEMS}/${id}`);
-    return response.data;
+    const response = await api.get<{ data: OrderItemResponse }>(
+      `${ORDER_ITEMS}/${id}`,
+    );
+
+    console.log(`RESPONSE API: ${response.data}`);
+    return response.data.data;
   } catch (err) {
     console.error(`Error fetching order item ${id}:`, err);
     throw err;
@@ -249,6 +253,35 @@ export const deleteOrderItem = async (id: number): Promise<void> => {
     await api.delete(`${ORDER_ITEMS}/${id}`);
   } catch (err) {
     console.error(`Error deleting order item ${id}:`, err);
+    throw err;
+  }
+};
+
+export const getOrdersByDate = async (
+  paginationParams?: PaginationParams,
+): Promise<PaginatedOrdersResponse> => {
+  try {
+    const params = new URLSearchParams();
+
+    if (paginationParams) {
+      if (paginationParams.page !== undefined) {
+        params.append("page", paginationParams.page.toString());
+      }
+      if (paginationParams.size !== undefined) {
+        params.append("size", paginationParams.size.toString());
+      }
+    }
+
+    const url = params.toString()
+      ? `${ORDERS}/sorted-by-date?${params.toString()}`
+      : ORDERS;
+
+    const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
+
+    console.log("getOrdersByDate:", response);
+    return response.data.data;
+  } catch (err) {
+    console.error("Error fetching orders:", err);
     throw err;
   }
 };

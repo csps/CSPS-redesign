@@ -50,11 +50,11 @@ const RecentEvents = () => {
         modules={[Pagination]}
       >
         {loading ? (
-          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200 rounded-lg flex items-center justify-center">
+          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60flex items-center justify-center">
             <p className="text-gray-400">Loading...</p>
           </SwiperSlide>
         ) : events.length === 0 ? (
-          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60 bg-[#0F033C] border border-gray-200 rounded-lg flex items-center justify-center">
+          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60flex items-center justify-center">
             <p className="text-gray-400">No recent events</p>
           </SwiperSlide>
         ) : (
