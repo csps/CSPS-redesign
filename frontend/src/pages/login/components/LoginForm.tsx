@@ -10,16 +10,44 @@ const LoginForm = () => {
   const [studentId, setStudentId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{
+    studentId?: string;
+    password?: string;
+  }>({});
 
   const navigate = useNavigate();
 
+  const validateForm = (): boolean => {
+    const newErrors: { studentId?: string; password?: string } = {};
+
+    if (!studentId.trim()) {
+      newErrors.studentId = "Student ID is required";
+    } else if (studentId.length < 3) {
+      newErrors.studentId = "Student ID must be at least 3 characters";
+    }
+
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const authRequest: AuthRequest = {
-        studentId,
+        studentId: studentId.trim(),
         password,
       };
 
@@ -38,15 +66,67 @@ const LoginForm = () => {
       if (user.role === "ADMIN") destination = "/admin/dashboard";
       else destination = "/dashboard";
 
-      toast.success("Login successful");
+      toast.success("Login successful! Welcome back!");
       navigate(destination);
     } catch (error: any) {
       console.error("Login failed:", error);
 
-      if (error?.response?.status === 401) {
-        toast.error("Invalid credentials. Please check your ID and password.");
+      // Handle different error scenarios with specific messages
+      if (
+        error?.response?.status === 401 ||
+        error?.response?.data?.status === "UNAUTHORIZED"
+      ) {
+        const errorMessage =
+          error?.response?.data?.message?.toLowerCase() || "";
+
+        if (
+          errorMessage.includes("invalid") ||
+          errorMessage.includes("wrong")
+        ) {
+          toast.error(
+            "Invalid student ID or password. Please check your credentials and try again.",
+          );
+        } else if (
+          errorMessage.includes("not found") ||
+          errorMessage.includes("exist")
+        ) {
+          toast.error(
+            "Student ID not found. Please check your ID number or contact support.",
+          );
+        } else if (
+          errorMessage.includes("disabled") ||
+          errorMessage.includes("inactive")
+        ) {
+          toast.error(
+            "Your account has been deactivated. Please contact an administrator.",
+          );
+        } else if (errorMessage.includes("credentials")) {
+          toast.error(
+            "Invalid credentials. Please check your student ID and password.",
+          );
+        } else {
+          toast.error(
+            "Login failed. Please check your credentials and try again.",
+          );
+        }
+      } else if (error?.response?.status === 400) {
+        toast.error("Please enter both student ID and password.");
+      } else if (error?.response?.status === 429) {
+        toast.error(
+          "Too many login attempts. Please wait a few minutes before trying again.",
+        );
+      } else if (error?.response?.status >= 500) {
+        toast.error(
+          "Server error. Please try again later or contact support if the problem persists.",
+        );
+      } else if (error?.code === "NETWORK_ERROR" || !error?.response) {
+        toast.error(
+          "Network error. Please check your internet connection and try again.",
+        );
       } else {
-        toast.error("Login failed. Please try again later.");
+        toast.error(
+          "Login failed. Please try again or contact support if the problem continues.",
+        );
       }
     } finally {
       setIsLoading(false);
@@ -67,11 +147,21 @@ const LoginForm = () => {
         <input
           type="text"
           id="idNumber"
-          className="w-full bg-purple-700/40 rounded-2xl  py-3 sm:py-4  px-10  text-white  placeholder-purple-300/80  focus:outline-none  focus:bg-purple-700/50  transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border border-black  font-bold text-base sm:text-lg lg:text-xl"
+          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
+            errors.studentId ? "border-red-500 bg-red-700/40" : "border-black"
+          }`}
           placeholder="ID Number"
           value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
+          onChange={(e) => {
+            setStudentId(e.target.value);
+            if (errors.studentId) {
+              setErrors((prev) => ({ ...prev, studentId: undefined }));
+            }
+          }}
         />
+        {errors.studentId && (
+          <p className="text-red-400 text-sm mt-1 ml-3">{errors.studentId}</p>
+        )}
       </div>
       <div className="w-full relative">
         <label htmlFor="password" className="absolute top-5 left-3">
@@ -80,11 +170,21 @@ const LoginForm = () => {
         <input
           type="password"
           id="password"
-          className="w-full bg-purple-700/40 rounded-2xl  py-3 sm:py-4 px-10  text-white  placeholder-purple-300/80  focus:outline-none  focus:bg-purple-700/50  transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border border-black font-bold text-base sm:text-lg lg:text-xl"
+          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
+            errors.password ? "border-red-500 bg-red-700/40" : "border-black"
+          }`}
           placeholder="Password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (errors.password) {
+              setErrors((prev) => ({ ...prev, password: undefined }));
+            }
+          }}
         />
+        {errors.password && (
+          <p className="text-red-400 text-sm mt-1 ml-3">{errors.password}</p>
+        )}
       </div>
       <div className="flex justify-between items-center px-2 sm:px-5 m5-6 sm:mt-10 mb-6 sm:mb-10">
         <Link
