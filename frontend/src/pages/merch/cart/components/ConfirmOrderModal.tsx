@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import type { OrderPostRequest } from "../../../../interfaces/order/OrderRequest";
-import { FaShieldAlt } from "react-icons/fa";
 
 interface ConfirmOrderModalProps {
   open: boolean;

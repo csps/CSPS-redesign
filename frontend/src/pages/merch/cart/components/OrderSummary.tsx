@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaCheck, FaLock } from "react-icons/fa";
 import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
 import { MerchType } from "../../../../enums/MerchType";
 import type {

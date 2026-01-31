@@ -5,7 +5,6 @@ import StatusCard from "./components/StatusCard";
 import { PurchaseFilter } from "../../../merch/transactions/components/PurchaseFilter";
 import Pagination from "../../../merch/transactions/components/Pagination";
 import {
-  getOrders,
   getOrderItemByStatus,
   getOrdersByDate,
 } from "../../../../api/order";

@@ -6,7 +6,6 @@ import { S3_BASE_URL } from "../../../constant";
 const Activities = () => {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {

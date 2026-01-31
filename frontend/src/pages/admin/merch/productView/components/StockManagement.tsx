@@ -145,14 +145,18 @@ const StockManagement: React.FC<StockManagementProps> = ({
               >
                 {/* Size/Item Label */}
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-purple-300">
-                      {item.size ? item.size.substring(0, 2) : "•"}
-                    </span>
-                  </div>
-                  <span className="font-medium text-white truncate">
-                    {item.size || `Item ${item.merchVariantItemId}`}
-                  </span>
+                  {item.size && (
+                    <>
+                      <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-purple-300">
+                          {item.size ? item.size.substring(0, 2) : "•"}
+                        </span>
+                      </div>
+                      <span className="font-medium text-white truncate">
+                        {item.size || `Item ${item.merchVariantItemId}`}
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* Stock and Price Section */}

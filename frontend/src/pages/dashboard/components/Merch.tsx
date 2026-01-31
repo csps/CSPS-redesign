@@ -10,7 +10,6 @@ import SAMPLE from "../../../assets/image 8.png";
 const Merch = () => {
   const [merchandise, setMerchandise] = useState<MerchSummaryResponse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const fetchMerchandise = async () => {

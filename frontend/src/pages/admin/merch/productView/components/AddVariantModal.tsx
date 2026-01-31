@@ -57,6 +57,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Helper handlers remained functionally identical to ensure logic stability
   const handleClothingColorChange = (value: string) => {
     setClothingVariant({ ...clothingVariant, color: value });
   };
@@ -70,7 +71,6 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   const handleClothingImageUpload = (_imageIndex: number, file: File) => {
     setClothingVariant({ ...clothingVariant, imageFile: file });
-
     const reader = new FileReader();
     reader.onload = (event) => {
       setClothingVariant((prev) => ({
@@ -123,7 +123,6 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   const handleNonClothingImageUpload = (_imageIndex: number, file: File) => {
     setNonClothingVariant({ ...nonClothingVariant, imageFile: file });
-
     const reader = new FileReader();
     reader.onload = (event) => {
       setNonClothingVariant((prev) => ({
@@ -147,12 +146,10 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
         toast.error("Please enter a color");
         return;
       }
-
       if (!clothingVariant.imageFile) {
         toast.error("Please upload an image");
         return;
       }
-
       if (clothingVariant.price === "" || clothingVariant.price <= 0) {
         toast.error("Please enter a valid price");
         return;
@@ -176,7 +173,6 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
       }
 
       setIsSubmitting(true);
-
       try {
         const data = {
           color: clothingVariant.color,
@@ -187,12 +183,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           })),
           imageFile: clothingVariant.imageFile!,
         };
-
-        console.log("Submitting clothing variant:", data);
-
         await onConfirm(data);
-
-        // Reset form
         setClothingVariant({
           color: "",
           price: "",
@@ -208,43 +199,33 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           })),
         });
       } catch (err) {
-        console.error("Error adding variant:", err);
-        // Error toast is handled in onConfirm
-        // Reset image on error to allow re-upload
         setClothingVariant((prev) => ({
           ...prev,
           imageFile: null,
           imagePreview: "",
-          imageThumbnails: [],
-          thumbnailFiles: [],
         }));
       } finally {
         setIsSubmitting(false);
       }
     } else {
-      // NON_CLOTHING
       if (!nonClothingVariant.design.trim()) {
         toast.error("Please enter a design name");
         return;
       }
-
       if (!nonClothingVariant.imageFile) {
         toast.error("Please upload an image");
         return;
       }
-
       if (nonClothingVariant.price === "" || nonClothingVariant.price <= 0) {
         toast.error("Please enter a valid price");
         return;
       }
-
       if (nonClothingVariant.stock === "" || nonClothingVariant.stock <= 0) {
         toast.error("Please enter a valid stock quantity");
         return;
       }
 
       setIsSubmitting(true);
-
       try {
         const data = {
           design: nonClothingVariant.design,
@@ -256,10 +237,7 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           ],
           imageFile: nonClothingVariant.imageFile!,
         };
-
         await onConfirm(data);
-
-        // Reset form
         setNonClothingVariant({
           design: "",
           price: "",
@@ -270,9 +248,6 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
           stock: "",
         });
       } catch (err) {
-        console.error("Error adding variant:", err);
-        // Error toast is handled in onConfirm
-        // Reset image on error to allow re-upload
         setNonClothingVariant((prev) => ({
           ...prev,
           imageFile: null,
@@ -288,66 +263,70 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
 
   if (isAddingVariant)
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-[#242050] border border-purple-500/20 rounded-lg p-8 text-center">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-lg flex items-center justify-center z-50">
+        <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p className="text-purple-200 text-lg">Adding variant...</p>
+          <p className="text-white font-medium text-lg">Adding variant...</p>
         </div>
       </div>
     );
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#242050] rounded-2xl border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-[#242050] rounded-3xl border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl custom-scrollbar">
         {/* Header */}
-        <div className="flex justify-between items-start mb-6">
-          <h2 className="text-2xl font-bold text-white">Add New Variant</h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold text-white uppercase tracking-tight">
+            Add New Variant
+          </h2>
           <button
             onClick={onClose}
-            className="text-white/40 hover:text-white/60 transition"
+            className="w-8 h-8 flex items-center justify-center bg-white/5 hover:bg-white/10 text-white rounded-full transition-all"
             aria-label="Close"
           >
             ✕
           </button>
         </div>
 
-        {/* Render appropriate variant card based on merchandise type */}
-        {merchType === "CLOTHING" ? (
-          <ClothingVariantCard
-            variant={clothingVariant}
-            variantIndex={0}
-            onColorChange={handleClothingColorChange}
-            onPriceChange={handleClothingPriceChange}
-            onImageUpload={handleClothingImageUpload}
-            onSizeCheckChange={handleClothingSizeCheckChange}
-            onStockQuantityChange={handleClothingStockQuantityChange}
-            onPriceChangeForSize={handleClothingPriceChangeForSize}
-            onDelete={() => {}}
-          />
-        ) : (
-          <NonClothingVariantCard
-            variant={nonClothingVariant}
-            variantIndex={0}
-            onDesignChange={handleNonClothingDesignChange}
-            onPriceChange={handleNonClothingPriceChange}
-            onImageUpload={handleNonClothingImageUpload}
-            onStockChange={handleNonClothingStockChange}
-            onDelete={() => {}}
-          />
-        )}
+        {/* Form Content */}
+        <div className="space-y-6">
+          {merchType === "CLOTHING" ? (
+            <ClothingVariantCard
+              variant={clothingVariant}
+              variantIndex={0}
+              onColorChange={handleClothingColorChange}
+              onPriceChange={handleClothingPriceChange}
+              onImageUpload={handleClothingImageUpload}
+              onSizeCheckChange={handleClothingSizeCheckChange}
+              onStockQuantityChange={handleClothingStockQuantityChange}
+              onPriceChangeForSize={handleClothingPriceChangeForSize}
+              onDelete={() => {}}
+            />
+          ) : (
+            <NonClothingVariantCard
+              variant={nonClothingVariant}
+              variantIndex={0}
+              onDesignChange={handleNonClothingDesignChange}
+              onPriceChange={handleNonClothingPriceChange}
+              onImageUpload={handleNonClothingImageUpload}
+              onStockChange={handleNonClothingStockChange}
+              onDelete={() => {}}
+            />
+          )}
+        </div>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-8">
+        <div className="flex flex-col sm:flex-row gap-4 mt-10">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold transition-colors border border-white/10"
+            className="flex-1 px-7 py-4 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold transition-all border border-white/10"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-3 bg-[#341677] hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-7 py-4 bg-[#FDE006] hover:brightness-110 text-black rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#FDE006]/10"
           >
             {isSubmitting ? "Adding..." : "Add Variant"}
           </button>
