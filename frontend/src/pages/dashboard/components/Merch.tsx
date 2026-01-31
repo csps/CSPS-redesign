@@ -14,12 +14,10 @@ const Merch = () => {
 
   const fetchMerchandise = async () => {
     setLoading(true);
-    setError(null);
     try {
       const merchData = await getAllMerchWithoutVariants();
       setMerchandise(merchData);
     } catch (err: any) {
-      setError(err?.message || "Failed to load merchandise.");
     } finally {
       setLoading(false);
     }

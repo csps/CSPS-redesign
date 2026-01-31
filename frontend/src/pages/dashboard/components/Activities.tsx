@@ -10,12 +10,10 @@ const Activities = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true);
-      setError(null);
       try {
         const eventsData = await getAllEvents();
         setEvents(eventsData);
       } catch (err: any) {
-        setError(err?.message || "Failed to load events.");
       } finally {
         setLoading(false);
       }
