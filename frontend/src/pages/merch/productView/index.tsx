@@ -15,7 +15,6 @@ import { addCartItem } from "../../../api/cart";
 import BuyNowModal from "./components/BuyNowModal";
 import { toast } from "sonner";
 import NotFoundPage from "../../notFound";
-import LoadingPage from "../../loading";
 import { S3_BASE_URL } from "../../../constant";
 
 const Index = () => {
