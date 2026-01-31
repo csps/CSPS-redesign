@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import SAMPLE from "../../../assets/image 8.png";
 import { BiSolidCartAdd } from "react-icons/bi";
 import Layout from "../../../components/Layout";
 import DesktopCarousel from "./components/DesktopCarousel";
