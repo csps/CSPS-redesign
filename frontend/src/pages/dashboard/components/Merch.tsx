@@ -47,7 +47,12 @@ const Merch = () => {
       </div>
 
       <div className="w-full">
-        {merchandise.length > 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-[450px]">
+            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
+            <p className="text-white font-medium">Loading merchandise...</p>
+          </div>
+        ) : merchandise.length > 0 ? (
           <Swiper
             slidesPerView="auto"
             spaceBetween={24}
@@ -118,22 +123,12 @@ const Merch = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-        ) : !loading ? (
+        ) : (
           <div className="flex flex-col items-center justify-center h-[450px] text-white/60">
             <p className="text-lg font-medium">No merchandise available</p>
           </div>
-        ) : null}
+        )}
       </div>
-
-      {/* Loading Modal */}
-      {loading && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
-            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white font-medium text-lg">Loading merchandise...</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
