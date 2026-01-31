@@ -11,6 +11,7 @@ const Index = () => {
   const [items, setItems] = useState<CartItemResponse[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const location = useLocation();
 
@@ -22,8 +23,12 @@ const Index = () => {
     }
   }, [location.state]);
 
-  const fetchCart = async () => {
-    setLoading(true);
+  const fetchCart = async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     try {
       const getCartResponse = await getCart();
       setItems(getCartResponse.items);
@@ -31,6 +36,7 @@ const Index = () => {
       console.error(err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -76,32 +82,37 @@ const Index = () => {
         <div className="flex flex-col lg:flex-row gap-12 items-start">
           {/* LEFT: Product List Area */}
           <div className="w-full lg:flex-[2] space-y-4">
-            {items.length > 0
-              ? items.map((item) => (
-                  <div
-                    key={item.merchVariantItemId}
-                    className="transition-all duration-300"
-                  >
-                    <ProductCard
-                      cartItem={item}
-                      isSelected={selectedIds.has(item.merchVariantItemId)}
-                      onToggle={() => toggleSelect(item.merchVariantItemId)}
-                    />
-                  </div>
-                ))
-              : !loading && (
-                  <div className="bg-[#242050]/50 border border-white/5 rounded-[2rem] py-24 flex flex-col items-center justify-center text-center">
-                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                      <span className="text-4xl">🛒</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white">
-                      Your cart is empty
-                    </h3>
-                    <p className="text-white/40 mt-2">
-                      Looks like you haven't added anything yet.
-                    </p>
-                  </div>
-                )}
+            {loading ? (
+              <div className="bg-[#242050]/50 border border-white/5 rounded-[2rem] py-24 flex flex-col items-center justify-center text-center">
+                <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
+                <p className="text-white font-medium">Loading your cart...</p>
+              </div>
+            ) : items.length > 0 ? (
+              items.map((item) => (
+                <div
+                  key={item.merchVariantItemId}
+                  className="transition-all duration-300"
+                >
+                  <ProductCard
+                    cartItem={item}
+                    isSelected={selectedIds.has(item.merchVariantItemId)}
+                    onToggle={() => toggleSelect(item.merchVariantItemId)}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="bg-[#242050]/50 border border-white/5 rounded-[2rem] py-24 flex flex-col items-center justify-center text-center">
+                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6">
+                  <span className="text-4xl">🛒</span>
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  Your cart is empty
+                </h3>
+                <p className="text-white/40 mt-2">
+                  Looks like you haven't added anything yet.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* RIGHT: Order Summary Sidebar (Sticky) */}
@@ -110,14 +121,23 @@ const Index = () => {
               items={selectedItems}
               totalPrice={totalSelectedPrice}
               onOrderSuccess={() => {
-                fetchCart();
+                fetchCart(true);
                 setSelectedIds(new Set());
               }}
             />
-
           </aside>
         </div>
       </div>
+
+      {/* Refreshing Modal */}
+      {refreshing && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white font-medium text-lg">Refreshing cart...</p>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

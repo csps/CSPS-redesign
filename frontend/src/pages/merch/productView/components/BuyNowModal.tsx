@@ -11,6 +11,7 @@ type Props = {
   design?: string;
   quantity: number;
   size?: ClothingSizing | null;
+  isProcessing?: boolean;
 };
 
 const BuyNowModal: React.FC<Props> = ({
@@ -21,6 +22,7 @@ const BuyNowModal: React.FC<Props> = ({
   design,
   quantity,
   size,
+  isProcessing = false,
 }) => {
   return (
     <AnimatePresence>
@@ -59,7 +61,8 @@ const BuyNowModal: React.FC<Props> = ({
             <div className="mt-6 flex gap-3 justify-end">
               <button
                 onClick={onClose}
-                className="px-4 py-2 rounded-full border border-white/10 text-white/80 hover:bg-white/5 cursor-pointer"
+                disabled={isProcessing}
+                className="px-4 py-2 rounded-full border border-white/10 text-white/80 hover:bg-white/5 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -68,9 +71,10 @@ const BuyNowModal: React.FC<Props> = ({
                 onClick={async () => {
                   await onConfirm();
                 }}
-                className="px-4 py-2 rounded-full bg-[#FDE006] text-black font-semibold hover:bg-[#e6cc05] cursor-pointer"
+                disabled={isProcessing}
+                className="px-4 py-2 rounded-full bg-[#FDE006] text-black font-semibold hover:bg-[#e6cc05] cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               >
-                Confirm Purchase
+                {isProcessing ? "Processing..." : "Confirm Purchase"}
               </button>
             </div>
           </motion.div>

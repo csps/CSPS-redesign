@@ -26,6 +26,8 @@ const Index = () => {
   const [merch, setMerch] = useState<MerchDetailedResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [isNotFound, setIsNotFound] = useState(false);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [processingBuy, setProcessingBuy] = useState(false);
 
   // Selection state
   const [activeIndex, setActiveIndex] = useState(0);
@@ -106,6 +108,7 @@ const Index = () => {
     cartItem: CartItemRequest,
   ): Promise<CartItemResponse | null> => {
     if (!cartItem) return null;
+    setAddingToCart(true);
     try {
       const response = await addCartItem(cartItem);
       toast.success("Added to cart! 🛒");
@@ -113,6 +116,8 @@ const Index = () => {
     } catch (err: any) {
       toast.error(err.message || "Something went wrong");
       return null;
+    } finally {
+      setAddingToCart(false);
     }
   };
 
@@ -130,6 +135,7 @@ const Index = () => {
 
   const handleConfirmBuy = async () => {
     if (!selectedMerchVariantItemId) return;
+    setProcessingBuy(true);
     try {
       await handleAddToCart({
         merchVariantItemId: selectedMerchVariantItemId,
@@ -139,6 +145,8 @@ const Index = () => {
       navigate("/merch/cart", { state: { selectedMerchVariantItemId } });
     } catch (err) {
       console.error(err);
+    } finally {
+      setProcessingBuy(false);
     }
   };
 
@@ -155,7 +163,6 @@ const Index = () => {
     };
   };
 
-  if (loading || !merch) return <LoadingPage />;
   if (isNotFound) return <NotFoundPage />;
 
   return (
@@ -168,7 +175,7 @@ const Index = () => {
           <div className="hidden lg:block shrink-0">
             <DesktopCarousel
               items={merchVariantIds}
-              merchVariants={merch.variants}
+              merchVariants={merch?.variants || []}
               activeIndex={activeIndex}
               setActiveIndex={setActiveIndex}
               getSlidePosition={getSlidePosition}
@@ -205,10 +212,10 @@ const Index = () => {
           <div className="flex-1 w-full flex flex-col gap-8">
             <header className="space-y-3">
               <div className="inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-white/50 uppercase">
-                CSPS Official • {merch.merchType}
+                CSPS Official • {merch?.merchType}
               </div>
               <h1 className="text-4xl xl:text-5xl font-bold text-white ">
-                {merch.merchName}
+                {merch?.merchName}
               </h1>
               <div className="flex items-center gap-4">
                 <p className="text-3xl font-bold text-white">
@@ -234,7 +241,7 @@ const Index = () => {
                   Select Style
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {merch.variants.map((variant, idx) => (
+                  {merch?.variants.map((variant, idx) => (
                     <button
                       key={variant.merchVariantId}
                       onClick={() => setActiveIndex(idx)}
@@ -251,7 +258,7 @@ const Index = () => {
               </div>
 
               {/* Size Selection */}
-              {merch.merchType === "CLOTHING" && (
+              {merch?.merchType === "CLOTHING" && (
                 <div className="space-y-4">
                   <p className="text-[10px] font-bold text-white/40 uppercase ">
                     Choose Size
@@ -315,10 +322,12 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
                 onClick={handleBuyNow}
-                disabled={!isValidForPurchase || currentStock === 0}
+                disabled={
+                  !isValidForPurchase || currentStock === 0 || processingBuy
+                }
                 className="flex-[2] bg-[#FDE006] text-black font-bold py-5 rounded-2xl hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale"
               >
-                Buy Now
+                {processingBuy ? "Processing..." : "Buy Now"}
               </button>
               <button
                 onClick={() =>
@@ -327,10 +336,13 @@ const Index = () => {
                     quantity,
                   })
                 }
-                className="flex-1 bg-white/5 border border-white/10 backdrop-blur-xl text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-[0.98]"
+                disabled={
+                  addingToCart || !isValidForPurchase || currentStock === 0
+                }
+                className="flex-1 bg-white/5 border border-white/10 backdrop-blur-xl text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/10 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale"
               >
                 <BiSolidCartAdd className="text-2xl" />
-                Add
+                {addingToCart ? "Adding..." : "Add"}
               </button>
             </div>
           </div>
@@ -341,11 +353,44 @@ const Index = () => {
         open={showBuyModal}
         onClose={() => setShowBuyModal(false)}
         onConfirm={handleConfirmBuy}
-        merchName={merch.merchName}
+        merchName={merch?.merchName || ""}
         design={design}
         quantity={quantity}
         size={selectedSize}
+        isProcessing={processingBuy}
       />
+
+      {/* Loading Modal for initial fetch */}
+      {loading && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white font-medium text-lg">Loading product...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Modal for adding to cart */}
+      {addingToCart && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white font-medium text-lg">Adding to cart...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Modal for buy now processing */}
+      {processingBuy && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
+            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-white font-medium text-lg">
+              Processing purchase...
+            </p>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
