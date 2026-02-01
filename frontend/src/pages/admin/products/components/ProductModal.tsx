@@ -101,7 +101,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-6 right-6 text-white/60 hover:text-white transition cursor-pointer"
+          className="absolute top-3 right-3 text-white/60 hover:text-white transition cursor-pointer"
           aria-label="Close modal"
         >
           <FaTimes size={24} />

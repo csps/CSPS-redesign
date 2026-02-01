@@ -4,11 +4,11 @@ import type { StudentResponse } from "../../../interfaces/student/StudentRespons
 
 const Hero = () => {
   // get student info from auth store
-  const student = useAuthStore((state) => state.user as StudentResponse).user;
+  const student = useAuthStore((state) => state.user as StudentResponse);
 
-  const fullName = `${student.firstName} ${
-    student.middleName ? `${student.middleName.charAt(0)}.` : ""
-  } ${student.lastName}`;
+  const fullName = `${student?.user.firstName} ${
+    student?.user.middleName ? `${student.user.middleName.charAt(0)}.` : ""
+  } ${student?.user.lastName}`;
 
   return (
     <div className="w-full flex flex-col md:flex-row items-center md:items-start">

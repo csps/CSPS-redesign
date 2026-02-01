@@ -18,7 +18,6 @@ export const login = async (authRequest: AuthRequest) => {
 
   useAuthStore.getState().setAccessToken(accessToken);
 
-
   try {
     // profile() already sets the user
     await profile();
@@ -34,7 +33,7 @@ export const refresh = async () => {
     const response = await api.post(
       "/auth/refresh",
       {},
-      { withCredentials: true }
+      { withCredentials: true },
     );
 
     const { accessToken } = response.data;
@@ -74,7 +73,11 @@ export const profile = async (): Promise<AuthUser> => {
       const res = await api.get<StudentResponse>(endpoint);
 
       // validate shape
-      if (!res?.data || typeof res.data.studentId !== "string" || !res.data.user) {
+      if (
+        !res?.data ||
+        typeof res.data.studentId !== "string" ||
+        !res.data.user
+      ) {
         useAuthStore.getState().clearAuth();
         throw new Error("Invalid student profile response");
       }

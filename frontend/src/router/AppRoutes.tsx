@@ -33,6 +33,7 @@ import LoadingPage from "../pages/loading";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 import AdminMerchProductView from "../pages/admin/merch/productView";
+import ProfilePage from "../components/ProfilePage";
 
 // Home route component - redirects authenticated users to dashboard
 const HomeRoute = () => {
@@ -68,6 +69,7 @@ const routers = [
     element: <ProtectedRoute allowedRole="STUDENT" />,
     children: [
       { path: "/dashboard", element: <DashboardPage /> },
+      { path: "/profile", element: <ProfilePage /> },
       // { path: "/resources", element: <ResourcesPage /> },
       { path: "/events", element: <EventsPage /> },
       { path: "/events/view/:id", element: <EventViewPage /> },
@@ -84,6 +86,7 @@ const routers = [
     element: <ProtectedRoute allowedRole="ADMIN" />,
     children: [
       { path: "/admin/dashboard", element: <AdminDashboardPage /> },
+      { path: "/admin/profile", element: <ProfilePage /> },
       { path: "/admin/event", element: <AdminEventPage /> },
       { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
