@@ -7,16 +7,16 @@ type ProtectedRouteProps = {
 
 /**
  * ProtectedRoute - Checks authentication and user role before rendering
- * @param allowedRole 
+ * @param allowedRole
  *   - "ADMIN": Only admins can access
  *   - "STUDENT": Only students can access
  */
 export const ProtectedRoute = ({ allowedRole }: ProtectedRouteProps) => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
   // Not authenticated - redirect to login
-  if (!accessToken || !user) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
 

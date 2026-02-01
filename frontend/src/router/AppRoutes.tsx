@@ -37,11 +37,11 @@ import ProfilePage from "../components/ProfilePage";
 
 // Home route component - redirects authenticated users to dashboard
 const HomeRoute = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
   // If authenticated, redirect to appropriate dashboard via protected routes
-  if (accessToken && user) {
+  if (isAuthenticated && user) {
     return (
       <Navigate
         to={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}

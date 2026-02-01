@@ -6,11 +6,11 @@ import { useAuthStore } from "../store/auth_store";
  * Redirects authenticated users to their appropriate dashboard
  */
 export const PublicRoute = () => {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
   // If authenticated, redirect to appropriate dashboard
-  if (accessToken && user) {
+  if (isAuthenticated && user) {
     return (
       <Navigate
         to={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
