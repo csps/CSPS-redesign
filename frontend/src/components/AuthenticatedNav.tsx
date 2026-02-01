@@ -233,7 +233,6 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
-  const clearAuth = useAuthStore((state) => state.clearAuth);
 
   console.log("STUDENT IN DROPDOWN:", student);
 
