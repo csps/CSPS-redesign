@@ -22,7 +22,6 @@ const UpcomingEvents = () => {
         const data = await getUpcomingEvents();
         setEvents(data);
       } catch (err) {
-        console.error("Failed to fetch upcoming events:", err);
         setEvents([]);
       } finally {
         setLoading(false);

@@ -142,7 +142,7 @@ const Index = () => {
       setShowBuyModal(false);
       navigate("/merch/cart", { state: { selectedMerchVariantItemId } });
     } catch (err) {
-      console.error(err);
+      // Handle error silently
     } finally {
       setProcessingBuy(false);
     }

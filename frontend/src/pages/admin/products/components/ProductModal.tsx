@@ -76,8 +76,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
     setIsLoading(true);
     setSubmitError(null);
 
-    console.log(`Submitting form state: ${JSON.stringify(formState)}`);
-
     const result = await createMerch(formState);
 
     if (result.success) {

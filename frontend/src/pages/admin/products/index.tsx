@@ -31,7 +31,7 @@ const Index = () => {
           : await getMerchByType(type as MerchType);
       setMerch(data);
     } catch (err) {
-      console.error(err);
+      // Handle error silently
     } finally {
       setLoading(false);
     }

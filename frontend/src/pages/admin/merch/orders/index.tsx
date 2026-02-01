@@ -4,10 +4,7 @@ import Footer from "../../../../components/Footer";
 import StatusCard from "./components/StatusCard";
 import { PurchaseFilter } from "../../../merch/transactions/components/PurchaseFilter";
 import Pagination from "../../../merch/transactions/components/Pagination";
-import {
-  getOrderItemByStatus,
-  getOrdersByDate,
-} from "../../../../api/order";
+import { getOrderItemByStatus, getOrdersByDate } from "../../../../api/order";
 import type {
   OrderResponse,
   PaginatedOrdersResponse,
@@ -44,7 +41,6 @@ const Index = () => {
             size: pageSize,
           } as PaginationParams);
 
-          console.log("Fetched orders:", response.content);
           const orderItems = Array.isArray(response.content)
             ? response.content.flatMap((order) => order.orderItems || [])
             : [];
@@ -59,7 +55,6 @@ const Index = () => {
         }
         setError(null);
       } catch (err) {
-        console.error("Failed to fetch orders:", err);
         setError("Failed to load orders. Please try again later.");
         setItems([]);
       } finally {

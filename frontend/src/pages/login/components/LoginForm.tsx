@@ -55,8 +55,6 @@ const LoginForm = () => {
 
       const { accessToken, user } = useAuthStore.getState();
 
-      console.log(`USER AFTER LOGIN:`, user);
-
       if (!accessToken || !user) {
         throw new Error("Auth state not ready");
       }
@@ -69,8 +67,6 @@ const LoginForm = () => {
       toast.success("Login successful! Welcome back!");
       navigate(destination);
     } catch (error: any) {
-      console.error("Login failed:", error);
-
       // Handle different error scenarios with specific messages
       if (
         error?.response?.status === 401 ||

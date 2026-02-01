@@ -96,7 +96,6 @@ const AdminMerchProductView = () => {
       setActiveIndex(0);
       initializeEditedData(response);
     } catch (err) {
-      console.error("Fetch failed:", err);
       setIsNotFound(true);
     } finally {
       setLoading(false);
@@ -183,7 +182,6 @@ const AdminMerchProductView = () => {
       setShowAddVariantModal(false);
       toast.success("Variant added successfully!");
     } catch (err: any) {
-      console.error("Error adding variant:", err);
       const errorMessage =
         err?.response?.data?.message || "Failed to add variant";
       toast.error(errorMessage);
@@ -304,7 +302,6 @@ const AdminMerchProductView = () => {
 
       toast.success("Changes saved successfully!");
     } catch (err: any) {
-      console.error("Error saving changes:", err);
       const errorMessage =
         err?.response?.data?.message || "Failed to save changes";
       toast.error(errorMessage);

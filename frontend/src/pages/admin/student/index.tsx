@@ -18,13 +18,12 @@ const StudentsPage = () => {
     setLoading(true);
     try {
       const response = await getStudents({ page: page - 1, size: 7 });
-      console.log("Fetched students:", response);
 
       setStudents(response.content);
       setTotalPages(response.totalPages);
       setTotalElements(response.totalElements);
     } catch (error) {
-      console.error("Failed to fetch students:", error);
+      // Handle error silently
     } finally {
       setLoading(false);
     }
@@ -40,7 +39,6 @@ const StudentsPage = () => {
   };
 
   const handleExportCSV = () => {
-    console.log("Exporting CSV...");
     // Export logic here
   };
 

@@ -58,7 +58,6 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
-      console.error("Failed to update status:", error);
       // Perhaps show an error message
     }
   };

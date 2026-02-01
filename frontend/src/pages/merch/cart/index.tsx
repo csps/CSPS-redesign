@@ -33,7 +33,7 @@ const Index = () => {
       const getCartResponse = await getCart();
       setItems(getCartResponse.items);
     } catch (err) {
-      console.error(err);
+      // Handle error silently
     } finally {
       setLoading(false);
       setRefreshing(false);

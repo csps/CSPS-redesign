@@ -22,7 +22,6 @@ const RecentEvents = () => {
         const data = await getPastEvents();
         setEvents(data);
       } catch (err) {
-        console.error("Failed to fetch recent events:", err);
         setEvents([]);
       } finally {
         setLoading(false);

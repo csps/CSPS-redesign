@@ -34,12 +34,9 @@ const GlassCalendar = () => {
       const month = date.getMonth() + 1; // getMonth() returns 0-11
       const year = date.getFullYear();
 
-      console.log("Fetching events for:", month, year);
-
       const data = await getEventByMonth(month, year);
       setEvents(data);
     } catch (err) {
-      console.error("Failed to fetch events by month:", err);
       setEvents([]);
     }
   };
@@ -50,7 +47,6 @@ const GlassCalendar = () => {
       const data = await getUpcomingEvents();
       setUpcomingEvents(data);
     } catch (err) {
-      console.error("Failed to fetch upcoming events:", err);
       setUpcomingEvents([]);
     } finally {
       setUpcomingLoading(false);
@@ -62,9 +58,6 @@ const GlassCalendar = () => {
   }, []);
 
   useEffect(() => {
-    console.log(
-      `Fetching events for: ${value.getFullYear()}-${value.getMonth() + 1}`,
-    );
     fetchEventsByMonth(value);
   }, [value.getFullYear(), value.getMonth()]);
 
