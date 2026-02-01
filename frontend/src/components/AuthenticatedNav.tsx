@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
 import { useAuthStore } from "../store/auth_store";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
+import { logout } from "../api/auth";
 
 interface DesktopNavProps {
   location: string;
@@ -237,8 +238,8 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   console.log("STUDENT IN DROPDOWN:", student);
 
   const isAdmin = student?.user.role === "ADMIN";
-  const handleLogout = () => {
-    clearAuth();
+  const handleLogout = async () => {
+    await logout();
     onClose();
     navigate("/login");
   };
