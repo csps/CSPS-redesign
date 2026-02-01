@@ -1,20 +1,10 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth_store";
-import { refresh, profile } from "./auth";
+import { profile, refresh } from "./auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-});
-
-api.interceptors.request.use((config) => {
-  const accessToken = useAuthStore.getState().accessToken;
-
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
-  }
-
-  return config;
 });
 
 api.interceptors.response.use(
@@ -22,6 +12,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    console.log
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -29,30 +20,11 @@ api.interceptors.response.use(
       !originalRequest.url?.includes("/auth/login")
     ) {
       originalRequest._retry = true;
-
+      const response = await refresh();
       try {
-        const response = await refresh();
+        console.log(`Token refreshed: ${response.data}`);
 
-        const { accessToken } = response.data.data || response.data;
-
-        if (!accessToken) {
-          useAuthStore.getState().clearAuth();
-          return Promise.reject(
-            new Error("No access token returned from refresh"),
-          );
-        }
-
-        try {
-          await profile();
-
-          useAuthStore.getState().setAccessToken(accessToken);
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-
-          return api(originalRequest);
-        } catch (validateError) {
-          useAuthStore.getState().clearAuth();
-          return Promise.reject(validateError);
-        }
+        return api(originalRequest); // Retry with new token
       } catch (refreshError) {
         useAuthStore.getState().clearAuth();
         return Promise.reject(refreshError);
