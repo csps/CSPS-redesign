@@ -12,7 +12,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    console.log
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
@@ -20,13 +19,13 @@ api.interceptors.response.use(
       !originalRequest.url?.includes("/auth/login")
     ) {
       originalRequest._retry = true;
-      const response = await refresh();
-      try {
-        console.log(`Token refreshed: ${response.data}`);
 
+      try {
+        await refresh();
         return api(originalRequest); // Retry with new token
       } catch (refreshError) {
         useAuthStore.getState().clearAuth();
+        useAuthStore.getState().setSessionExpired(true);
         return Promise.reject(refreshError);
       }
     }

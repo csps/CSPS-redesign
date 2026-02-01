@@ -1,5 +1,7 @@
 import React from "react";
 import Footer from "./Footer";
+import SessionExpiredModal from "./SessionExpiredModal";
+import { useAuthStore } from "../store/auth_store";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -18,8 +20,15 @@ const Layout = ({
   classNameInner,
   withFooter = true,
 }: LayoutProps) => {
+  const sessionExpired = useAuthStore((state) => state.sessionExpired);
+  const setSessionExpired = useAuthStore((state) => state.setSessionExpired);
+
   return (
     <>
+      <SessionExpiredModal
+        isOpen={sessionExpired}
+        onClose={() => setSessionExpired(false)}
+      />
       <div
         className={
           `min-h-${
