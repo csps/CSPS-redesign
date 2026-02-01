@@ -53,9 +53,9 @@ const LoginForm = () => {
 
       await login(authRequest);
 
-      const { accessToken, user } = useAuthStore.getState();
+      const { isAuthenticated, user } = useAuthStore.getState();
 
-      if (!accessToken || !user) {
+      if (!isAuthenticated || !user) {
         throw new Error("Auth state not ready");
       }
 
