@@ -4,7 +4,6 @@ import { refresh } from "./auth";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
 });
 
 interface QueuedRequest {
@@ -15,6 +14,18 @@ interface QueuedRequest {
 
 let isRefreshing = false;
 let requestQueue: QueuedRequest[] = [];
+
+api.interceptors.request.use(
+  (config) => {
+    // Add Authorization header if we have an access token
+    const accessToken = sessionStorage.getItem("accessToken");
+    if (accessToken && !config.url?.includes("/auth/login")) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 api.interceptors.response.use(
   (response) => response,
@@ -45,6 +56,11 @@ api.interceptors.response.use(
         // 3. REFRESH SUCCESS: Now process the queue one-by-one (Sequentially)
         for (const queued of requestQueue) {
           try {
+            // Update Authorization header with new token
+            const newAccessToken = sessionStorage.getItem("accessToken");
+            if (newAccessToken) {
+              queued.config.headers.Authorization = `Bearer ${newAccessToken}`;
+            }
             const result = await api(queued.config);
             queued.resolve(result); // Pass success back to the component
           } catch (fail) {
@@ -53,6 +69,12 @@ api.interceptors.response.use(
         }
 
         requestQueue = []; // Clear queue after sequential processing
+
+        // Update Authorization header for original request with new token
+        const newAccessToken = sessionStorage.getItem("accessToken");
+        if (newAccessToken) {
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        }
         return api(originalRequest); // Finally, retry the original request
       } catch (refreshError) {
         // 4. REFRESH FAILED: Reject everyone waiting

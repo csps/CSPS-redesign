@@ -10,8 +10,13 @@ export const login = async (authRequest: AuthRequest) => {
   const response = await api.post("/auth/login", authRequest);
 
   try {
-    // Backend sets httpOnly cookie automatically
-    // profile() sets the user in store
+    const { accessToken, refreshToken } = response.data.data;
+
+    // Store tokens in sessionStorage
+    sessionStorage.setItem("accessToken", accessToken);
+    sessionStorage.setItem("refreshToken", refreshToken);
+
+    // Get user profile and set in store
     await profile();
     return response.data;
   } catch (err) {
@@ -22,19 +27,26 @@ export const login = async (authRequest: AuthRequest) => {
 
 export const refresh = async () => {
   try {
+    const refreshToken = sessionStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+      throw new Error("No refresh token available");
+    }
+
     // Use a separate axios instance to avoid interceptor loops
     const refreshApi = axios.create({
       baseURL: import.meta.env.VITE_API_URL,
-      withCredentials: true,
     });
 
-    const response = await refreshApi.post(
-      "/auth/refresh",
-      {},
-      { withCredentials: true },
-    );
+    const response = await refreshApi.post("/auth/refresh", {
+      refreshToken,
+    });
 
-    // Backend sets new httpOnly cookie automatically
+    const { accessToken } = response.data.data;
+
+    // Update access token in sessionStorage
+    sessionStorage.setItem("accessToken", accessToken);
+
     return response.data;
   } catch (err) {
     throw err;
@@ -45,11 +57,15 @@ export const logout = async () => {
   try {
     useAuthStore.getState().setLoggingOut(true);
 
-    const response = await api.post(
-      "/auth/logout",
-      {},
-      { withCredentials: true },
-    );
+    const refreshToken = sessionStorage.getItem("refreshToken");
+
+    const response = await api.post("/auth/logout", {
+      refreshToken,
+    });
+
+    // Clear tokens from sessionStorage
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
 
     useAuthStore.getState().clearAuth();
     return response.data;

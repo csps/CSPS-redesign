@@ -16,8 +16,8 @@ interface AuthState {
 // Prefixing unused 'name' with '_' tells TS it's intentionally unused
 const customStorage = {
   getItem: (_name: string): StorageValue<AuthState> | null => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    const user = localStorage.getItem("user");
+    const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+    const user = sessionStorage.getItem("user");
 
     if (!isAuthenticated && !user) return null;
 
@@ -31,15 +31,15 @@ const customStorage = {
     };
   },
   setItem: (_name: string, value: StorageValue<AuthState>) => {
-    localStorage.setItem(
+    sessionStorage.setItem(
       "isAuthenticated",
       JSON.stringify(value.state.isAuthenticated),
     );
-    localStorage.setItem("user", JSON.stringify(value.state.user));
+    sessionStorage.setItem("user", JSON.stringify(value.state.user));
   },
   removeItem: (_name: string) => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("isAuthenticated");
+    sessionStorage.removeItem("user");
   },
 };
 
