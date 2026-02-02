@@ -580,12 +580,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
 
             {/* ─── PASSWORD TAB ──────────────────────────────────────────── */}
             {activeTab === "password" && (
-              <div className="max-w-lg">
+              <div className="max-w-lg mx-auto">
                 {/* Heading block */}
                 <div className="flex items-start gap-4 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
-                    <IconShield className="w-5 h-5 text-purple-400" />
-                  </div>
                   <div>
                     <h2 className="text-base font-semibold text-white">
                       Change Password
@@ -596,7 +593,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                   </div>
                 </div>
 
-                <Card>
+                <Card >
                   <div className="p-5 space-y-5">
                     {/* Current password */}
                     <div>
