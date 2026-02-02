@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "../store/auth_store";
 import { useNavigate } from "react-router-dom";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
@@ -26,7 +26,7 @@ interface PasswordForm {
 type ActiveTab = "credentials" | "password";
 
 // ============================================================================
-// Icons (inline SVG — no external icon dep needed)
+// Icons (inline SVG)
 // ============================================================================
 
 const IconUser = (props: React.SVGProps<SVGSVGElement>) => (
@@ -73,6 +73,64 @@ const IconChevronLeft = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const IconPencil = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+  </svg>
+);
+
+const IconX = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <line x1={18} y1={6} x2={6} y2={18} />
+    <line x1={6} y1={6} x2={18} y2={18} />
+  </svg>
+);
+
+const IconCheck = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const IconShield = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.75}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+
 // ============================================================================
 // Sub-Components
 // ============================================================================
@@ -86,7 +144,7 @@ const DetailRow: React.FC<{
   editInput?: React.ReactNode;
 }> = ({ label, value, isLast, isEditing, editInput }) => (
   <div
-    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-4 px-5 py-3.5 ${
+    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-4 px-5 py-3.5 transition-colors duration-200 hover:bg-zinc-800/40 ${
       !isLast ? "border-b border-zinc-800" : ""
     }`}
   >
@@ -95,7 +153,10 @@ const DetailRow: React.FC<{
     </span>
     <div className="flex-1 sm:text-right">
       {isEditing && editInput ? (
-        editInput
+        <div className="relative">
+          {editInput}
+          <div className="absolute inset-x-0 -bottom-0.5 h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent" />
+        </div>
       ) : (
         <span className="text-sm text-zinc-200 font-medium">{value}</span>
       )}
@@ -103,7 +164,7 @@ const DetailRow: React.FC<{
   </div>
 );
 
-/** Thin section header inside the main content */
+/** Thin section header */
 const SectionLabel: React.FC<{
   title: string;
   action?: React.ReactNode;
@@ -175,20 +236,24 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
   }, [student]);
 
   // ── handlers ──────────────────────────────────────────────────────────────
-  const handleField = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((p) => ({
-      ...p,
-      [name]: name === "yearLevel" ? Number(value) : value,
-    }));
-  };
+  const handleField = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setFormData((p) => ({
+        ...p,
+        [name]: name === "yearLevel" ? Number(value) : value,
+      }));
+    },
+    [],
+  );
 
-  const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswordForm((p) => ({ ...p, [name]: value }));
-  };
+  const handlePassword = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setPasswordForm((p) => ({ ...p, [name]: value }));
+    },
+    [],
+  );
 
   if (!student) return null;
 
@@ -197,63 +262,68 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
     "w-full bg-transparent text-sm text-zinc-200 text-right placeholder-zinc-600 focus:outline-none focus:ring-0 border-none caret-purple-400";
   const selectBase =
     "w-full bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-200 text-right px-3 py-1.5 focus:outline-none focus:border-purple-500 transition-colors cursor-pointer appearance-none";
+  const passwordInputBase =
+    "w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors";
 
   // ── initials ──────────────────────────────────────────────────────────────
   const initials =
     (student.user.firstName?.[0] || "") + (student.user.lastName?.[0] || "");
+
+  // ── nav items ─────────────────────────────────────────────────────────────
+  const navItems = [
+    { id: "credentials" as ActiveTab, icon: IconUser, label: "Credentials" },
+    { id: "password" as ActiveTab, icon: IconLock, label: "Password" },
+  ] as const;
 
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
   // ──────────────────────────────────────────────────────────────────────────
   return (
     <Layout>
-      {/* Page-level font override */}
+      {/* Font + browser chrome fixes */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
-        .profile-root { font-family: 'Geist', 'SF Pro Display', system-ui, sans-serif; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        .profile-root { font-family: 'Poppins', sans-serif; }
+
         /* scrollbar */
         .profile-root ::-webkit-scrollbar { width: 6px; }
         .profile-root ::-webkit-scrollbar-track { background: transparent; }
         .profile-root ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+        .profile-root ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
         /* date input chrome fix */
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.5; }
-        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          filter: invert(1); cursor: pointer; opacity: 0.4; transition: opacity 200ms;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 0.7; }
+
         /* select arrow */
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+        select {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 12px center;
+        }
       `}</style>
 
-      <div className="profile-root flex flex-col md:flex-row min-h-[calc(100vh-64px)] bg-zinc-950 text-zinc-100">
+      <div className="profile-root flex flex-col md:flex-row min-h-[calc(100vh-64px)] bg-[#242050] text-zinc-100">
         {/* ═══════════════════════════════════════════════════════════════════
             SIDEBAR
            ═══════════════════════════════════════════════════════════════════ */}
-        <aside className="w-full md:w-56 flex-shrink-0 border-b md:border-b-0 md:border-r border-zinc-800 bg-zinc-950">
-          {/* Back */}
+        <aside className="w-full md:w-56 flex-shrink-0 border-b md:border-b-0 md:border-r border-zinc-800 bg-[#242050]">
+          {/* Back button */}
           <div className="p-5 pb-0">
             <button
               onClick={() => (onClose ? onClose() : navigate(-1))}
               className="flex items-center gap-1.5 text-zinc-500 hover:text-zinc-200 transition-colors group"
             >
-              <IconChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <IconChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
               <span className="text-sm font-medium">Back</span>
             </button>
           </div>
 
-          {/* Nav */}
+          {/* Nav links */}
           <nav className="p-5 flex flex-row md:flex-col gap-2">
-            {(
-              [
-                {
-                  id: "credentials" as ActiveTab,
-                  icon: IconUser,
-                  label: "Credentials",
-                },
-                {
-                  id: "password" as ActiveTab,
-                  icon: IconLock,
-                  label: "Password",
-                },
-              ] as const
-            ).map((item) => {
+            {navItems.map((item) => {
               const active = activeTab === item.id;
               return (
                 <button
@@ -266,9 +336,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                   }`}
                 >
                   <item.icon
-                    className={`w-4 h-4 ${active ? "text-purple-400" : ""}`}
+                    className={`w-4 h-4 transition-colors duration-200 ${
+                      active ? "text-purple-400" : ""
+                    }`}
                   />
                   {item.label}
+                  {/* Active pill indicator */}
+                  {active && (
+                    <span className="ml-auto w-1.5 h-1.5 rounded-full bg-purple-500" />
+                  )}
                 </button>
               );
             })}
@@ -279,9 +355,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
             MAIN CONTENT
            ═══════════════════════════════════════════════════════════════════ */}
         <main className="flex-1 overflow-y-auto">
-          {/* Avatar banner strip */}
-          <div className="relative bg-zinc-950 px-6 md:px-10 pt-10 pb-8 flex flex-col items-start gap-4">
-            {/* subtle top gradient accent */}
+          {/* ─── Avatar banner ─────────────────────────────────────────────── */}
+          <header className="relative bg-[#242050] px-6 md:px-10 pt-10 pb-8 flex flex-col items-start gap-4">
+            {/* Top accent line */}
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
 
             <div className="flex items-center gap-5">
@@ -302,11 +378,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                 </p>
               </div>
             </div>
-          </div>
+          </header>
 
-          {/* ─── Content body ──────────────────────────────────────────────── */}
-          <div className="px-6 md:px-10 pb-12">
-            {/* ─── CREDENTIALS TAB ─────────────────────────────────────────── */}
+          {/* ─── Tab content body ──────────────────────────────────────────── */}
+          <section className="px-6 md:px-10 pb-12">
+            {/* ─── CREDENTIALS TAB ───────────────────────────────────────── */}
             {activeTab === "credentials" && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left column */}
@@ -318,13 +394,23 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                       action={
                         <button
                           onClick={() => setIsEditing(!isEditing)}
-                          className={`text-xs font-medium px-3 py-1 rounded-full border transition-all ${
+                          className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full border transition-all duration-200 ${
                             isEditing
                               ? "border-red-500/30 text-red-400 bg-red-500/5 hover:bg-red-500/10"
                               : "border-zinc-700 text-zinc-400 hover:border-purple-500/50 hover:text-purple-400"
                           }`}
                         >
-                          {isEditing ? "Cancel" : "Edit"}
+                          {isEditing ? (
+                            <>
+                              <IconX className="w-3 h-3" />
+                              Cancel
+                            </>
+                          ) : (
+                            <>
+                              <IconPencil className="w-3 h-3" />
+                              Edit
+                            </>
+                          )}
                         </button>
                       }
                     />
@@ -467,25 +553,52 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                       />
                     </Card>
                   </div>
+
+                  {/* Save prompt — only shown while editing */}
+                  {isEditing && (
+                    <div className="flex items-center justify-between gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-xl">
+                      <p className="text-xs text-zinc-500">
+                        Changes are unsaved
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setIsEditing(false)}
+                          className="text-xs font-medium text-zinc-400 hover:text-zinc-200 px-3 py-1.5 rounded-lg transition-colors"
+                        >
+                          Discard
+                        </button>
+                        <button className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-500 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition-colors">
+                          <IconCheck className="w-3 h-3" />
+                          Save Changes
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* ─── PASSWORD TAB ────────────────────────────────────────────── */}
+            {/* ─── PASSWORD TAB ──────────────────────────────────────────── */}
             {activeTab === "password" && (
               <div className="max-w-lg">
-                <div className="mb-6">
-                  <h2 className="text-base font-semibold text-white">
-                    Change Password
-                  </h2>
-                  <p className="text-sm text-zinc-500 mt-1">
-                    Update your password to keep your account secure.
-                  </p>
+                {/* Heading block */}
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                    <IconShield className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-white">
+                      Change Password
+                    </h2>
+                    <p className="text-sm text-zinc-500 mt-0.5">
+                      Update your password to keep your account secure.
+                    </p>
+                  </div>
                 </div>
 
                 <Card>
                   <div className="p-5 space-y-5">
-                    {/* Current */}
+                    {/* Current password */}
                     <div>
                       <label className="text-xs font-medium text-zinc-500 tracking-wide uppercase block mb-2">
                         Current Password
@@ -496,14 +609,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                         value={passwordForm.currentPassword}
                         onChange={handlePassword}
                         placeholder="••••••••"
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                        className={passwordInputBase}
                       />
                     </div>
 
                     {/* Divider */}
                     <div className="border-t border-zinc-800" />
 
-                    {/* New */}
+                    {/* New password */}
                     <div>
                       <label className="text-xs font-medium text-zinc-500 tracking-wide uppercase block mb-2">
                         New Password
@@ -514,7 +627,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                         value={passwordForm.newPassword}
                         onChange={handlePassword}
                         placeholder="••••••••"
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                        className={passwordInputBase}
                       />
                       <p className="text-xs text-zinc-600 mt-2">
                         8+ characters — uppercase, lowercase, numbers &amp;
@@ -522,7 +635,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                       </p>
                     </div>
 
-                    {/* Confirm */}
+                    {/* Confirm password */}
                     <div>
                       <label className="text-xs font-medium text-zinc-500 tracking-wide uppercase block mb-2">
                         Confirm Password
@@ -533,7 +646,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                         value={passwordForm.confirmPassword}
                         onChange={handlePassword}
                         placeholder="••••••••"
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-purple-500 transition-colors"
+                        className={passwordInputBase}
                       />
                     </div>
 
@@ -550,7 +663,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                 </Card>
               </div>
             )}
-          </div>
+          </section>
         </main>
       </div>
     </Layout>
