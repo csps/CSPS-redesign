@@ -4,15 +4,22 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { getAllAnnouncements } from "../../../api/announcement";
 import type { AnnouncementResponse } from "../../../interfaces/announcement/AnnouncementResponse";
 import AnnouncementCard from "./AnnouncementCard";
+import { useInView } from "../../../hooks/useInView";
 
 const Announcements = () => {
   const [announcements, setAnnouncements] = useState<AnnouncementResponse[]>(
     [],
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { ref, isInView } = useInView();
 
   useEffect(() => {
+    if (!isInView) {
+      setLoading(true);
+      return;
+    }
+
     const fetchAnnouncements = async () => {
       try {
         setLoading(true);
@@ -28,10 +35,10 @@ const Announcements = () => {
     };
 
     fetchAnnouncements();
-  }, []);
+  }, [isInView]);
 
   return (
-    <div className="w-full">
+    <div ref={ref} className="w-full">
       <div className="w-full flex justify-between mb-5">
         <p className="md:text-xl lg:text-4xl font-semibold">Announcements</p>
         <p

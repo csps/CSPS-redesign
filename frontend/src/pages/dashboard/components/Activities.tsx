@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { getAllEvents } from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
+import { useInView } from "../../../hooks/useInView";
 
 const Activities = () => {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const { ref, isInView } = useInView();
 
   useEffect(() => {
+    if (!isInView) return; // Don't fetch if not in view
+
     const fetchEvents = async () => {
       setLoading(true);
       try {
@@ -19,10 +23,10 @@ const Activities = () => {
       }
     };
     fetchEvents();
-  }, []);
+  }, [isInView]);
 
   return (
-    <div className="w-full">
+    <div ref={ref} className="w-full">
       <div className="w-full flex justify-between items-end mb-10">
         <div>
           <h2 className="text-3xl lg:text-4xl font-bold text-white ">
