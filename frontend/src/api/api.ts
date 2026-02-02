@@ -1,26 +1,44 @@
 import axios from "axios";
 import { useAuthStore } from "../store/auth_store";
-import { refresh } from "./auth";
+
+// Utility function to check if JWT token is expired
+const isTokenExpired = (token: string): boolean => {
+  try {
+    // JWT tokens are in format: header.payload.signature
+    const payload = token.split(".")[1];
+    // Decode the base64 payload
+    const decodedPayload = JSON.parse(atob(payload));
+    // Check if exp (expiration time) exists and is less than current time
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decodedPayload.exp < currentTime;
+  } catch (error) {
+    // If we can't decode the token, consider it expired
+    console.warn("Failed to decode token:", error);
+    return true;
+  }
+};
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-interface QueuedRequest {
-  resolve: (value: any) => void;
-  reject: (error: any) => void;
-  config: any;
-}
-
-let isRefreshing = false;
-let requestQueue: QueuedRequest[] = [];
-
 api.interceptors.request.use(
   (config) => {
     // Add Authorization header if we have an access token
     const accessToken = sessionStorage.getItem("accessToken");
-    if (accessToken && !config.url?.includes("/auth/login")) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+
+    if (accessToken) {
+      // Check if token is expired before using it
+      if (isTokenExpired(accessToken)) {
+        console.warn("Access token is expired, setting session expired flag");
+        useAuthStore.getState().setSessionExpired(true);
+        // Don't add the expired token to headers
+        return config;
+      }
+
+      if (!config.url?.includes("/auth/login")) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
     return config;
   },
@@ -40,56 +58,43 @@ api.interceptors.response.use(
     ) {
       originalRequest._retry = true;
 
-      // 1. If refresh is in progress, just add to queue and STOP.
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          requestQueue.push({ resolve, reject, config: originalRequest });
-        });
-      }
+      const accessToken = sessionStorage.getItem("accessToken");
 
-      isRefreshing = true;
-
-      try {
-        // 2. Wait for the refresh response first
-        await refresh();
-
-        // 3. REFRESH SUCCESS: Now process the queue one-by-one (Sequentially)
-        for (const queued of requestQueue) {
-          try {
-            // Update Authorization header with new token
-            const newAccessToken = sessionStorage.getItem("accessToken");
-            if (newAccessToken) {
-              queued.config.headers.Authorization = `Bearer ${newAccessToken}`;
-            }
-            const result = await api(queued.config);
-            queued.resolve(result); // Pass success back to the component
-          } catch (fail) {
-            queued.reject(fail); // Pass error back to the component
-          }
-        }
-
-        requestQueue = []; // Clear queue after sequential processing
-
-        // Update Authorization header for original request with new token
-        const newAccessToken = sessionStorage.getItem("accessToken");
-        if (newAccessToken) {
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        }
-        return api(originalRequest); // Finally, retry the original request
-      } catch (refreshError) {
-        // 4. REFRESH FAILED: Reject everyone waiting
-        requestQueue.forEach((q) => q.reject(refreshError));
-        requestQueue = [];
-
-        useAuthStore.getState().clearAuth();
+      // If no token or token is expired, set session expired flag
+      if (!accessToken || isTokenExpired(accessToken)) {
+        console.warn("Token expired or missing, setting session expired flag");
         useAuthStore.getState().setSessionExpired(true);
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
+        return Promise.reject(error);
       }
+
+      // If token exists and is not expired, try to refresh (if refresh endpoint exists)
+      // For now, we'll just reject since we don't have a refresh mechanism
+      return Promise.reject(error);
     }
 
     return Promise.reject(error);
   },
 );
+
+// Export the token checker utility for use in other parts of the app
+export const checkTokenExpiration = (): boolean => {
+  const accessToken = sessionStorage.getItem("accessToken");
+  if (!accessToken) return true; // No token = expired
+  return isTokenExpired(accessToken);
+};
+
+// Export function to get token expiration time in milliseconds
+export const getTokenExpirationTime = (): number | null => {
+  const accessToken = sessionStorage.getItem("accessToken");
+  if (!accessToken) return null;
+
+  try {
+    const payload = accessToken.split(".")[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    return decodedPayload.exp * 1000; // Convert to milliseconds
+  } catch (error) {
+    return null;
+  }
+};
+
 export default api;

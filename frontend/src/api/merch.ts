@@ -165,11 +165,22 @@ export const createMerch = async (
     console.log(Object.fromEntries(formData.entries()));
     const response = await api.post("/merch/post", formData);
 
-    return response.data;
+    console.log("Merch created successfully:", response.data.data);
+    return {
+      success: response.data.status === "CREATED",
+      data: response.data.data,
+    };
   } catch (err: any) {
     console.error("Error creating merch:", err);
 
-    throw err;
+    // Return error response instead of throwing
+    return {
+      success: false,
+      error:
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to create merchandise",
+    };
   }
 };
 
