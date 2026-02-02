@@ -36,6 +36,8 @@ export const refresh = async () => {
 
 export const logout = async () => {
   try {
+    useAuthStore.getState().setLoggingOut(true);
+
     const response = await api.post(
       "/auth/logout",
       {},
@@ -46,6 +48,8 @@ export const logout = async () => {
     return response.data;
   } catch (err) {
     throw err;
+  } finally {
+    useAuthStore.getState().setLoggingOut(false);
   }
 };
 

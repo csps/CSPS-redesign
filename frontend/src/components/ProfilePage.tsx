@@ -593,7 +593,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
                   </div>
                 </div>
 
-                <Card >
+                <Card>
                   <div className="p-5 space-y-5">
                     {/* Current password */}
                     <div>

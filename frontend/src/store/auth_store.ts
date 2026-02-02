@@ -6,9 +6,11 @@ interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   sessionExpired: boolean;
+  isLoggingOut: boolean;
   setUser: (user: AuthUser) => void;
   clearAuth: () => void;
   setSessionExpired: (expired: boolean) => void;
+  setLoggingOut: (loggingOut: boolean) => void;
 }
 
 // Prefixing unused 'name' with '_' tells TS it's intentionally unused
@@ -47,9 +49,11 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       sessionExpired: false,
+      isLoggingOut: false,
       setUser: (user) => set({ user, isAuthenticated: true }),
       clearAuth: () => set({ user: null, isAuthenticated: false }),
       setSessionExpired: (expired) => set({ sessionExpired: expired }),
+      setLoggingOut: (loggingOut) => set({ isLoggingOut: loggingOut }),
     }),
     {
       name: "auth",

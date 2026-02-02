@@ -1,6 +1,7 @@
 import React from "react";
 import Footer from "./Footer";
 import SessionExpiredModal from "./SessionExpiredModal";
+import LogoutLoadingModal from "./LogoutLoadingModal";
 import { useAuthStore } from "../store/auth_store";
 
 type LayoutProps = {
@@ -22,6 +23,7 @@ const Layout = ({
 }: LayoutProps) => {
   const sessionExpired = useAuthStore((state) => state.sessionExpired);
   const setSessionExpired = useAuthStore((state) => state.setSessionExpired);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
 
   return (
     <>
@@ -29,6 +31,7 @@ const Layout = ({
         isOpen={sessionExpired}
         onClose={() => setSessionExpired(false)}
       />
+      <LogoutLoadingModal isOpen={isLoggingOut} />
       <div
         className={
           `min-h-${
