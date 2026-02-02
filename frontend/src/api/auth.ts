@@ -1,3 +1,4 @@
+import axios from "axios";
 import type { AuthRequest } from "../interfaces/auth/AuthRequest";
 import type { UserResponse } from "../interfaces/user/UserResponse";
 import { useAuthStore } from "../store/auth_store";
@@ -21,7 +22,13 @@ export const login = async (authRequest: AuthRequest) => {
 
 export const refresh = async () => {
   try {
-    const response = await api.post(
+    // Use a separate axios instance to avoid interceptor loops
+    const refreshApi = axios.create({
+      baseURL: import.meta.env.VITE_API_URL,
+      withCredentials: true,
+    });
+
+    const response = await refreshApi.post(
       "/auth/refresh",
       {},
       { withCredentials: true },
