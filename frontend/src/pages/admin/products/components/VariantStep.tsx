@@ -37,6 +37,11 @@ interface VariantStepProps {
     sizeIndex: number,
     value: string,
   ) => void;
+  onPriceChangeForSize?: (
+    variantIndex: number,
+    sizeIndex: number,
+    value: string,
+  ) => void;
   onVariantImageUpload: (
     type: "clothing" | "nonClothing",
     variantIndex: number,
@@ -59,6 +64,7 @@ const VariantStep: React.FC<VariantStepProps> = ({
   onNonClothingVariantChange,
   onSizeCheckChange,
   onStockQuantityChange,
+  onPriceChangeForSize,
   onVariantImageUpload,
   onDeleteClothingVariant,
   onDeleteNonClothingVariant,
@@ -113,6 +119,9 @@ const VariantStep: React.FC<VariantStepProps> = ({
                   }
                   onStockQuantityChange={(sizeIndex, value) =>
                     onStockQuantityChange(variantIndex, sizeIndex, value)
+                  }
+                  onPriceChangeForSize={(sizeIndex, value) =>
+                    onPriceChangeForSize?.(variantIndex, sizeIndex, value)
                   }
                   onDelete={() => onDeleteClothingVariant(variantIndex)}
                 />

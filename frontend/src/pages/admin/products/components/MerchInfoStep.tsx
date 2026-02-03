@@ -188,25 +188,27 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
 
           {/* Row 2: Category */}
           <InputBlock label="Category" error={errors.merchType}>
-            <div className="relative w-full">
+            <div className="relative w-full group">
               <select
                 value={formState.merchType}
                 onChange={(e) =>
                   onMerchTypeChange(e.target.value as MerchType | "")
                 }
-                className="w-full bg-transparent text-white text-lg font-medium appearance-none focus:outline-none cursor-pointer [&>option]:bg-[#170657]"
+                className={`w-full bg-white/5 hover:bg-white/10 text-white text-lg font-medium appearance-none focus:outline-none cursor-pointer transition-all duration-200 rounded-lg px-3 py-2 border border-transparent focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 [&>option]:bg-[#4e4570] [&>option]:text-white [&>option]:font-medium ${
+                  formState.merchType ? "text-white" : "text-white/40"
+                }`}
               >
-                <option value="" className="text-white/20">
+                <option value="" className="text-white/40">
                   Select a category...
                 </option>
                 {Object.entries(MerchType).map(([key, value]) => (
-                  <option key={value} value={value}>
+                  <option key={value} value={value} className="text-white">
                     {key}
                   </option>
                 ))}
               </select>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/30">
-                <FaChevronDown size={12} />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 group-hover:text-white/60 group-focus-within:text-purple-400 transition-colors duration-200">
+                <FaChevronDown size={14} />
               </div>
             </div>
           </InputBlock>

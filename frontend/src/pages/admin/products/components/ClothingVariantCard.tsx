@@ -90,7 +90,7 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
         </label>
         <input
           type="number"
-          value={variant.price}
+          value={variant.price === "" ? "" : variant.price}
           onChange={(e) => onPriceChange(e.target.value)}
           placeholder="0.00"
           min="0"
@@ -191,7 +191,7 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
               <input
                 type="number"
                 disabled={!item.checked}
-                value={item.price}
+                value={item.price === "" ? "" : item.price}
                 onChange={(e) =>
                   onPriceChangeForSize?.(sizeIndex, e.target.value)
                 }

@@ -26,7 +26,7 @@ const NonClothingVariantCard: React.FC<NonClothingVariantCardProps> = ({
 }) => {
   const handleImageUpload = (
     imageIndex: number,
-    e: ChangeEvent<HTMLInputElement>
+    e: ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -78,7 +78,7 @@ const NonClothingVariantCard: React.FC<NonClothingVariantCardProps> = ({
         </label>
         <input
           type="number"
-          value={variant.price}
+          value={variant.price === "" ? "" : variant.price}
           onChange={(e) => onPriceChange(e.target.value)}
           placeholder="0.00"
           min="0"
