@@ -56,10 +56,34 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="relative" ref={homeRef}>
+    <div
+      className="relative min-h-screen bg-gradient-to-b from-[rgb(65,22,156)] via-[#20113F] to-black overflow-x-hidden"
+      ref={homeRef}
+      style={{ touchAction: "pan-y" }}
+    >
+      {/* Prevent dragging and ensure full background coverage */}
+      <style>{`
+        body {
+          background: linear-gradient(
+            to bottom,
+            rgb(65, 22, 156),
+            rgb(32, 17, 63),
+            black
+          ) !important;
+          overflow-x: hidden;
+        }
+        * {
+          -webkit-user-select: none;
+          -webkit-touch-callout: none;
+          -webkit-user-drag: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+      `}</style>
       {/* First Layout */}
       <Layout containerScreen="900px" withFooter={false}>
-        
         {/* Dynamic Sticky Wrapper */}
         <div
           ref={navHeightRef}
