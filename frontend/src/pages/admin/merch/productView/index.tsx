@@ -8,7 +8,6 @@ import type { MerchDetailedResponse } from "../../../../interfaces/merch/MerchRe
 import { getMerchById, addVariantToMerch } from "../../../../api/merch";
 import { toast } from "sonner";
 import NotFoundPage from "../../../notFound";
-import LoadingPage from "../../../loading";
 import { S3_BASE_URL } from "../../../../constant";
 import AddVariantModal from "./components/AddVariantModal";
 import StockManagement from "./components/StockManagement";
@@ -310,13 +309,85 @@ const AdminMerchProductView = () => {
     }
   };
 
-  // ========== Render Guards ==========
-  if (loading || !merch) {
-    return <LoadingPage />;
-  }
+  // Skeleton Loading Component
+  const SkeletonLoader = () => (
+    <Layout>
+      <AuthenticatedNav />
 
+      <div className="mb-8">
+        <div className="h-6 bg-white/10 rounded w-32 animate-pulse" />
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-16">
+        {/* Left - Variant List Skeleton */}
+        <div className="flex-1">
+          <div className="flex flex-col gap-4">
+            <div className="h-6 bg-white/10 rounded w-24 mb-4 animate-pulse" />
+            <div className="space-y-3 max-h-[600px]">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="w-full p-4 rounded-lg border border-white/10 bg-white/5"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white/10 rounded animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-white/10 rounded w-24 animate-pulse" />
+                      <div className="h-3 bg-white/10 rounded w-16 animate-pulse" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="h-12 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+
+        {/* Center - Image Skeleton */}
+        <div className="flex-[2] flex items-center justify-center">
+          <div className="w-full max-w-[350px] h-[400px] bg-white/10 rounded-lg animate-pulse" />
+        </div>
+
+        {/* Right - Info Skeleton */}
+        <div className="flex flex-col gap-6 flex-1">
+          {/* Header */}
+          <div className="space-y-3">
+            <div className="h-8 bg-white/10 rounded w-48 animate-pulse" />
+            <div className="h-6 bg-white/10 rounded w-32 animate-pulse" />
+            <div className="h-4 bg-white/10 rounded w-24 animate-pulse" />
+          </div>
+
+          {/* Stock Management Skeleton */}
+          <div className="space-y-4 border-t border-white/10 pt-4">
+            <div className="h-6 bg-white/10 rounded w-32 animate-pulse" />
+            {[1, 2].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-4 bg-white/10 rounded w-20 animate-pulse" />
+                <div className="h-10 bg-white/10 rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+            <div className="flex-1 h-12 bg-white/10 rounded animate-pulse" />
+            <div className="flex-1 h-12 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+  // ========== Render Guards ==========
   if (isNotFound) {
     return <NotFoundPage />;
+  }
+
+  if (!merch) {
+    return null;
   }
 
   // ========== Main Render ==========
