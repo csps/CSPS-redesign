@@ -63,22 +63,28 @@ const options = {
 // Labels for the chart (days of the week)
 const labels = ["Mo", "Tu", "We", "Th", "Fr", "Sat", "Sun"];
 
-// Data for the chart (you can update this based on your real data)
-const data = {
-  labels,
-  datasets: [
-    {
-      data: [150, 180, 120, 210, 250, 180, 190], // Replace with your actual data
-      borderColor: "rgb(255, 221, 51)", // Yellow line color
-      backgroundColor: "rgba(255, 221, 51, 0.5)", // Slightly transparent yellow
-      tension: 0.4,
-    },
-  ],
-};
+interface ChartProps {
+  data?: number[];
+}
 
 // Chart component
-export function Chart() {
+export function Chart({
+  data: chartDataValues = [150, 180, 120, 210, 250, 180, 190],
+}: ChartProps) {
   const [timeRange, setTimeRange] = useState("7 days"); // Track selected time range
+
+  // Build chart data dynamically
+  const data = {
+    labels,
+    datasets: [
+      {
+        data: chartDataValues,
+        borderColor: "rgb(255, 221, 51)", // Yellow line color
+        backgroundColor: "rgba(255, 221, 51, 0.5)", // Slightly transparent yellow
+        tension: 0.4,
+      },
+    ],
+  };
 
   // Handle change in dropdown selection
   const handleDropdownChange = (
