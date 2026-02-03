@@ -18,6 +18,7 @@ const customStorage = {
   getItem: (_name: string): StorageValue<AuthState> | null => {
     const isAuthenticated = sessionStorage.getItem("isAuthenticated");
     const user = sessionStorage.getItem("user");
+    const sessionExpired = sessionStorage.getItem("sessionExpired");
 
     if (!isAuthenticated && !user) return null;
 
@@ -25,6 +26,7 @@ const customStorage = {
       state: {
         isAuthenticated: isAuthenticated ? JSON.parse(isAuthenticated) : false,
         user: user ? JSON.parse(user) : null,
+        sessionExpired: sessionExpired ? JSON.parse(sessionExpired) : false,
         // We cast as any or Partial here because we don't persist functions
       } as AuthState,
       version: 0,
@@ -36,10 +38,15 @@ const customStorage = {
       JSON.stringify(value.state.isAuthenticated),
     );
     sessionStorage.setItem("user", JSON.stringify(value.state.user));
+    sessionStorage.setItem(
+      "sessionExpired",
+      JSON.stringify(value.state.sessionExpired),
+    );
   },
   removeItem: (_name: string) => {
     sessionStorage.removeItem("isAuthenticated");
     sessionStorage.removeItem("user");
+    sessionStorage.removeItem("sessionExpired");
   },
 };
 
@@ -50,9 +57,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       sessionExpired: false,
       isLoggingOut: false,
-      setUser: (user) => set({ user, isAuthenticated: true }),
-      clearAuth: () => set({ user: null, isAuthenticated: false }),
-      setSessionExpired: (expired) => set({ sessionExpired: expired }),
+      setUser: (user) =>
+        set({ user, isAuthenticated: true, sessionExpired: false }),
+      clearAuth: () =>
+        set({ user: null, isAuthenticated: false, sessionExpired: false }),
+      setSessionExpired: (sessionExpired) => set({ sessionExpired }),
       setLoggingOut: (loggingOut) => set({ isLoggingOut: loggingOut }),
     }),
     {
@@ -63,6 +72,7 @@ export const useAuthStore = create<AuthState>()(
         ({
           user: state.user,
           isAuthenticated: state.isAuthenticated,
+          sessionExpired: state.sessionExpired,
         }) as AuthState,
     },
   ),
