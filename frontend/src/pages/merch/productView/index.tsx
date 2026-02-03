@@ -211,6 +211,7 @@ const Index = () => {
                 <div className="h-20 bg-[#242050]/50 border border-white/10 rounded-[2rem] animate-pulse" />
               ) : (
                 <MobileCarousel
+                  merchVariants={merch?.variants || []}
                   items={merchVariantIds}
                   activeIndex={activeIndex}
                   setActiveIndex={setActiveIndex}

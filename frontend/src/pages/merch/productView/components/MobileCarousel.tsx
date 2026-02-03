@@ -1,12 +1,20 @@
-import SAMPLE from "../../../../assets/image 8.png";
+import { S3_BASE_URL } from "../../../../constant";
+import type { MerchVariantResponse } from "../../../../interfaces/merch_variant/MerchVariantResponse";
 
 type Props = {
   items: number[];
+  merchVariants: MerchVariantResponse[];
+
   activeIndex: number;
   setActiveIndex: (i: number) => void;
 };
 
-const MobileCarousel = ({ items, activeIndex, setActiveIndex }: Props) => {
+const MobileCarousel = ({
+  items,
+  activeIndex,
+  setActiveIndex,
+  merchVariants,
+}: Props) => {
   if (!items?.length) return null;
 
   return (
@@ -30,7 +38,7 @@ const MobileCarousel = ({ items, activeIndex, setActiveIndex }: Props) => {
                   <div className="absolute inset-0 bg-purple-500/10 blur-lg rounded-full" />
                 )}
                 <img
-                  src={SAMPLE}
+                  src={`${S3_BASE_URL}${merchVariants[index].s3ImageKey}`}
                   alt={`variant-${n}`}
                   className={`w-full h-full object-contain transition-transform duration-300 ${
                     isActive ? "scale-110" : "scale-90 opacity-60"

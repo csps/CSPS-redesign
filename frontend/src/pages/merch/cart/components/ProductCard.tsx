@@ -17,10 +17,10 @@ const ProductCard = memo(
 
     return (
       <div className="flex items-center gap-6 group relative">
-        {/* Premium Selection Toggle */}
+        {/* Premium Selection Toggle - Desktop */}
         <button
           onClick={onToggle}
-          className={`w-7 h-7 rounded-full border-2 transition-all duration-300 flex items-center justify-center shrink-0 z-10 
+          className={`hidden md:flex w-7 h-7 rounded-full border-2 transition-all duration-300 items-center justify-center shrink-0 z-10 
         ${
           isSelected
             ? "bg-[#FDE006] border-[#FDE006] shadow-[0_0_15px_rgba(253,224,6,0.3)]"
@@ -32,13 +32,25 @@ const ProductCard = memo(
 
         {/* Main Card Surface */}
         <div
-          className={`flex-1 flex flex-col md:flex-row gap-6 bg-[#242050] border transition-all duration-500 p-5 rounded-[2.5rem]
+          className={`flex-1 flex flex-col md:flex-row gap-6 bg-[#242050] border transition-all duration-500 p-5 rounded-[2.5rem] relative
         ${
           isSelected
             ? "border-purple-500/50 shadow-2xl shadow-purple-900/20"
             : "border-white/5 opacity-80 hover:opacity-100 hover:border-white/10"
         }`}
         >
+          {/* Premium Selection Toggle - Mobile (inside card) */}
+          <button
+            onClick={onToggle}
+            className={`md:hidden absolute top-4 right-4 w-7 h-7 rounded-full border-2 transition-all duration-300 flex items-center justify-center z-10 
+        ${
+          isSelected
+            ? "bg-[#FDE006] border-[#FDE006] shadow-[0_0_15px_rgba(253,224,6,0.3)]"
+            : "bg-white/5 border-white/20 hover:border-white/40"
+        }`}
+          >
+            {isSelected && <FaCheck className="w-3 h-3 text-black" />}
+          </button>
           {/* Product Image Container - Inspired by the eStore rounded image blocks */}
           <div className="shrink-0 aspect-square w-32 md:w-44 bg-white/5 border border-white/5 rounded-[2rem] flex items-center justify-center p-4 relative overflow-hidden group-hover:bg-white/10 transition-colors">
             <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/5 to-transparent" />
