@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../store/auth_store";
 import PageTransition from "../components/PageTransition";
 
-import LandingPage from "../pages/landing";
 import LoginPage from "../pages/login";
 import ContactUsPage from "../pages/contact";
 import ForgotPasswordPage from "../pages/forgotPassword";
@@ -20,9 +19,7 @@ import BulletinPage from "../pages/bulletin";
 // Admin
 import AdminDashboardPage from "../pages/admin/dashboard";
 import AdminEventPage from "../pages/admin/event/page";
-import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminProductsPage from "../pages/admin/products";
-import AdminSalesPage from "../pages/admin/sales";
 
 import AdminForumPage from "../pages/admin/forum";
 import AdminMerchPage from "../pages/admin/student";
@@ -34,13 +31,14 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 import AdminMerchProductView from "../pages/admin/merch/productView";
 import ProfilePage from "../components/ProfilePage";
+import LandingPage from "../pages/landing";
 
 // Home route component - redirects authenticated users to dashboard
 const HomeRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
-  // If authenticated, redirect to appropriate dashboard via protected routes
+  // If authenticated, redirect to appropriate dashboard
   if (isAuthenticated && user) {
     return (
       <Navigate
@@ -49,6 +47,8 @@ const HomeRoute = () => {
       />
     );
   }
+
+  // Not authenticated - show landing page
   return <LandingPage />;
 };
 const routers = [
@@ -88,9 +88,9 @@ const routers = [
       { path: "/admin/dashboard", element: <AdminDashboardPage /> },
       { path: "/admin/profile", element: <ProfilePage /> },
       { path: "/admin/event", element: <AdminEventPage /> },
-      { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+      // { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
-      { path: "/admin/sales", element: <AdminSalesPage /> },
+      // { path: "/admin/sales", element: <AdminSalesPage /> },
       { path: "/admin/forum", element: <AdminForumPage /> },
       { path: "/admin/students", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
