@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { getAllMerchWithoutVariants } from "../../../api/merch";
 import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchResponse";
 import { S3_BASE_URL } from "../../../constant";
@@ -60,17 +58,12 @@ const Merch = () => {
             <p className="text-white font-medium">Loading merchandise...</p>
           </div>
         ) : merchandise.length > 0 ? (
-          <Swiper
-            slidesPerView="auto"
-            spaceBetween={24}
-            pagination={{ clickable: true, dynamicBullets: true }}
-            modules={[Pagination]}
-            className="pb-16 !overflow-visible"
-          >
-            {merchandise.map((item) => (
-              <SwiperSlide
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Show only first 3 items */}
+            {merchandise.slice(0, 3).map((item) => (
+              <div
                 key={item.merchId}
-                className="!w-[280px] sm:!w-[320px] !h-auto group cursor-pointer"
+                className="group cursor-pointer"
                 onClick={() => navigate(`/merch/${item.merchId}`)}
               >
                 {/* THE GLASS CARD: 
@@ -127,9 +120,59 @@ const Merch = () => {
                     </div>
                   </div>
                 </div>
-              </SwiperSlide>
+              </div>
             ))}
-          </Swiper>
+
+            {/* Show More Card */}
+            <div
+              className="group cursor-pointer"
+              onClick={() => navigate("/merch")}
+            >
+              <div className="flex flex-col gap-5 bg-[#1a1a1a]/80 backdrop-blur-xl border border-white/10 p-5 rounded-[2.5rem] transition-all duration-500 hover:bg-[#222222]/90 hover:border-white/20 relative overflow-hidden h-full min-h-[400px]">
+                {/* Internal Glow Effect */}
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
+
+                {/* IMAGE CONTAINER */}
+                <div className="w-full aspect-square bg-black/40 rounded-[2rem] flex items-center justify-center p-6 overflow-hidden relative border border-white/10 shadow-inner">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-purple-500/10 to-transparent opacity-50" />
+                  <div className="flex items-center justify-center w-full h-full">
+                    <svg
+                      className="w-16 h-16 text-white/40 group-hover:text-white/60 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* TYPOGRAPHY AREA */}
+                <div className="flex flex-col gap-4 px-1 pb-1 relative z-10 flex-grow justify-center">
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold text-white mb-2">
+                      Show More
+                    </h3>
+                    <p className="text-sm text-white/60">
+                      Discover all our merchandise
+                    </p>
+                  </div>
+
+                  {/* DIVIDER & FOOTER */}
+                  <div className="flex items-center justify-center pt-4 border-t border-white/10 mt-auto">
+                    <p className="text-[11px] font-black text-[#FDE006] uppercase group-hover:underline">
+                      View All
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-[450px] text-white/60">
             <p className="text-lg font-medium">No merchandise available</p>

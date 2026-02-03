@@ -42,24 +42,24 @@ const Activities = () => {
       </div>
 
       {loading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="w-full h-[500px] bg-white/5 border border-white/20 rounded-[2.5rem] animate-pulse"
+              className="w-full h-[350px] md:h-[400px] lg:h-[520px] bg-white/5 border border-white/20 rounded-[2.5rem] animate-pulse"
             />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {/* Main Featured Events */}
           {events.slice(0, 2).map((event) => (
             <div
               key={event.eventId}
-              className="group relative flex flex-col bg-white/15 backdrop-blur-2xl border border-white/20 p-5 rounded-[2.5rem] transition-all duration-500 hover:border-white/40 hover:bg-[#1a1a1a] h-[520px] shadow-[0_0_40px_rgba(0,0,0,1)]"
+              className="group relative flex flex-col bg-white/15 backdrop-blur-2xl border border-white/20 p-4 md:p-5 rounded-[2.5rem] transition-all duration-500 hover:border-white/40 hover:bg-[#1a1a1a] h-[350px] md:h-[450px] lg:h-[520px] shadow-[0_0_40px_rgba(0,0,0,1)]"
             >
               {/* Image Container with Inset Contrast */}
-              <div className="w-full h-60 bg-black/60 rounded-[2rem] overflow-hidden border border-white/10 relative shadow-2xl mb-6">
+              <div className="w-full h-40 md:h-48 lg:h-60 bg-black/60 rounded-[2rem] overflow-hidden border border-white/10 relative shadow-2xl mb-4 md:mb-6">
                 {event.s3ImageKey && (
                   <img
                     src={S3_BASE_URL + event.s3ImageKey}
@@ -73,27 +73,27 @@ const Activities = () => {
 
               {/* Content Area */}
               <div className="flex flex-col flex-grow">
-                <p className="text-[11px] font-bold text-purple-400 uppercase mb-2">
+                <p className="text-[10px] md:text-[11px] font-bold text-purple-400 uppercase mb-2">
                   {event.eventType}
                 </p>
-                <h3 className="text-2xl font-bold text-white mb-3">
+                <h3 className="text-lg md:text-2xl font-bold text-white mb-2 md:mb-3">
                   {event.eventName}
                 </h3>
-                <p className="text-white/80 text-sm line-clamp-3 leading-relaxed mb-4 font-normal">
+                <p className="text-white/80 text-xs md:text-sm line-clamp-3 leading-relaxed mb-3 md:mb-4 font-normal">
                   {event.eventDescription}
                 </p>
 
                 {/* Footer Metadata - Higher Contrast */}
-                <div className="mt-auto pt-5 border-t border-white/10 flex justify-between items-center">
+                <div className="mt-auto pt-3 md:pt-5 border-t border-white/10 flex justify-between items-center">
                   <div className="space-y-0.5">
-                    <p className="text-[11px] font-bold text-white/60 uppercase">
+                    <p className="text-[10px] md:text-[11px] font-bold text-white/60 uppercase">
                       {event.eventLocation}
                     </p>
-                    <p className="text-[11px] font-medium text-white/40">
+                    <p className="text-[10px] md:text-[11px] font-medium text-white/40">
                       {new Date(event.eventDate).toLocaleDateString()}
                     </p>
                   </div>
-                  <span className="bg-[#FDE006] text-black px-4 py-1.5 rounded-full text-[11px] font-black uppercase transition-transform group-hover:scale-105">
+                  <span className="bg-[#FDE006] text-black px-3 md:px-4 py-1.5 rounded-full text-[10px] md:text-[11px] font-black uppercase transition-transform group-hover:scale-105">
                     Details
                   </span>
                 </div>
@@ -102,7 +102,7 @@ const Activities = () => {
           ))}
 
           {/* Third Column: Stacked Technical High-Contrast Cards */}
-          <div className="flex flex-col gap-6">
+          <div className="col-span-1 md:col-span-2 lg:col-span-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
             {events.slice(2, 4).map((event) => (
               <div
                 key={event.eventId}

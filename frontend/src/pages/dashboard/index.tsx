@@ -28,8 +28,8 @@ const Index = () => {
         <Hero />
       </Layout>
 
-      <div className="min-h-screen w-full bg-black flex justify-center py-56">
-        <div className="w-full max-w-[90rem] px-6 text-white space-y-50">
+      <div className="min-h-screen w-full bg-black flex justify-center py-20 md:py-56">
+        <div className="w-full max-w-[90rem] px-4 md:px-6 text-white space-y-50">
           {/** Announcements Section */}
           <Announcements />
 
