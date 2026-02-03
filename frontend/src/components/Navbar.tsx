@@ -94,9 +94,12 @@ const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex  lg:hidden  ">
+    <div className="flex lg:hidden">
       {/* Toggle button */}
-      <button onClick={() => setIsOpen(!isOpen)} className="text-2xl p-2">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="text-2xl p-3 hover:bg-white/10 rounded-lg transition-colors text-white"
+      >
         {<FaBars />}
       </button>
 
@@ -104,38 +107,49 @@ const MobileNav: React.FC<NavProps> = ({ LOGOS, NAVBARS, HandleNavigate }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="bg-white/4 backdrop-blur-lg border-2  border-white/20 min-h-screen fixed top-0 right-0 w-64 shadow-lg p-5 z-20 "
+            className="bg-white/4 backdrop-blur-lg border-2 border-white/20 min-h-screen fixed top-0 right-0 w-64 sm:w-72 shadow-lg p-6 z-20 overflow-y-auto"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ stiffness: 80 }}
           >
-            <div className="flex justify-between w-full">
-              <div className="flex">
-                <div className="flex">
-                  {LOGOS.map((logo, index) => (
-                    <img src={logo} key={index} />
-                  ))}
-                </div>
+            <div className="flex justify-between w-full mb-8">
+              <div className="flex gap-1 sm:gap-2">
+                {LOGOS.map((logo, index) => (
+                  <img
+                    src={logo}
+                    key={index}
+                    className="w-7 sm:w-8 h-7 sm:h-8 object-contain"
+                  />
+                ))}
               </div>
-              <button onClick={() => setIsOpen(!isOpen)}>
-                <FaTimes size={30} />
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <FaTimes size={24} className="text-white" />
               </button>
             </div>
-            <div className="mt-10">
+            <div className="space-y-2">
               {NAVBARS.map((name, index) => (
                 <p
-                  className="text-white text-xl mt-5"
+                  className="text-white text-base sm:text-lg hover:bg-white/10 px-3 py-2 rounded-lg transition-colors cursor-pointer"
                   key={index}
-                  onClick={() => HandleNavigate && HandleNavigate(name.name)}
+                  onClick={() => {
+                    HandleNavigate && HandleNavigate(name.name);
+                    setIsOpen(false);
+                  }}
                 >
                   {name.name}
                 </p>
               ))}
-              <div className="mt-8">
+              <div className="mt-8 pt-6 border-t border-white/10">
                 <button
-                  className=" bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-2 text-lg rounded-lg w-full "
-                  onClick={() => navigate("/login")}
+                  className="bg-white/5 backdrop-blur-[40px] shadow-md px-4 py-3 text-sm sm:text-base rounded-lg w-full text-white hover:bg-white/10 transition-colors"
+                  onClick={() => {
+                    navigate("/login");
+                    setIsOpen(false);
+                  }}
                 >
                   Login
                 </button>

@@ -1,7 +1,7 @@
 import React from "react";
 import Footer from "./Footer";
-import SessionExpiredModal from "./SessionExpiredModal";
 import LogoutLoadingModal from "./LogoutLoadingModal";
+import SessionExpiredModal from "./SessionExpiredModal";
 import { useAuthStore } from "../store/auth_store";
 
 type LayoutProps = {
@@ -21,17 +21,19 @@ const Layout = ({
   classNameInner,
   withFooter = true,
 }: LayoutProps) => {
-  const sessionExpired = useAuthStore((state) => state.sessionExpired);
-  const setSessionExpired = useAuthStore((state) => state.setSessionExpired);
   const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
+  const sessionExpired = useAuthStore((state) => state.sessionExpired);
 
   return (
     <>
+      <LogoutLoadingModal isOpen={isLoggingOut} />
       <SessionExpiredModal
         isOpen={sessionExpired}
-        onClose={() => setSessionExpired(false)}
+        onClose={() => {
+          useAuthStore.getState().setSessionExpired(false);
+          useAuthStore.getState().clearAuth();
+        }}
       />
-      <LogoutLoadingModal isOpen={isLoggingOut} />
       <div
         className={
           `min-h-${
@@ -42,7 +44,7 @@ const Layout = ({
       >
         <div
           className={
-            `w-full max-w-[90rem] p-6 text-white ${
+            `w-full max-w-[90rem] px-4 md:px-6 text-white ${
               overflowHidden ? "overflow-hidden" : ""
             }` + classNameInner
           }

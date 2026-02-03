@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LOGOS, NAVBARSAUTHENTICATED } from "./nav.config";
+import { LOGOS, getAuthenticatedNavbar } from "./nav.config";
 import { useAuthStore } from "../store/auth_store";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
 import { logout } from "../api/auth";
@@ -480,7 +480,7 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
         <LogoSection />
 
         <ul className="flex gap-10 justify-center flex-1">
-          {NAVBARSAUTHENTICATED.map((navItem, index) => {
+          {getAuthenticatedNavbar(isAdmin).map((navItem, index) => {
             const isMerchandise = navItem.name === "Merchandise";
             // base active detection (matches nav.to or nested paths)
             let isActive = isRouteActive(navItem.name, location, navItem.to);
@@ -560,8 +560,9 @@ const MobileAuthenticatedNav: React.FC = () => {
     null,
   );
 
-  const isAdmin = useAuthStore.getState().user?.role === "ADMIN";
-  const student = useAuthStore((state) => state.user as StudentResponse);
+  const user = useAuthStore((state) => state.user);
+  const student = user as StudentResponse;
+  const isAdmin = user?.role === "ADMIN";
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleMobileDropdown = (name: string) => {
@@ -572,7 +573,7 @@ const MobileAuthenticatedNav: React.FC = () => {
     <div className="flex justify-end lg:hidden">
       <button
         onClick={toggleMenu}
-        className="text-2xl p-2 text-white"
+        className="text-2xl p-3 text-white hover:bg-white/10 rounded-lg transition-colors"
         aria-label="Open menu"
       >
         <FaBars />
@@ -582,27 +583,31 @@ const MobileAuthenticatedNav: React.FC = () => {
         {isOpen && (
           <motion.div
             {...ANIMATION_CONFIG.mobileMenu}
-            className="bg-white/4 backdrop-blur-lg border-2 border-white/20 min-h-screen fixed top-0 right-0 w-64 shadow-lg p-5 z-20"
+            className="bg-white/4 backdrop-blur-lg border-2 border-white/20 min-h-screen fixed top-0 right-0 w-64 sm:w-72 shadow-lg p-6 z-20 overflow-y-auto"
           >
-            <div className="flex justify-between w-full items-center">
-              <div className="flex gap-2">
+            <div className="flex justify-between w-full items-center mb-8">
+              <div className="flex gap-1 sm:gap-2">
                 {LOGOS.map((logo, index) => (
                   <img
                     key={`mobile-logo-${index}`}
                     src={logo}
                     alt={`Logo ${index + 1}`}
-                    className="w-8 h-8 object-contain"
+                    className="w-7 sm:w-8 h-7 sm:h-8 object-contain"
                   />
                 ))}
               </div>
-              <button onClick={toggleMenu} aria-label="Close menu">
+              <button
+                onClick={toggleMenu}
+                aria-label="Close menu"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
                 <FaTimes size={24} className="text-white" />
               </button>
             </div>
 
-            <nav className="mt-10">
-              <ul className="space-y-5">
-                {NAVBARSAUTHENTICATED.map((navItem, index) => {
+            <nav className="mt-6">
+              <ul className="space-y-3 sm:space-y-5">
+                {getAuthenticatedNavbar(isAdmin).map((navItem, index) => {
                   const isMerchandise = navItem.name === "Merchandise";
 
                   if (isMerchandise) {
@@ -610,7 +615,7 @@ const MobileAuthenticatedNav: React.FC = () => {
                       <li key={`mobile-nav-${index}`}>
                         <button
                           onClick={() => toggleMobileDropdown("Merchandise")}
-                          className="text-white text-xl hover:text-gray-300 transition-colors w-full text-left flex items-center justify-between"
+                          className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors w-full text-left flex items-center justify-between px-3 py-2 rounded-lg"
                         >
                           {navItem.name}
                           <span
@@ -673,7 +678,7 @@ const MobileAuthenticatedNav: React.FC = () => {
                       <Link
                         to={navItem.to}
                         onClick={toggleMenu}
-                        className="text-white text-xl hover:text-gray-300 transition-colors block"
+                        className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors block px-3 py-2 rounded-lg"
                       >
                         {navItem.name}
                       </Link>
@@ -683,9 +688,11 @@ const MobileAuthenticatedNav: React.FC = () => {
               </ul>
 
               {student && (
-                <div className="mt-8 flex gap-3 items-center">
-                  <div className="h-16 w-16 bg-purple-700/40 rounded-md flex-shrink-0" />
-                  <p className="text-white text-sm">{student.studentId}</p>
+                <div className="mt-8 pt-6 border-t border-white/10 flex gap-3 items-center">
+                  <div className="h-14 w-14 bg-purple-700/40 rounded-md flex-shrink-0" />
+                  <p className="text-white text-xs sm:text-sm truncate">
+                    {student.studentId}
+                  </p>
                 </div>
               )}
             </nav>

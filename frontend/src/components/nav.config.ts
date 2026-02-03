@@ -7,17 +7,10 @@ import STUDENT from "../assets/navs/student.svg";
 import UCLOGO from "../assets/logos/uc_LOGO 1.png";
 import CCSLOGO from "../assets/logos/ccs logo 1.png";
 import CSPSLOGO from "../assets/logos/CSPS PNG (1) 1.png";
-import { useAuthStore } from "../store/auth_store";
 
 export const LOGOS: string[] = [UCLOGO, CCSLOGO, CSPSLOGO];
 
-const isAdmin = useAuthStore.getState().user?.role === "ADMIN";
-
-export const NAVBARSAUTHENTICATED: {
-  name: string;
-  icon?: string;
-  to: string;
-}[] = [
+export const getAuthenticatedNavbar = (isAdmin: boolean) => [
   { name: "Home", icon: HOME, to: isAdmin ? "/admin/dashboard" : "/dashboard" },
   // { name: "Forum", icon: FORUM, to: "/forum" },
   {
