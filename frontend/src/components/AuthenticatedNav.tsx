@@ -639,7 +639,10 @@ const MobileAuthenticatedNav: React.FC = () => {
                             >
                               {(isAdmin
                                 ? [
-                                    { to: "/admin/merch", label: "Products" },
+                                    {
+                                      to: "/admin/merch/products",
+                                      label: "Products",
+                                    },
                                     {
                                       to: "/admin/merch/orders",
                                       label: "Orders",

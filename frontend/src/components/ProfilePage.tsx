@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/auth_store";
 import { useNavigate } from "react-router-dom";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
 import Layout from "./Layout";
+import { changePassword } from "../api/auth";
 
 // ============================================================================
 // Types
@@ -175,6 +176,91 @@ const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({
   </div>
 );
 
+/** Success Modal for Password Change */
+const PasswordSuccessModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/50 rounded-3xl shadow-2xl shadow-black/50 p-8 max-w-sm w-full mx-4">
+        <div className="flex flex-col items-center text-center">
+          {/* Success Icon */}
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+            <IconCheck className="w-8 h-8 text-green-400" />
+          </div>
+
+          {/* Content */}
+          <h3 className="text-xl font-bold text-white mb-2">
+            Password Changed
+          </h3>
+          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+            Your password has been successfully updated.
+          </p>
+
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/** Confirmation Modal for Password Change */
+const PasswordConfirmModal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  isLoading?: boolean;
+}> = ({ isOpen, onClose, onConfirm, isLoading = false }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <div className="bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/50 rounded-3xl shadow-2xl shadow-black/50 p-8 max-w-sm w-full mx-4">
+        <div className="flex flex-col items-center text-center">
+          {/* Warning Icon */}
+          <div className="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mb-6">
+            <IconLock className="w-8 h-8 text-yellow-400" />
+          </div>
+
+          {/* Content */}
+          <h3 className="text-xl font-bold text-white mb-2">Change Password</h3>
+          <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+            Are you sure you want to change your password? This action cannot be
+            undone.
+          </p>
+
+          {/* Buttons */}
+          <div className="flex gap-3 w-full">
+            <button
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 bg-zinc-700 hover:bg-zinc-600 disabled:bg-zinc-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={isLoading}
+              className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              {isLoading ? "Changing..." : "Change Password"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ============================================================================
 // Main Page
 // ============================================================================
@@ -205,6 +291,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // ── seed form from store ──────────────────────────────────────────────────
   useEffect(() => {
@@ -237,9 +328,76 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setPasswordForm((p) => ({ ...p, [name]: value }));
+      // Clear error when user starts typing
+      if (passwordError) setPasswordError("");
     },
-    [],
+    [passwordError],
   );
+
+  const handlePasswordUpdate = useCallback(async () => {
+    // Clear previous error
+    setPasswordError("");
+
+    // Validation
+    if (!passwordForm.currentPassword.trim()) {
+      setPasswordError("Current password is required");
+      return;
+    }
+
+    if (!passwordForm.newPassword.trim()) {
+      setPasswordError("New password is required");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("New password must be at least 8 characters long");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("New passwords do not match");
+      return;
+    }
+
+    if (passwordForm.currentPassword === passwordForm.newPassword) {
+      setPasswordError("New password must be different from current password");
+      return;
+    }
+
+    // Show confirmation modal instead of directly changing password
+    setShowConfirmModal(true);
+  }, [passwordForm]);
+
+  const confirmPasswordChange = useCallback(async () => {
+    setIsChangingPassword(true);
+    setShowConfirmModal(false);
+
+    try {
+      await changePassword({
+        oldPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+
+      // Success - show modal and reset form
+      setShowSuccessModal(true);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error: any) {
+      // Handle API errors
+      if (error.response?.status === 400) {
+        setPasswordError("Current password is incorrect");
+      } else if (error.response?.data?.message) {
+        setPasswordError(error.response.data.message);
+      } else {
+        setPasswordError("Failed to change password. Please try again.");
+      }
+    } finally {
+      setIsChangingPassword(false);
+    }
+  }, [passwordForm]);
 
   if (!student) return null;
 
@@ -635,13 +793,41 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
 
                     {/* Actions */}
                     <div className="flex gap-3 pt-2">
-                      <button className="bg-purple-600 hover:bg-purple-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors">
-                        Update Password
+                      <button
+                        onClick={handlePasswordUpdate}
+                        disabled={isChangingPassword}
+                        className="bg-purple-600 hover:bg-purple-500 disabled:bg-purple-600/50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                      >
+                        {isChangingPassword ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Updating...
+                          </>
+                        ) : (
+                          "Update Password"
+                        )}
                       </button>
-                      <button className="text-zinc-400 hover:text-zinc-200 px-4 py-2 text-sm font-medium transition-colors">
+                      <button
+                        onClick={() => {
+                          setPasswordForm({
+                            currentPassword: "",
+                            newPassword: "",
+                            confirmPassword: "",
+                          });
+                          setPasswordError("");
+                        }}
+                        className="text-zinc-400 hover:text-zinc-200 px-4 py-2 text-sm font-medium transition-colors"
+                      >
                         Cancel
                       </button>
                     </div>
+
+                    {/* Error Message */}
+                    {passwordError && (
+                      <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                        <p className="text-red-400 text-sm">{passwordError}</p>
+                      </div>
+                    )}
                   </div>
                 </Card>
               </div>
@@ -649,6 +835,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onClose }) => {
           </section>
         </main>
       </div>
+
+      {/* Confirmation Modal */}
+      <PasswordConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={confirmPasswordChange}
+        isLoading={isChangingPassword}
+      />
+
+      {/* Success Modal */}
+      <PasswordSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
     </Layout>
   );
 };

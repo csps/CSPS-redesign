@@ -10,6 +10,7 @@ import { getAllMerchWithoutVariants, getMerchByType } from "../../../api/merch";
 import { useNavigate } from "react-router-dom";
 import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
+import CSPSLOGO from "../../../assets/logos/CSPS PNG (1) 1.png";
 
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -91,70 +92,88 @@ const Index = () => {
         </div>
 
         {/* Grid Display */}
-        <div
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 transition-all duration-500 ${loading ? "opacity-30 blur-sm" : "opacity-100"}`}
-        >
-          {merch.map((item) => (
-            <div
-              key={item.merchId}
-              className="bg-[#1E293B]/40 border border-white/5 rounded-2xl p-3 sm:p-4 flex flex-col group transition-all hover:bg-[#1E293B]/60"
-            >
-              {/* Product Image Box */}
-              <div className="aspect-[4/3] bg-[#0F172A]/60 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden mb-3 sm:mb-4">
+        <div className="relative min-h-[400px]">
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center z-40">
+              <div className="flex flex-col items-center gap-4">
                 <img
-                  src={item.s3ImageKey ? S3_BASE_URL + item.s3ImageKey : SAMPLE}
-                  alt={item.merchName}
-                  className="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform"
+                  src={CSPSLOGO}
+                  alt="Loading"
+                  className="w-24 h-24 animate-spin"
                 />
-              </div>
-
-              {/* Product Info */}
-              <div className="flex flex-col flex-1">
-                <span className="text-[#9f8fd8] font-bold mb-1 text-xs sm:text-sm">
-                  MERCH {item.merchId}
-                </span>
-                <h3 className="text-white font-medium text-sm sm:text-base mb-1 truncate">
-                  {item.merchName}
-                </h3>
-                <p className="text-[#FFB800] font-bold text-base sm:text-lg mb-3 sm:mb-4">
-                  ₱{item.basePrice.toLocaleString()}
+                <p className="text-white text-lg font-medium">
+                  Loading products...
                 </p>
-                {/* Stock Info Area */}
-                <div className="bg-[#0F172A]/40 rounded-xl p-2 sm:p-3 border border-white/5 flex justify-between items-center mt-auto mb-3 sm:mb-4">
-                  <div className="flex flex-col">
-                    <span className="text-white/40 text-[10px] font-bold uppercase">
-                      Stock
-                    </span>
-                    <span className="text-white font-bold text-sm sm:text-base">
-                      {item.totalStockQuantity}
-                    </span>
-                  </div>
-
-                  {(item.totalStockQuantity ?? 0) > 0 ? (
-                    <span className="bg-[#10B981]/20 text-[#10B981] text-[10px] px-2 sm:px-3 py-1 rounded-lg font-bold uppercase border border-[#10B981]/20">
-                      In Stock
-                    </span>
-                  ) : (
-                    <span className="bg-[#EF4444]/20 text-[#EF4444] text-[10px] px-2 sm:px-3 py-1 rounded-lg font-bold uppercase border border-[#EF4444]/20">
-                      Out of Stock
-                    </span>
-                  )}
-                </div>
-                {/* Action Buttons (Visible on hover or card bottom) */}
-                <div className="flex gap-2 mt-auto">
-                  <button
-                    onClick={() => navigate(item.merchId)}
-                    className="flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
-                  >
-                    <FiEdit3 className="text-sm" /> Edit
-                  </button>
-                  <button className="flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110">
-                    <FiTrash2 className="text-sm" /> Delete
-                  </button>
-                </div>
               </div>
             </div>
-          ))}
+          )}
+          <div
+            className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 transition-all duration-500 ${loading ? "opacity-30 blur-sm" : "opacity-100"}`}
+          >
+            {merch.map((item) => (
+              <div
+                key={item.merchId}
+                className="bg-[#1E293B]/40 border border-white/5 rounded-2xl p-3 sm:p-4 flex flex-col group transition-all hover:bg-[#1E293B]/60"
+              >
+                {/* Product Image Box */}
+                <div className="aspect-[4/3] bg-[#0F172A]/60 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden mb-3 sm:mb-4">
+                  <img
+                    src={
+                      item.s3ImageKey ? S3_BASE_URL + item.s3ImageKey : SAMPLE
+                    }
+                    alt={item.merchName}
+                    className="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-105 transition-transform"
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="flex flex-col flex-1">
+                  <span className="text-[#9f8fd8] font-bold mb-1 text-xs sm:text-sm">
+                    MERCH {item.merchId}
+                  </span>
+                  <h3 className="text-white font-medium text-sm sm:text-base mb-1 truncate">
+                    {item.merchName}
+                  </h3>
+                  <p className="text-[#FFB800] font-bold text-base sm:text-lg mb-3 sm:mb-4">
+                    ₱{item.basePrice.toLocaleString()}
+                  </p>
+                  {/* Stock Info Area */}
+                  <div className="bg-[#0F172A]/40 rounded-xl p-2 sm:p-3 border border-white/5 flex justify-between items-center mt-auto mb-3 sm:mb-4">
+                    <div className="flex flex-col">
+                      <span className="text-white/40 text-[10px] font-bold uppercase">
+                        Stock
+                      </span>
+                      <span className="text-white font-bold text-sm sm:text-base">
+                        {item.totalStockQuantity}
+                      </span>
+                    </div>
+
+                    {(item.totalStockQuantity ?? 0) > 0 ? (
+                      <span className="bg-[#10B981]/20 text-[#10B981] text-[10px] px-2 sm:px-3 py-1 rounded-lg font-bold uppercase border border-[#10B981]/20">
+                        In Stock
+                      </span>
+                    ) : (
+                      <span className="bg-[#EF4444]/20 text-[#EF4444] text-[10px] px-2 sm:px-3 py-1 rounded-lg font-bold uppercase border border-[#EF4444]/20">
+                        Out of Stock
+                      </span>
+                    )}
+                  </div>
+                  {/* Action Buttons (Visible on hover or card bottom) */}
+                  <div className="flex gap-2 mt-auto">
+                    <button
+                      onClick={() => navigate(item.merchId)}
+                      className="flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                    >
+                      <FiEdit3 className="text-sm" /> Edit
+                    </button>
+                    <button className="flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110">
+                      <FiTrash2 className="text-sm" /> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

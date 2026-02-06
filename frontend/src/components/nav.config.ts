@@ -16,7 +16,7 @@ export const getAuthenticatedNavbar = (isAdmin: boolean) => [
   {
     name: "Merchandise",
     icon: MERCHANDISE,
-    to: isAdmin ? "/admin/merch" : "/merch",
+    to: isAdmin ? "/admin/merch/products" : "/merch",
   },
   ...(!isAdmin ? [{ name: "Bulletin", icon: BULLETIN, to: "/bulletin" }] : []),
   { name: "Events", icon: EVENTS, to: isAdmin ? "/admin/event" : "/events" },

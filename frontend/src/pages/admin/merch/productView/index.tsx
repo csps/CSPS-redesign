@@ -397,7 +397,7 @@ const AdminMerchProductView = () => {
 
       <div className="mb-8">
         <button
-          onClick={() => navigate("/admin/merch")}
+          onClick={() => navigate("/admin/merch/products")}
           className="text-purple-400 hover:text-purple-300 transition-colors"
         >
           ← Back to Merch

@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/auth_store";
 import api from "./api";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
 import type { AuthUser } from "../types/auth";
+import type { ChangePasswordRequest } from "../interfaces/auth/ChangePasswordRequest";
 
 export const login = async (authRequest: AuthRequest) => {
   const response = await api.post("/auth/login", authRequest);
@@ -119,5 +120,19 @@ export const profile = async (): Promise<AuthUser> => {
       useAuthStore.getState().clearAuth();
       throw adminErr;
     }
+  }
+};
+
+export const changePassword = async (
+  changePasswordRequest: ChangePasswordRequest,
+) => {
+  try {
+    const response = await api.post(
+      "/auth/change-password",
+      changePasswordRequest,
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
   }
 };
