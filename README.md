@@ -150,7 +150,7 @@ frontend/
 ## 🎨 Design System
 
 - **Color Scheme**: Purple-based theme with dark mode support
-- **Typography**: iOS-inspired font stack (SF Pro Text, system fonts)
+- **Typography**: (SF Pro Text, system fonts)
 - **Components**: Modular, reusable component library
 - **Animations**: Smooth transitions and micro-interactions
 - **Accessibility**: WCAG compliant design patterns
