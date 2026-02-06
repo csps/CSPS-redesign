@@ -5,6 +5,7 @@ A modern, responsive web application for the Computer Science and Programming So
 ## 🚀 Features
 
 ### For Students
+
 - **Dashboard**: Personalized student portal with membership information and quick access to features
 - **Events**: Browse upcoming and recent events, register for activities
 - **Bulletin**: Stay updated with announcements and news
@@ -12,6 +13,7 @@ A modern, responsive web application for the Computer Science and Programming So
 - **Profile Management**: Update personal information and membership details
 
 ### For Administrators
+
 - **Student Management**: View and manage student memberships, details, and status
 - **Event Management**: Create, edit, and manage society events
 - **Merchandise Management**: Add products, manage inventory, variants, and pricing
@@ -19,6 +21,7 @@ A modern, responsive web application for the Computer Science and Programming So
 - **Analytics**: View charts and statistics for events, sales, and membership
 
 ### Core Features
+
 - **Authentication**: Secure login/logout with JWT token management
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Real-time Updates**: Live data fetching with React Query
@@ -47,12 +50,14 @@ A modern, responsive web application for the Computer Science and Programming So
 ## 📦 Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd csps-redesign/frontend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -62,6 +67,7 @@ A modern, responsive web application for the Computer Science and Programming So
    - Configure API endpoints and other environment variables
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -74,27 +80,35 @@ A modern, responsive web application for the Computer Science and Programming So
 ## 🚀 Usage
 
 ### Development
+
 ```bash
 npm run dev
 ```
+
 Starts the Vite development server with hot module replacement.
 
 ### Production Build
+
 ```bash
 npm run build
 ```
+
 Creates an optimized production build in the `dist` directory.
 
 ### Preview Production Build
+
 ```bash
 npm run preview
 ```
+
 Serves the production build locally for testing.
 
 ### Linting
+
 ```bash
 npm run lint
 ```
+
 Runs ESLint to check for code quality issues.
 
 ## 📁 Project Structure
@@ -144,11 +158,13 @@ frontend/
 ## 🔧 Configuration
 
 ### Vite Configuration
+
 - SWC for fast compilation
 - Tailwind CSS integration
 - Path aliases for clean imports
 
 ### ESLint Configuration
+
 - TypeScript support
 - React hooks rules
 - Custom rules for code consistency
