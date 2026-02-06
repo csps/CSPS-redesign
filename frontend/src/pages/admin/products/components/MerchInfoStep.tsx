@@ -1,5 +1,5 @@
 import React, { type ChangeEvent } from "react";
-import { FaCloudUploadAlt, FaChevronDown } from "react-icons/fa";
+import { FaCloudUploadAlt, FaChevronDown, FaArrowRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MerchType } from "../../../../enums/MerchType";
 import type { ValidationErrors } from "../util/validation";
@@ -16,7 +16,7 @@ interface MerchInfoStepProps {
   onNext: () => void;
 }
 
-// --- Reusable "Deposit" Style Input Block ---
+// --- Reusable Modern Input Block ---
 const InputBlock = ({
   label,
   error,
@@ -30,27 +30,29 @@ const InputBlock = ({
   className?: string;
   rightElement?: React.ReactNode;
 }) => (
-  <div
-    className={`group relative w-full bg-white/5 rounded-2xl px-5 py-3 border transition-all duration-200 ${
-      error
-        ? "border-red-500/50 bg-red-500/5"
-        : "border-transparent hover:border-white/10 hover:bg-white/[0.07]"
-    } ${className}`}
-  >
-    <div className="flex justify-between items-center mb-1">
-      <label className="block text-white/40 text-xs font-bold uppercase tracking-wider group-focus-within:text-purple-300 transition-colors">
-        {label}
-      </label>
-      {rightElement}
+  <div className={`group relative ${className}`}>
+    <div
+      className={`relative w-full bg-white/[0.03] hover:bg-white/[0.05] rounded-2xl px-5 py-4 border-2 transition-all duration-200 ${
+        error
+          ? "border-red-500/50 bg-red-500/5"
+          : "border-transparent focus-within:border-purple-500/50 focus-within:bg-white/[0.05]"
+      }`}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <label className="block text-white/50 text-xs font-semibold uppercase tracking-wider group-focus-within:text-purple-300 transition-colors">
+          {label}
+        </label>
+        {rightElement}
+      </div>
+      <div className="relative flex items-center">{children}</div>
     </div>
-    <div className="relative flex items-center">{children}</div>
     <AnimatePresence>
       {error && (
         <motion.p
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          className="absolute -bottom-5 left-1 text-red-400 text-[10px] font-medium"
+          className="absolute -bottom-6 left-2 text-red-400 text-xs font-medium"
         >
           {error}
         </motion.p>
@@ -80,14 +82,14 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 h-full">
-      {/* --- Left Column: Image Upload (Takes up 4/12 columns on desktop) --- */}
-      <div className="lg:col-span-4 flex flex-col h-full">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+      {/* --- Left Column: Image Upload --- */}
+      <div className="lg:col-span-5 flex flex-col">
         <label
-          className={`relative flex-1 min-h-[300px] lg:min-h-0 w-full rounded-[32px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all overflow-hidden group ${
+          className={`relative flex-1 min-h-[320px] lg:min-h-[400px] w-full rounded-3xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all duration-300 overflow-hidden group ${
             errors.merchImage
               ? "border-red-500/50 bg-red-500/5"
-              : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+              : "border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-purple-500/30"
           }`}
         >
           <input
@@ -104,24 +106,30 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                 alt="Merch Preview"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-full text-white font-semibold border border-white/20">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="bg-white/10 backdrop-blur-xl px-6 py-3 rounded-2xl text-white font-semibold border border-white/20 shadow-xl">
                   Change Photo
                 </span>
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center gap-4 p-6 text-center">
-              <div className="w-20 h-20 rounded-full bg-[#242050] flex items-center justify-center text-white/50 group-hover:scale-110 group-hover:text-white transition-all duration-300 shadow-xl">
+            <div className="flex flex-col items-center gap-5 p-8 text-center">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 flex items-center justify-center text-white/40 group-hover:scale-110 group-hover:text-purple-400 transition-all duration-300 border border-white/5">
                 <FaCloudUploadAlt size={40} />
               </div>
               <div>
-                <span className="block text-lg font-bold text-white mb-1">
-                  Upload Image
+                <span className="block text-lg font-bold text-white mb-2">
+                  Upload Product Image
                 </span>
-                <span className="text-xs text-white/40 uppercase tracking-widest font-semibold">
-                  PNG, JPG, WebP
+                <span className="text-sm text-white/40">
+                  Drag & drop or click to browse
                 </span>
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">PNG</span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">JPG</span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">WebP</span>
+                </div>
               </div>
             </div>
           )}
@@ -133,7 +141,7 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="text-center text-red-400 text-xs font-bold mt-3"
+              className="text-center text-red-400 text-sm font-medium mt-3"
             >
               {errors.merchImage}
             </motion.p>
@@ -141,17 +149,17 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* --- Right Column: Form Fields (Takes up 8/12 columns) --- */}
-      <div className="lg:col-span-8 flex flex-col justify-center">
-        <div className="space-y-5">
+      {/* --- Right Column: Form Fields --- */}
+      <div className="lg:col-span-7 flex flex-col justify-center">
+        <div className="space-y-6">
           {/* Row 1: Name & Price */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <InputBlock
               label="Product Name"
               error={errors.merchName}
               rightElement={
                 <span
-                  className={`text-[10px] font-medium ${formState.merchName.length >= 100 ? "text-red-400" : "text-white/20"}`}
+                  className={`text-xs font-medium ${formState.merchName.length >= 100 ? "text-red-400" : "text-white/30"}`}
                 >
                   {formState.merchName.length}/100
                 </span>
@@ -167,9 +175,9 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
               />
             </InputBlock>
 
-            <InputBlock label="Price (PHP)" error={errors.basePrice}>
-              <div className="flex items-center gap-2 w-full">
-                <span className="text-white/30 font-medium text-lg">₱</span>
+            <InputBlock label="Base Price" error={errors.basePrice}>
+              <div className="flex items-center gap-3 w-full">
+                <span className="text-purple-400 font-bold text-xl">₱</span>
                 <input
                   type="number"
                   value={formState.basePrice || ""}
@@ -177,7 +185,7 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                     const value = e.target.value;
                     onBasePriceChange(value === "" ? "0" : value);
                   }}
-                  placeholder="0"
+                  placeholder="0.00"
                   min="0"
                   step="0.01"
                   className="w-full bg-transparent text-white text-lg font-bold placeholder-white/20 focus:outline-none"
@@ -187,14 +195,14 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
           </div>
 
           {/* Row 2: Category */}
-          <InputBlock label="Category" error={errors.merchType}>
-            <div className="relative w-full group">
+          <InputBlock label="Product Category" error={errors.merchType}>
+            <div className="relative w-full">
               <select
                 value={formState.merchType}
                 onChange={(e) =>
                   onMerchTypeChange(e.target.value as MerchType | "")
                 }
-                className={`w-full bg-white/5 hover:bg-white/10 text-white text-lg font-medium appearance-none focus:outline-none cursor-pointer transition-all duration-200 rounded-lg px-3 py-2 border border-transparent focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 [&>option]:bg-[#4e4570] [&>option]:text-white [&>option]:font-medium ${
+                className={`w-full bg-transparent text-lg font-medium appearance-none focus:outline-none cursor-pointer transition-all duration-200 pr-10 [&>option]:bg-[#2a2650] [&>option]:text-white [&>option]:font-medium ${
                   formState.merchType ? "text-white" : "text-white/40"
                 }`}
               >
@@ -207,7 +215,7 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                   </option>
                 ))}
               </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 group-hover:text-white/60 group-focus-within:text-purple-400 transition-colors duration-200">
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 group-focus-within:text-purple-400 transition-colors duration-200">
                 <FaChevronDown size={14} />
               </div>
             </div>
@@ -219,7 +227,7 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
             error={errors.description}
             rightElement={
               <span
-                className={`text-[10px] font-medium ${formState.description.length >= 500 ? "text-red-400" : "text-white/20"}`}
+                className={`text-xs font-medium ${formState.description.length >= 500 ? "text-red-400" : "text-white/30"}`}
               >
                 {formState.description.length}/500
               </span>
@@ -228,20 +236,21 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
             <textarea
               value={formState.description}
               onChange={(e) => onDescriptionChange(e.target.value)}
-              placeholder="Tell us about this product..."
+              placeholder="Describe your product - materials, features, and what makes it special..."
               maxLength={500}
               rows={4}
-              className="w-full bg-transparent text-white text-base font-normal placeholder-white/20 focus:outline-none resize-none leading-relaxed mt-1"
+              className="w-full bg-transparent text-white text-base placeholder-white/20 focus:outline-none resize-none leading-relaxed"
             />
           </InputBlock>
 
-          {/* Actions */}
+          {/* Next Button */}
           <div className="pt-4 flex justify-end">
             <button
               onClick={onNext}
-              className="w-full md:w-auto bg-white hover:bg-purple-50 text-[#170657] text-lg font-bold py-4 px-10 rounded-xl shadow-lg shadow-purple-900/20 active:scale-[0.98] transition-all"
+              className="group w-full md:w-auto bg-[#FDE006] hover:brightness-110 text-black text-lg font-bold py-4 px-10 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
             >
-              Next Step
+              <span>Continue to Variants</span>
+              <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
