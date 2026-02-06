@@ -1,22 +1,29 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { OrderStatus } from "../../../../../enums/OrderStatus";
+import { FiChevronDown } from "react-icons/fi";
 
 const options = [
   {
-    label: "TO BE CLAIMED",
+    label: "Ready for Pickup",
     value: OrderStatus.TO_BE_CLAIMED,
-    color: "text-yellow-400",
+    color: "text-[#FDE006]",
+    bg: "bg-[#FDE006]/10",
+    border: "border-[#FDE006]/20",
   },
   {
-    label: OrderStatus.PENDING,
+    label: "Processing",
     value: OrderStatus.PENDING,
-    color: "text-red-500",
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
   },
   {
-    label: OrderStatus.CLAIMED,
+    label: "Claimed",
     value: OrderStatus.CLAIMED,
-    color: "text-green-500",
+    color: "text-green-400",
+    bg: "bg-green-500/10",
+    border: "border-green-500/20",
   },
 ];
 
@@ -34,19 +41,22 @@ export default function StatusDropdown({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative inline-block text-m">
+    <div className="relative inline-block w-full">
       {/* Trigger */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-xl bg-[#2a2456] px-4 py-4 text-white"
+        className={`flex items-center justify-between gap-3 w-full rounded-xl px-4 py-4 transition-all border ${selected.bg} ${selected.border}`}
       >
-        <span className="opacity-80">Status:</span>
-        <span
-          className={`font-semibold ${selected.color}  inline-block w-[130px]`}
-        >
-          {selected.label}
-        </span>
-        <span className="ml-1 text-gray-300">▾</span>
+        <div className="flex items-center gap-3">
+          <span className="text-white/50 text-sm">Status:</span>
+          <span className={`font-bold text-sm ${selected.color}`}>
+            {selected.label}
+          </span>
+        </div>
+        <FiChevronDown 
+          className={`text-white/40 transition-transform ${open ? "rotate-180" : ""}`} 
+          size={18} 
+        />
       </button>
 
       {/* Dropdown */}
@@ -57,7 +67,7 @@ export default function StatusDropdown({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 mt-2 w-full rounded-xl bg-[#2a2456] p-3 shadow-lg"
+            className="absolute left-0 right-0 mt-2 rounded-xl bg-[#252552] border border-white/10 p-2 z-10"
           >
             {options.map((option) => (
               <button
@@ -67,12 +77,13 @@ export default function StatusDropdown({
                   setOpen(false);
                 }}
                 className={`
-                  flex w-full rounded-lg px-3 py-2 text-left font-medium
-                  hover:bg-white/10
-                  ${option.color}
+                  flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left font-medium
+                  transition-colors hover:bg-white/10
+                  ${selected.value === option.value ? option.bg : ""}
                 `}
               >
-                {option.label}
+                <span className={`w-2 h-2 rounded-full ${option.color.replace("text-", "bg-")}`} />
+                <span className={option.color}>{option.label}</span>
               </button>
             ))}
           </motion.div>

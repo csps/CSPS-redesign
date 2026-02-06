@@ -4,157 +4,146 @@ import type { OrderItemResponse } from "../../../../../interfaces/order/OrderRes
 import { S3_BASE_URL } from "../../../../../constant";
 import { updateOrderItemStatus } from "../../../../../api/order";
 import { OrderStatus } from "../../../../../enums/OrderStatus";
+import { MerchType } from "../../../../../enums/MerchType";
 import { AnimatePresence, motion } from "framer-motion";
 
-const options = [
-  {
-    label: "TO BE CLAIMED",
-    value: OrderStatus.TO_BE_CLAIMED,
-    color: "text-yellow-400",
+export const statusStyles = {
+  [OrderStatus.CLAIMED]: {
+    color: "text-green-400",
+    bg: "bg-green-500/10",
+    border: "border-green-500/20",
   },
-  {
-    label: OrderStatus.PENDING,
-    value: OrderStatus.PENDING,
-    color: "text-red-500",
+  [OrderStatus.TO_BE_CLAIMED]: {
+    color: "text-[#FDE006]",
+    bg: "bg-[#FDE006]/10",
+    border: "border-[#FDE006]/20",
   },
-  {
-    label: OrderStatus.CLAIMED,
-    value: OrderStatus.CLAIMED,
-    color: "text-green-500",
+  [OrderStatus.PENDING]: {
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/20",
   },
-];
+};
+
+export const statusLabels = {
+  [OrderStatus.CLAIMED]: "Claimed",
+  [OrderStatus.TO_BE_CLAIMED]: "Ready for Pickup",
+  [OrderStatus.PENDING]: "Processing",
+};
 
 interface StatusCardProps {
   orderItem: OrderItemResponse;
 }
 
 const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
-  const getInitialStatus = () => {
-    switch (orderItem.orderStatus) {
-      case OrderStatus.TO_BE_CLAIMED:
-        return options[0];
-      case OrderStatus.PENDING:
-        return options[1];
-      case OrderStatus.CLAIMED:
-        return options[2];
-      default:
-        return options[1];
-    }
-  };
-
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState(getInitialStatus());
-  const [tempStatus, setTempStatus] = useState(selectedStatus);
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(orderItem.orderStatus as OrderStatus);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleSave = async () => {
+  const handleStatusUpdate = async (newStatus: OrderStatus) => {
     try {
-      await updateOrderItemStatus(
-        orderItem.orderItemId,
-        tempStatus.value as OrderStatus,
-      );
-      setSelectedStatus(tempStatus);
+      await updateOrderItemStatus(orderItem.orderItemId, newStatus);
+      setCurrentStatus(newStatus);
       setModalOpen(false);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
-      // Perhaps show an error message
+      console.error("Failed to update status:", error);
     }
   };
 
-  const handleCancel = () => {
-    setTempStatus(selectedStatus);
-    setModalOpen(false);
-  };
+  const isClothing = orderItem.merchType === MerchType.CLOTHING;
+  const statusStyle = statusStyles[currentStatus] || statusStyles[OrderStatus.PENDING];
 
   return (
     <>
       <div
-        className="w-full bg-[#170657] border border-gray-500/90 relative rounded-lg px-6 py-4 cursor-pointer  hover:bg-[#1f096b] transition-colors"
-        onClick={() => {
-          setTempStatus(selectedStatus);
-          setModalOpen(true);
-        }}
+        className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-[#1E1E3F] p-4 sm:p-5 border border-white/5 rounded-2xl cursor-pointer hover:bg-[#252552] transition-colors mb-4"
+        onClick={() => setModalOpen(true)}
       >
-        {/* Index Number - Absolute Position Top Left */}
-        <p className="text-white text-base font-bold absolute top-4 left-4">
-          #{orderItem.orderId}
-        </p>
+        {/* Image Container */}
+        <div className="shrink-0 w-full sm:w-32 sm:h-32 md:w-40 md:h-40 aspect-square sm:aspect-auto bg-[#1E1E3F] rounded-xl sm:rounded-[2rem] flex items-center justify-center p-2 sm:p-4 overflow-hidden border border-white/5">
+          <img
+            src={orderItem.s3ImageKey ? S3_BASE_URL + orderItem.s3ImageKey : ""}
+            alt={orderItem.merchName}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        </div>
 
-        {/* Grid Container for Perfect Alignment */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-          {/* LEFT: Image & Student Info (Span 3/12) */}
-          <div className="md:col-span-3 flex flex-col items-center pt-6 md:pt-0">
-            <div className="w-[114px] h-[114px] flex items-center justify-center bg-black/20 rounded-sm overflow-hidden mb-3">
-              <img
-                src={`${S3_BASE_URL}${orderItem.s3ImageKey}`}
-                className="w-full h-full object-cover"
-                alt={orderItem.merchName}
-              />
-            </div>
-            <p className="text-sm text-gray-200 text-center leading-tight max-w-[150px]">
-              {orderItem.studentName} <br />{" "}
-              <span className="text-gray-400">{orderItem.studentId}</span>
-            </p>
-          </div>
-
-          {/* MIDDLE: Product Details (Span 6/12 - Perfectly Centered) */}
-          <div className="md:col-span-6 flex flex-col items-center md:items-start text-center md:text-left pl-0 md:pl-8 border-t md:border-t-0 md:border-l border-white/5 py-4 md:py-0">
-            <div className="flex items-center gap-4 mb-2">
-              <h3 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-wide">
+        {/* Info Content */}
+        <div className="flex flex-col flex-1 w-full py-1">
+          <div className="flex flex-col sm:flex-row justify-between items-start w-full gap-2 sm:gap-0">
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                CSPS OFFICIAL • {orderItem.merchType}
+              </p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 {orderItem.merchName}
               </h3>
-              <span className="text-2xl font-light text-gray-300">
-                x{orderItem.quantity}
-              </span>
+
+              {/* Status Badge */}
+              <div className="pt-1 sm:pt-2">
+                <span
+                  className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusStyle.bg} ${statusStyle.color} ${statusStyle.border}`}
+                >
+                  {statusLabels[currentStatus] || currentStatus}
+                </span>
+              </div>
             </div>
 
-            <div className="space-y-0.5">
-              {orderItem.design && (
-                <p className="text-base text-gray-300">
-                  Design:{" "}
-                  <span className="text-white font-medium">
-                    {orderItem.design}
-                  </span>
-                </p>
-              )}
-              {orderItem.size && (
-                <p className="text-base text-gray-300">
-                  Size:{" "}
-                  <span className="text-white font-medium">
-                    {orderItem.size}
-                  </span>
-                </p>
-              )}
-              {orderItem.color && (
-                <p className="text-base text-gray-300">
-                  Color:{" "}
-                  <span className="text-white font-medium">
-                    {orderItem.color}
-                  </span>
-                </p>
-              )}
-              <p className="text-base text-gray-300">
-                Total Price:{" "}
-                <span className="text-white font-medium">
-                  {orderItem.totalPrice}
-                </span>
+            {/* Price & Quantity */}
+            <div className="text-left sm:text-right w-full sm:w-auto flex sm:flex-col justify-between items-end sm:items-end mt-2 sm:mt-0">
+              <p className="text-xl sm:text-2xl font-bold text-white">
+                ₱{orderItem.totalPrice.toLocaleString()}
+              </p>
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                Qty: {orderItem.quantity}
               </p>
             </div>
           </div>
 
-          {/* RIGHT: Status (Span 3/12) */}
-          <div className="md:col-span-3 flex justify-center md:justify-end items-center">
-            <p className="text-white text-base">
-              Status:{" "}
-              <span className={`font-bold ml-1 ${selectedStatus.color}`}>
-                {selectedStatus.label}
+          {/* Row Footer with Details */}
+          <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-400">
+            {isClothing && (
+              <>
+                <p className="text-[11px] font-medium uppercase">
+                  Size:{" "}
+                  <span className="text-white font-bold">
+                    {orderItem.size || "N/A"}
+                  </span>
+                </p>
+                <p className="text-[11px] font-medium uppercase">
+                  Color:{" "}
+                  <span className="text-white font-bold">{orderItem.color || "N/A"}</span>
+                </p>
+              </>
+            )}
+            {orderItem.design && (
+              <p className="text-[11px] font-medium uppercase">
+                Design:{" "}
+                <span className="text-white font-bold">{orderItem.design}</span>
+              </p>
+            )}
+            <p className="text-[11px] font-medium uppercase">
+              Student:{" "}
+              <span className="text-white font-bold">
+                {orderItem.studentName}
               </span>
+            </p>
+            <p className="text-[11px] font-medium uppercase">
+              Date:{" "}
+              <span className="text-white font-bold">
+                {new Date(orderItem.createdAt).toLocaleDateString()}
+              </span>
+            </p>
+            <p className="text-[11px] font-medium uppercase ml-0 sm:ml-auto">
+              ID: <span className="text-white/40">#{orderItem.orderId}</span>
             </p>
           </div>
         </div>
       </div>
 
+      {/* Success Toast */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div
@@ -164,8 +153,8 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
             transition={{ duration: 0.3 }}
             className="fixed top-4 right-4 z-50"
           >
-            <div className="bg-green-500/90 border border-green-500 rounded-lg px-6 py-3 text-white text-center shadow-lg">
-              <p className="text-sm font-semibold">
+            <div className="bg-green-500/90 border border-green-500 rounded-xl px-6 py-3">
+              <p className="text-white text-sm font-semibold">
                 Status updated successfully!
               </p>
             </div>
@@ -176,11 +165,9 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
       <StatusCardModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        tempStatus={tempStatus}
-        onStatusChange={setTempStatus}
-        onSave={handleSave}
-        onCancel={handleCancel}
         orderItem={orderItem}
+        currentStatus={currentStatus}
+        onStatusUpdate={handleStatusUpdate}
       />
     </>
   );

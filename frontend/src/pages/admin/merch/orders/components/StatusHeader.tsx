@@ -1,27 +1,48 @@
-import GlassIcon from "../../../../../assets/icons/glass.svg";
+import { FiSearch, FiChevronDown } from "react-icons/fi";
+import { OrderStatus } from "../../../../../enums/OrderStatus";
 
-const StatusHeader = () => {
+interface StatusHeaderProps {
+  selectedStatus?: string;
+  onStatusChange?: (status: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+}
+
+const StatusHeader = ({
+  selectedStatus = "All",
+  onStatusChange,
+  searchQuery = "",
+  onSearchChange,
+}: StatusHeaderProps) => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-5 gap-4 sm:gap-0 mb-4">
-      <select
-        className="bg-[#2a2456] text-white rounded-lg px-4 py-2 w-full sm:w-auto"
-        defaultValue="toBeClaimed"
-      >
-        <option value="toBeClaimed">To Be Claimed</option>
-        <option value="pending">Pending</option>
-        <option value="claimed">Claimed</option>
-      </select>
-
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      {/* Status Filter */}
       <div className="relative w-full sm:w-auto">
+        <select
+          value={selectedStatus}
+          onChange={(e) => onStatusChange?.(e.target.value)}
+          className="appearance-none bg-[#1E1E3F] border border-white/10 text-white rounded-xl px-4 py-3 pr-10 w-full sm:w-auto min-w-[180px] focus:outline-none focus:border-purple-500/50 transition-colors"
+        >
+          <option value="All">All Orders</option>
+          <option value={OrderStatus.TO_BE_CLAIMED}>Ready for Pickup</option>
+          <option value={OrderStatus.PENDING}>Processing</option>
+          <option value={OrderStatus.CLAIMED}>Claimed</option>
+        </select>
+        <FiChevronDown 
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" 
+          size={18} 
+        />
+      </div>
+
+      {/* Search */}
+      <div className="relative w-full sm:w-auto sm:min-w-[300px]">
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={18} />
         <input
           type="text"
-          placeholder="Search..."
-          className="border border-white outline-none p-2 pl-8 rounded-lg w-full"
-        />
-        <img
-          src={GlassIcon}
-          alt="glass"
-          className="absolute top-2.5 left-2.5 w-5 h-5"
+          placeholder="Search orders..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          className="w-full bg-[#1E1E3F] border border-white/10 text-white placeholder-white/40 rounded-xl px-4 py-3 pl-12 focus:outline-none focus:border-purple-500/50 transition-colors"
         />
       </div>
     </div>
