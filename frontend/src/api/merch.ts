@@ -233,3 +233,33 @@ export const addVariantToMerch = async (
     throw err;
   }
 };
+
+/**
+ * Delete merch by ID.
+ * Cascades to delete all variants and items.
+ * Endpoint: DELETE /api/merch/{merchId}
+ */
+export const deleteMerch = async (merchId: number): Promise<void> => {
+  try {
+    await api.delete(`/merch/${merchId}`);
+  } catch (err) {
+    console.error(`Error deleting merch ${merchId}:`, err);
+    throw err;
+  }
+};
+
+/**
+ * Delete merch variant by ID.
+ * Cascades to delete all items in the variant.
+ * Endpoint: DELETE /api/merch-variant/{merchVariantId}
+ */
+export const deleteMerchVariant = async (
+  merchVariantId: number,
+): Promise<void> => {
+  try {
+    await api.delete(`/merch-variant/${merchVariantId}`);
+  } catch (err) {
+    console.error(`Error deleting merch variant ${merchVariantId}:`, err);
+    throw err;
+  }
+};

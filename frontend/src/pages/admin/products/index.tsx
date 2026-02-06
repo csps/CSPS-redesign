@@ -6,18 +6,27 @@ import { FiEdit3, FiTrash2 } from "react-icons/fi";
 import ProductModal from "./components/ProductModal";
 import { MerchType } from "../../../enums/MerchType";
 import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchResponse";
-import { getAllMerchWithoutVariants, getMerchByType } from "../../../api/merch";
+import {
+  getAllMerchWithoutVariants,
+  getMerchByType,
+  deleteMerch,
+} from "../../../api/merch";
 import { useNavigate } from "react-router-dom";
 import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
-import CSPSLOGO from "../../../assets/logos/CSPS PNG (1) 1.png";
-import CSPSOVERLAY from "../../../assets/logos/BIGLOGOCSPS.png";
+import DeleteConfirmationModal from "../merch/productView/components/DeleteConfirmationModal";
+import { toast } from "sonner";
 
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [merch, setMerch] = useState<MerchSummaryResponse[]>([]);
   const [activeTag, setActiveTag] = useState<string>("ALL");
   const [loading, setLoading] = useState<boolean>(false);
+
+  // Delete state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [merchToDelete, setMerchToDelete] = useState<MerchSummaryResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const navigator = useNavigate();
   const navigate = (merchId: number) => {
@@ -43,6 +52,31 @@ const Index = () => {
     fetchMerch(activeTag);
   }, [activeTag]);
 
+  const handleDeleteClick = (item: MerchSummaryResponse) => {
+    setMerchToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!merchToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteMerch(merchToDelete.merchId);
+      toast.success(`"${merchToDelete.merchName}" deleted successfully!`);
+      setShowDeleteModal(false);
+      setMerchToDelete(null);
+      // Refetch merch list
+      await fetchMerch(activeTag);
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || "Failed to delete product";
+      toast.error(errorMessage);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
@@ -55,7 +89,7 @@ const Index = () => {
           </h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
+            className="cursor-pointer flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
           >
             <IoMdAdd className="text-lg sm:text-xl" />
             <span>Add Product</span>
@@ -161,11 +195,14 @@ const Index = () => {
                   <div className="flex gap-2 mt-auto">
                     <button
                       onClick={() => navigate(item.merchId)}
-                      className="flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                      className="cursor-pointer flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
                     >
                       <FiEdit3 className="text-sm" /> Edit
                     </button>
-                    <button className="flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110">
+                    <button
+                      onClick={() => handleDeleteClick(item)}
+                      className="cursor-pointer flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                    >
                       <FiTrash2 className="text-sm" /> Delete
                     </button>
                   </div>
@@ -179,6 +216,20 @@ const Index = () => {
       <ProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        open={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setMerchToDelete(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${merchToDelete?.merchName}"?`}
+        warningMessage="This will permanently delete the product and all its variants and items."
       />
     </Layout>
   );

@@ -5,19 +5,26 @@ import Layout from "../../../../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
 import type { MerchVariantRequest } from "../../../../interfaces/merch_variant/MerchVariantRequest";
 import type { MerchDetailedResponse } from "../../../../interfaces/merch/MerchResponse";
-import { getMerchById, addVariantToMerch } from "../../../../api/merch";
+import {
+  getMerchById,
+  addVariantToMerch,
+  deleteMerchVariant,
+} from "../../../../api/merch";
 import { toast } from "sonner";
 import NotFoundPage from "../../../notFound";
 import { S3_BASE_URL } from "../../../../constant";
 import AddVariantModal from "./components/AddVariantModal";
 import StockManagement from "./components/StockManagement";
 import ConfirmationModal from "./components/ConfirmationModal";
+import DeleteConfirmationModal from "./components/DeleteConfirmationModal";
 import {
   updateItemStock,
   updateItemPrice,
   addItemToVariant,
+  deleteItem,
 } from "../../../../api/merch_variant_item";
 import { ClothingSizing } from "../../../../enums/ClothingSizing";
+import { FaTrash } from "react-icons/fa";
 
 const AdminMerchProductView = () => {
   const { merchId } = useParams<{ merchId: string }>();
@@ -34,6 +41,12 @@ const AdminMerchProductView = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isAddingVariant, setIsAddingVariant] = useState(false);
+
+  // Delete state
+  const [showDeleteVariantModal, setShowDeleteVariantModal] = useState(false);
+  const [variantToDelete, setVariantToDelete] = useState<number | null>(null);
+  const [isDeletingVariant, setIsDeletingVariant] = useState(false);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
 
   // Edited stock state
   const [editedStocks, setEditedStocks] = useState<{
@@ -309,7 +322,52 @@ const AdminMerchProductView = () => {
     }
   };
 
-  // Skeleton Loading Component
+  // ========== Delete Handlers ==========
+  const handleDeleteVariantClick = (e: React.MouseEvent, variantId: number) => {
+    e.stopPropagation(); // Prevent selecting the variant
+    setVariantToDelete(variantId);
+    setShowDeleteVariantModal(true);
+  };
+
+  const handleConfirmDeleteVariant = async () => {
+    if (!variantToDelete || !merchId) return;
+
+    setIsDeletingVariant(true);
+    try {
+      await deleteMerchVariant(variantToDelete);
+      toast.success("Variant deleted successfully!");
+      setShowDeleteVariantModal(false);
+      setVariantToDelete(null);
+
+      // Refetch merch data
+      await fetchMerch(Number(merchId));
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || "Failed to delete variant";
+      toast.error(errorMessage);
+    } finally {
+      setIsDeletingVariant(false);
+    }
+  };
+
+  const handleDeleteItem = async (itemId: number) => {
+    if (isDeletingItem) return;
+
+    setIsDeletingItem(true);
+    try {
+      await deleteItem(itemId);
+      toast.success("Item deleted successfully!");
+
+      // Refetch merch data
+      await fetchMerch(Number(merchId));
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || "Failed to delete item";
+      toast.error(errorMessage);
+    } finally {
+      setIsDeletingItem(false);
+    }
+  };
   const SkeletonLoader = () => (
     <Layout>
       <AuthenticatedNav />
@@ -441,6 +499,15 @@ const AdminMerchProductView = () => {
                         {merch.merchType === "CLOTHING" ? "sizes" : "items"}
                       </p>
                     </div>
+                    <button
+                      onClick={(e) =>
+                        handleDeleteVariantClick(e, variant.merchVariantId)
+                      }
+                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all"
+                      title="Delete variant"
+                    >
+                      <FaTrash size={14} />
+                    </button>
                   </div>
                 </button>
               ))}
@@ -493,6 +560,7 @@ const AdminMerchProductView = () => {
               onStockChange={handleStockChange}
               onPriceChange={handlePriceChange}
               onAddSize={handleAddSize}
+              onDeleteItem={handleDeleteItem}
               isClothing={merch.merchType === "CLOTHING"}
             />
           )}
@@ -537,6 +605,20 @@ const AdminMerchProductView = () => {
         editedStocks={editedStocks}
         editedPrices={editedPrices}
         merch={merch!}
+      />
+
+      {/* Delete Variant Confirmation Modal */}
+      <DeleteConfirmationModal
+        open={showDeleteVariantModal}
+        onClose={() => {
+          setShowDeleteVariantModal(false);
+          setVariantToDelete(null);
+        }}
+        onConfirm={handleConfirmDeleteVariant}
+        isDeleting={isDeletingVariant}
+        title="Delete Variant"
+        message="Are you sure you want to delete this variant?"
+        warningMessage="This will permanently delete the variant and all its items."
       />
     </Layout>
   );

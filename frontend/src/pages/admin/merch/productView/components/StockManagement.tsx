@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaPlus, FaBox } from "react-icons/fa";
+import { FaPlus, FaBox, FaTrash } from "react-icons/fa";
 import { ClothingSizing } from "../../../../../enums/ClothingSizing";
 import type { MerchVariantResponse } from "../../../../../interfaces/merch_variant/MerchVariantResponse";
 
@@ -15,6 +15,7 @@ interface StockManagementProps {
   ) => void;
   onPriceChange: (variantIdx: number, sizeOrId: string, price: number) => void;
   onAddSize?: (variantIdx: number, size: string) => void;
+  onDeleteItem?: (itemId: number) => void;
   isClothing?: boolean;
 }
 
@@ -26,6 +27,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
   onStockChange,
   onPriceChange,
   onAddSize,
+  onDeleteItem,
   isClothing = false,
 }) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
@@ -152,10 +154,19 @@ const StockManagement: React.FC<StockManagementProps> = ({
                           {item.size ? item.size.substring(0, 2) : "•"}
                         </span>
                       </div>
-                      <span className="font-medium text-white truncate">
+                      <span className="font-medium text-white truncate flex-1">
                         {item.size || `Item ${item.merchVariantItemId}`}
                       </span>
                     </>
+                  )}
+                  {onDeleteItem && item.merchVariantItemId !== -1 && (
+                    <button
+                      onClick={() => onDeleteItem(item.merchVariantItemId)}
+                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all ml-auto"
+                      title="Delete item"
+                    >
+                      <FaTrash size={12} />
+                    </button>
                   )}
                 </div>
 
