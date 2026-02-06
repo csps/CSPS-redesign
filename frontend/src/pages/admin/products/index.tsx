@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
 import CSPSLOGO from "../../../assets/logos/CSPS PNG (1) 1.png";
+import CSPSOVERLAY from "../../../assets/logos/BIGLOGOCSPS.png";
 
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,17 +95,15 @@ const Index = () => {
         {/* Grid Display */}
         <div className="relative min-h-[400px]">
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center z-40">
-              <div className="flex flex-col items-center gap-4">
-                <img
-                  src={CSPSLOGO}
-                  alt="Loading"
-                  className="w-24 h-24 animate-spin"
-                />
-                <p className="text-white text-lg font-medium">
-                  Loading products...
-                </p>
-              </div>
+            <div className="col-span-full flex flex-col items-center justify-center py-32">
+              <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
+              <p className="text-white font-medium">Loading products...</p>
+            </div>
+          )}
+
+          {!loading && merch.length === 0 && (
+            <div className="col-span-full flex flex-col items-center justify-center py-32">
+              <p className="text-gray-500">No products found.</p>
             </div>
           )}
           <div
