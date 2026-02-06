@@ -7,26 +7,16 @@ const Index = () => {
   return (
     <Layout>
       <AuthenticatedNav />
-      {/*
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 py-10">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n, index) => (
-            <Link
-              to={`/events/view/${n}`}
-              key={index}
-              className="bg-purple-600/40 p-2 relative rounded-xl overflow-hidden group"
-            >
-              <img
-                src={SAMPLEIMAGE}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-100 group-hover:opacity-0 transition-opacity duration-300 hover:cursor-pointer"></div>
-            </Link>
-          ))}
-        </div>  
-        
-        */}
-
+      
+      {/* Page Header */}
+      <div className="py-8 mb-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+          Events
+        </h1>
+        <p className="text-white/60">Stay updated with our latest activities and gatherings</p>
+      </div>
+      
+      {/* Events Sections */}
       <UpcomingEvents />
       <RecentEvents />
     </Layout>

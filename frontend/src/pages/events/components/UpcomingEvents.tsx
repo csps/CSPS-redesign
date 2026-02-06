@@ -6,6 +6,7 @@ import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "./EventDetailModal";
 import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
+import { FaCalendarAlt, FaClock, FaArrowRight } from "react-icons/fa";
 
 const UpcomingEvents = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -32,62 +33,114 @@ const UpcomingEvents = () => {
   }, []);
 
   return (
-    <div>
+    <div className="py-8">
       <EventDetailModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         event={selectedEvent}
       />
 
-      <p className="text-lg md:text-2xl lg:text-3xl font-semibold mb-10">
-        Upcoming Events
-      </p>
-      <Swiper
-        slidesPerView="auto"
-        spaceBetween={20}
-        pagination={{ clickable: true }}
-        modules={[Pagination]}
-      >
-        {loading ? (
-          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60  flex items-center justify-center">
-            <p className="text-gray-400">Loading...</p>
-          </SwiperSlide>
-        ) : events.length === 0 ? (
-          <SwiperSlide className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[320px] !h-60  bg-[#0F033C] border border-gray-200 rounded-lg flex items-center justify-center">
-            <p className="text-gray-400">No upcoming events</p>
-          </SwiperSlide>
-        ) : (
-          events.map((event) => (
+      {/* Section Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div>
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
+              Upcoming Events
+            </h2>
+            <p className="text-white/50 text-sm">Don't miss out on these!</p>
+          </div>
+        </div>
+        {events.length > 0 && (
+          <button className="hidden sm:flex items-center gap-2 text-purple-400 hover:text-purple-300 transition text-sm font-medium">
+            View All <FaArrowRight size={12} />
+          </button>
+        )}
+      </div>
+
+      {/* Content */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+        </div>
+      ) : events.length === 0 ? (
+        /* Modern Empty State */
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e1a4a]/50 to-[#151238]/50 border border-white/5 p-12 text-center">
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+          
+          <div className="relative z-10">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
+              <FaCalendarAlt className="text-white/30" size={32} />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">No Upcoming Events</h3>
+            <p className="text-white/50 max-w-md mx-auto">
+              There are no upcoming events scheduled at the moment. Check back later for new announcements!
+            </p>
+          </div>
+        </div>
+      ) : (
+        <Swiper
+          slidesPerView="auto"
+          spaceBetween={20}
+          pagination={{ clickable: true }}
+          modules={[Pagination]}
+          className="!pb-12"
+        >
+          {events.map((event) => (
             <SwiperSlide
               key={event.eventId}
-              className="!w-[180px] sm:!w-[220px] md:!w-[280px] lg:!w-[350px] !h-70 bg-[#0F033C] border border-gray-200 rounded-lg overflow-hidden group relative cursor-pointer"
-              onClick={() => {
-                setSelectedEvent(event);
-                setIsOpen(true);
-              }}
+              className="!w-[280px] sm:!w-[320px] md:!w-[360px] lg:!w-[400px]"
             >
-              {event.s3ImageKey && (
-                <img
-                  src={`${S3_BASE_URL}${event.s3ImageKey}`}
-                  alt={event.eventName}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              )}
-              <div className="absolute inset-0 bg-black/40 opacity-100 group-hover:opacity-0 transition-opacity duration-300 flex flex-col justify-end p-3">
-                <p className="text-white font-semibold text-sm line-clamp-2 ">
-                  {event.eventName}
-                </p>
-                <p className="text-white font-light text-sm line-clamp-2">
-                  {formatDate(event.eventDate)}
-                </p>
-                <p className="text-white font-light text-sm line-clamp-2">
-                  {formatTimeRange(event.startTime, event.endTime)}
-                </p>
+              <div
+                onClick={() => {
+                  setSelectedEvent(event);
+                  setIsOpen(true);
+                }}
+                className="group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300"
+              >
+                {/* Image */}
+                {event.s3ImageKey && (
+                  <img
+                    src={`${S3_BASE_URL}${event.s3ImageKey}`}
+                    alt={event.eventName}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                
+                {/* Content */}
+                <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                  {/* Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1.5 bg-[#FDE006] text-black text-xs font-bold rounded-lg">
+                      UPCOMING
+                    </span>
+                  </div>
+                  
+                  {/* Event Info */}
+                  <h3 className="text-white font-bold text-lg mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
+                    {event.eventName}
+                  </h3>
+                  
+                  <div className="flex flex-wrap items-center gap-3 text-white/70 text-sm">
+                    <div className="flex items-center gap-1.5">
+                      <FaCalendarAlt size={12} className="text-purple-400" />
+                      <span>{formatDate(event.eventDate)}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <FaClock size={12} className="text-purple-400" />
+                      <span>{formatTimeRange(event.startTime, event.endTime)}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </SwiperSlide>
-          ))
-        )}
-      </Swiper>
+          ))}
+        </Swiper>
+      )}
     </div>
   );
 };
