@@ -9,12 +9,14 @@ const StudentTable = ({
   totalPages,
   totalElements,
   onPageChange,
+  onStudentClick,
 }: {
   students: StudentResponse[];
   currentPage: number;
   totalPages: number;
   totalElements: number;
   onPageChange: (page: number) => void;
+  onStudentClick?: (student: StudentResponse) => void;
 }) => {
   // --- STATE ---
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,7 +100,8 @@ const StudentTable = ({
               currentStudents.map((student, index) => (
                 <tr
                   key={index}
-                  className="hover:bg-white/5 transition-colors group"
+                  onClick={() => onStudentClick?.(students[index])}
+                  className="hover:bg-white/5 transition-colors group cursor-pointer"
                 >
                   <td className="px-6 py-4">
                     <input
@@ -131,8 +134,14 @@ const StudentTable = ({
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex justify-center items-center gap-2">
-                      <button className="bg-[#7d56c0] hover:bg-[#8f6ad0] text-white h-8 w-16 rounded-lg flex items-center justify-center transition">
-                        <div className="w-4 h-1.5 bg-white/40 rounded-full"></div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onStudentClick?.(students[index]);
+                        }}
+                        className="bg-[#7d56c0] hover:bg-[#8f6ad0] text-white h-8 px-4 rounded-lg flex items-center justify-center transition text-xs font-medium"
+                      >
+                        View Details
                       </button>
                     </div>
                   </td>

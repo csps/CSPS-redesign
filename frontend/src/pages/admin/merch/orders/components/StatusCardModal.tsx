@@ -5,7 +5,7 @@ import { S3_BASE_URL } from "../../../../../constant";
 import { OrderStatus } from "../../../../../enums/OrderStatus";
 import { MerchType } from "../../../../../enums/MerchType";
 import { FiX } from "react-icons/fi";
-import { statusStyles, statusLabels } from "./StatusCard";
+import { statusStyles } from "./StatusCard";
 
 interface StatusCardModalProps {
   isOpen: boolean;
@@ -65,7 +65,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50"
             onClick={handleClose}
           />
-          
+
           {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -81,7 +81,9 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
                     ORDER #{orderItem.orderId}
                   </p>
-                  <h2 className="text-xl font-bold text-white">Manage Order Status</h2>
+                  <h2 className="text-xl font-bold text-white">
+                    Manage Order Status
+                  </h2>
                 </div>
                 <button
                   onClick={handleClose}
@@ -98,7 +100,11 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                   {/* Image */}
                   <div className="shrink-0 w-32 h-32 bg-[#151530] rounded-2xl flex items-center justify-center p-3 overflow-hidden border border-white/5">
                     <img
-                      src={orderItem.s3ImageKey ? S3_BASE_URL + orderItem.s3ImageKey : ""}
+                      src={
+                        orderItem.s3ImageKey
+                          ? S3_BASE_URL + orderItem.s3ImageKey
+                          : ""
+                      }
                       alt={orderItem.merchName}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -115,25 +121,37 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                     <p className="text-2xl font-bold text-[#FDE006] mb-3">
                       ₱{orderItem.totalPrice.toLocaleString()}
                     </p>
-                    
+
                     {/* Details Row */}
                     <div className="flex flex-wrap gap-x-4 gap-y-1 text-gray-400">
                       <p className="text-[11px] font-medium uppercase">
-                        Qty: <span className="text-white font-bold">{orderItem.quantity}</span>
+                        Qty:{" "}
+                        <span className="text-white font-bold">
+                          {orderItem.quantity}
+                        </span>
                       </p>
                       {isClothing && orderItem.size && (
                         <p className="text-[11px] font-medium uppercase">
-                          Size: <span className="text-white font-bold">{orderItem.size}</span>
+                          Size:{" "}
+                          <span className="text-white font-bold">
+                            {orderItem.size}
+                          </span>
                         </p>
                       )}
                       {isClothing && orderItem.color && (
                         <p className="text-[11px] font-medium uppercase">
-                          Color: <span className="text-white font-bold">{orderItem.color}</span>
+                          Color:{" "}
+                          <span className="text-white font-bold">
+                            {orderItem.color}
+                          </span>
                         </p>
                       )}
                       {orderItem.design && (
                         <p className="text-[11px] font-medium uppercase">
-                          Design: <span className="text-white font-bold">{orderItem.design}</span>
+                          Design:{" "}
+                          <span className="text-white font-bold">
+                            {orderItem.design}
+                          </span>
                         </p>
                       )}
                     </div>
@@ -145,7 +163,9 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                   <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
                     CUSTOMER
                   </p>
-                  <p className="text-white font-bold">{orderItem.studentName}</p>
+                  <p className="text-white font-bold">
+                    {orderItem.studentName}
+                  </p>
                   <p className="text-white/50 text-sm">{orderItem.studentId}</p>
                 </div>
 
@@ -158,7 +178,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                     {statusOptions.map((option) => {
                       const style = statusStyles[option.value];
                       const isSelected = tempStatus === option.value;
-                      
+
                       return (
                         <button
                           key={option.value}
