@@ -25,10 +25,12 @@ import {
 } from "../../../../api/merch_variant_item";
 import { ClothingSizing } from "../../../../enums/ClothingSizing";
 import { FaTrash } from "react-icons/fa";
+import { usePermissions } from "../../../../hooks/usePermissions";
 
 const AdminMerchProductView = () => {
   const { merchId } = useParams<{ merchId: string }>();
   const navigate = useNavigate();
+  const { canManageMerch } = usePermissions();
 
   // Data state
   const [merch, setMerch] = useState<MerchDetailedResponse | null>(null);
@@ -499,26 +501,30 @@ const AdminMerchProductView = () => {
                         {merch.merchType === "CLOTHING" ? "sizes" : "items"}
                       </p>
                     </div>
-                    <button
-                      onClick={(e) =>
-                        handleDeleteVariantClick(e, variant.merchVariantId)
-                      }
-                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all"
-                      title="Delete variant"
-                    >
-                      <FaTrash size={14} />
-                    </button>
+                    {canManageMerch && (
+                      <button
+                        onClick={(e) =>
+                          handleDeleteVariantClick(e, variant.merchVariantId)
+                        }
+                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all"
+                        title="Delete variant"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    )}
                   </div>
                 </button>
               ))}
             </div>
 
-            <button
-              onClick={() => setShowAddVariantModal(true)}
-              className="w-full mt-4 py-3 px-4 bg-[#341677] hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
-            >
-              + Add Variant
-            </button>
+            {canManageMerch && (
+              <button
+                onClick={() => setShowAddVariantModal(true)}
+                className="w-full mt-4 py-3 px-4 bg-[#341677] hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+              >
+                + Add Variant
+              </button>
+            )}
           </div>
         </div>
 
@@ -562,27 +568,36 @@ const AdminMerchProductView = () => {
               onAddSize={handleAddSize}
               onDeleteItem={handleDeleteItem}
               isClothing={merch.merchType === "CLOTHING"}
+              canEdit={canManageMerch}
             />
           )}
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-            <button
-              onClick={handleSaveChanges}
-              disabled={isSaving || !hasChanges()}
-              className={`flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all ${
-                isSaving || !hasChanges() ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
+            {canManageMerch ? (
+              <>
+                <button
+                  onClick={handleSaveChanges}
+                  disabled={isSaving || !hasChanges()}
+                  className={`flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all ${
+                    isSaving || !hasChanges() ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </button>
 
-            <button
-              onClick={() => setActiveIndex(0)}
-              className="flex-1 py-3 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-all"
-            >
-              Reset View
-            </button>
+                <button
+                  onClick={() => setActiveIndex(0)}
+                  className="flex-1 py-3 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-all"
+                >
+                  Reset View
+                </button>
+              </>
+            ) : (
+              <div className="w-full text-center py-3 px-4 bg-gray-700/50 text-gray-400 rounded-lg">
+                Read-only mode - You don't have permission to edit
+              </div>
+            )}
           </div>
         </div>
       </div>

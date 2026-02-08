@@ -17,6 +17,7 @@ interface StockManagementProps {
   onAddSize?: (variantIdx: number, size: string) => void;
   onDeleteItem?: (itemId: number) => void;
   isClothing?: boolean;
+  canEdit?: boolean; // If false, component is read-only
 }
 
 const StockManagement: React.FC<StockManagementProps> = ({
@@ -29,6 +30,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
   onAddSize,
   onDeleteItem,
   isClothing = false,
+  canEdit = true,
 }) => {
   const [selectedSize, setSelectedSize] = useState<string>("");
 
@@ -98,8 +100,8 @@ const StockManagement: React.FC<StockManagementProps> = ({
           </div>
         </div>
 
-        {/* Inline Add Size */}
-        {isClothing && availableSizes.length > 0 && (
+        {/* Inline Add Size - only show when canEdit */}
+        {canEdit && isClothing && availableSizes.length > 0 && (
           <div className="flex items-center gap-2">
             <select
               value={selectedSize}
@@ -159,7 +161,7 @@ const StockManagement: React.FC<StockManagementProps> = ({
                       </span>
                     </>
                   )}
-                  {onDeleteItem && item.merchVariantItemId !== -1 && (
+                  {onDeleteItem && canEdit && item.merchVariantItemId !== -1 && (
                     <button
                       onClick={() => onDeleteItem(item.merchVariantItemId)}
                       className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all ml-auto"
@@ -194,7 +196,8 @@ const StockManagement: React.FC<StockManagementProps> = ({
                       }
                       min="0"
                       placeholder="New stock"
-                      className={`w-full px-3 py-2 bg-black/40 border rounded-lg text-white text-center font-medium focus:outline-none focus:ring-2 transition-all ${"border-white/20 focus:border-purple-500 focus:ring-purple-500/50"}`}
+                      disabled={!canEdit}
+                      className={`w-full px-3 py-2 bg-black/40 border rounded-lg text-white text-center font-medium focus:outline-none focus:ring-2 transition-all ${!canEdit ? "opacity-50 cursor-not-allowed border-white/10" : "border-white/20 focus:border-purple-500 focus:ring-purple-500/50"}`}
                     />
                   </div>
 
@@ -225,7 +228,8 @@ const StockManagement: React.FC<StockManagementProps> = ({
                       min="0"
                       step="0.01"
                       placeholder="New price"
-                      className={`w-full px-3 py-2 bg-black/40 border rounded-lg text-white text-center font-medium focus:outline-none focus:ring-2 transition-all ${"border-white/20 focus:border-purple-500 focus:ring-purple-500/50"}`}
+                      disabled={!canEdit}
+                      className={`w-full px-3 py-2 bg-black/40 border rounded-lg text-white text-center font-medium focus:outline-none focus:ring-2 transition-all ${!canEdit ? "opacity-50 cursor-not-allowed border-white/10" : "border-white/20 focus:border-purple-500 focus:ring-purple-500/50"}`}
                     />
                   </div>
                 </div>
