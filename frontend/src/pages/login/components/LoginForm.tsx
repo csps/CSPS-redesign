@@ -5,6 +5,8 @@ import { login } from "../../../api/auth";
 import { toast } from "sonner";
 import type { AuthRequest } from "../../../interfaces/auth/AuthRequest";
 import { useAuthStore } from "../../../store/auth_store";
+import type { UserResponse } from "../../../interfaces/user/UserResponse";
+import { getAdminHomeRoute } from "../../../router/routePermissions";
 
 const LoginForm = () => {
   const [studentId, setStudentId] = useState<string>("");
@@ -61,8 +63,13 @@ const LoginForm = () => {
 
       let destination = "";
 
-      if (user.role === "ADMIN") destination = "/admin/dashboard";
-      else destination = "/dashboard";
+      if (user.role === "ADMIN") {
+        // Use position-based routing for admins
+        const adminUser = user as UserResponse;
+        destination = getAdminHomeRoute(adminUser.position);
+      } else {
+        destination = "/dashboard";
+      }
 
       toast.success("Login successful! Welcome back!");
       navigate(destination);
