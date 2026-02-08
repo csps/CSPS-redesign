@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOGOS, getAuthenticatedNavbar } from "./nav.config";
 import { useAuthStore } from "../store/auth_store";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
+import type { UserResponse } from "../interfaces/user/UserResponse";
 import { logout } from "../api/auth";
 
 interface DesktopNavProps {
@@ -462,6 +463,8 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
   const user = useAuthStore((state) => state.user);
   const student = user as StudentResponse;
   const isAdmin = user?.role === "ADMIN";
+  // Get position for admin users to filter nav items
+  const adminPosition = isAdmin ? (user as UserResponse).position : undefined;
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   if (!student) {
@@ -480,7 +483,7 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
         <LogoSection />
 
         <ul className="flex gap-10 justify-center flex-1">
-          {getAuthenticatedNavbar(isAdmin).map((navItem, index) => {
+          {getAuthenticatedNavbar(isAdmin, adminPosition).map((navItem, index) => {
             const isMerchandise = navItem.name === "Merchandise";
             // base active detection (matches nav.to or nested paths)
             let isActive = isRouteActive(navItem.name, location, navItem.to);
@@ -563,6 +566,8 @@ const MobileAuthenticatedNav: React.FC = () => {
   const user = useAuthStore((state) => state.user);
   const student = user as StudentResponse;
   const isAdmin = user?.role === "ADMIN";
+  // Get position for admin users to filter nav items
+  const adminPosition = isAdmin ? (user as UserResponse).position : undefined;
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const toggleMobileDropdown = (name: string) => {
@@ -607,7 +612,7 @@ const MobileAuthenticatedNav: React.FC = () => {
 
             <nav className="mt-6">
               <ul className="space-y-3 sm:space-y-5">
-                {getAuthenticatedNavbar(isAdmin).map((navItem, index) => {
+                {getAuthenticatedNavbar(isAdmin, adminPosition).map((navItem, index) => {
                   const isMerchandise = navItem.name === "Merchandise";
 
                   if (isMerchandise) {
