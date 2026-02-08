@@ -44,9 +44,11 @@ interface StatusCardProps {
 
 const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(orderItem.orderStatus as OrderStatus);
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(
+    orderItem.orderStatus as OrderStatus,
+  );
   const [showSuccess, setShowSuccess] = useState(false);
-  const { canManageMerch } = usePermissions();
+  const { canManageOrder } = usePermissions();
 
   const handleStatusUpdate = async (newStatus: OrderStatus) => {
     try {
@@ -61,13 +63,18 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
   };
 
   const isClothing = orderItem.merchType === MerchType.CLOTHING;
-  const statusStyle = statusStyles[currentStatus] || statusStyles[OrderStatus.PENDING];
+  const statusStyle =
+    statusStyles[currentStatus] || statusStyles[OrderStatus.PENDING];
 
   return (
     <>
       <div
-        className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-[#1E1E3F] p-4 sm:p-5 border border-white/10 rounded-xl cursor-pointer hover:bg-[#252552] transition-colors mb-4"
-        onClick={() => setModalOpen(true)}
+        className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-[#1E1E3F] p-4 sm:p-5 border border-white/10 rounded-xl mb-4 ${
+          canManageOrder
+            ? "cursor-pointer hover:bg-[#252552] transition-colors"
+            : ""
+        }`}
+        onClick={() => canManageOrder && setModalOpen(true)}
       >
         {/* Image Container */}
         <div className="shrink-0 w-full sm:w-32 sm:h-32 md:w-40 md:h-40 bg-black/20 rounded-lg flex items-center justify-center p-2 overflow-hidden border border-white/5">
@@ -106,7 +113,10 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
                 ₱{orderItem.totalPrice.toLocaleString()}
               </p>
               <p className="text-sm text-gray-400">
-                Qty: <span className="font-bold text-gray-300">{orderItem.quantity}</span>
+                Qty:{" "}
+                <span className="font-bold text-gray-300">
+                  {orderItem.quantity}
+                </span>
               </p>
             </div>
           </div>
@@ -116,23 +126,36 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
             {isClothing && (
               <>
                 <p>
-                  Size: <span className="font-bold text-white">{orderItem.size || "N/A"}</span>
+                  Size:{" "}
+                  <span className="font-bold text-white">
+                    {orderItem.size || "N/A"}
+                  </span>
                 </p>
                 <p>
-                  Color: <span className="font-bold text-white">{orderItem.color || "N/A"}</span>
+                  Color:{" "}
+                  <span className="font-bold text-white">
+                    {orderItem.color || "N/A"}
+                  </span>
                 </p>
               </>
             )}
             {orderItem.design && (
               <p>
-                Design: <span className="font-bold text-white">{orderItem.design}</span>
+                Design:{" "}
+                <span className="font-bold text-white">{orderItem.design}</span>
               </p>
             )}
             <p>
-              Student: <span className="font-bold text-white">{orderItem.studentName}</span>
+              Student:{" "}
+              <span className="font-bold text-white">
+                {orderItem.studentName}
+              </span>
             </p>
             <p>
-              Date: <span className="font-bold text-white">{new Date(orderItem.createdAt).toLocaleDateString()}</span>
+              Date:{" "}
+              <span className="font-bold text-white">
+                {new Date(orderItem.createdAt).toLocaleDateString()}
+              </span>
             </p>
             <p className="ml-0 sm:ml-auto text-xs text-gray-500">
               ID: #{orderItem.orderId}
@@ -163,7 +186,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
         orderItem={orderItem}
         currentStatus={currentStatus}
         onStatusUpdate={handleStatusUpdate}
-        canEdit={canManageMerch}
+        canEdit={canManageOrder}
       />
     </>
   );
