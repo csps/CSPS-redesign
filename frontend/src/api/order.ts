@@ -51,8 +51,10 @@ export const getAllOrders = async (): Promise<OrderResponse[]> => {
  */
 export const getOrderById = async (orderId: number): Promise<OrderResponse> => {
   try {
-    const response = await api.get<OrderResponse>(`${ORDERS}/${orderId}`);
-    return response.data;
+    const response = await api.get<{ data: OrderResponse }>(
+      `${ORDERS}/${orderId}`,
+    );
+    return response.data.data;
   } catch (err) {
     console.error(`Error fetching order ${orderId}:`, err);
     throw err;
