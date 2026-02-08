@@ -4,6 +4,7 @@ import { X, Search, Calendar } from "lucide-react";
 import OrderDetailModal from "./OrderDetailModal";
 import Pagination from "../../../../pages/merch/transactions/components/Pagination";
 import type { TransactionParams } from "../../../../api/sales";
+import { usePermissions } from "../../../../hooks/usePermissions";
 
 interface HistoryModalProps {
   isOpen: boolean;
@@ -30,6 +31,7 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
     first: boolean;
     last: boolean;
   } | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       loadHistory();
@@ -188,12 +190,16 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
                 filteredTransactions.map((t) => (
                   <tr
                     key={t.id}
-                    className={`hover:bg-zinc-800/50 transition-colors ${t.status === "CLAIMED" ? "cursor-pointer" : ""}`}
+                    className={`${
+                      t.status === "CLAIMED"
+                        ? "hover:bg-zinc-800/50 transition-colors cursor-pointer"
+                        : ""
+                    }`}
                     onClick={() =>
                       t.status === "CLAIMED" && handleViewOrderDetails(t)
                     }
                   >
-                    <td className="px-6 py-4 text-sm font-mono text-zinc-500">
+                    <td className="px-6 py-4 text-sm  text-zinc-500">
                       #{t.orderId}
                     </td>
                     <td className="px-6 py-4 text-sm text-zinc-400 whitespace-nowrap">
@@ -202,7 +208,7 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
                         {new Date(t.date).toLocaleDateString()}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-mono text-zinc-500">
+                    <td className="px-6 py-4 text-sm  text-zinc-500">
                       {t.idNumber}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-zinc-200">
@@ -213,7 +219,7 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
                         {t.membershipType}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm font-mono font-medium text-emerald-400 text-right">
+                    <td className="px-6 py-4 text-sm  font-medium text-emerald-400 text-right">
                       ₱{t.amount.toLocaleString()}
                     </td>
                     <td className="px-6 py-4 text-center">

@@ -8,6 +8,7 @@ import { S3_BASE_URL } from "../../../../constant";
 import { formatDate } from "../../../../helper/dateUtils";
 import { OrderStatus } from "../../../../enums/OrderStatus";
 import StatusCardModal from "../../merch/orders/components/StatusCardModal";
+import { usePermissions } from "../../../../hooks/usePermissions";
 
 interface OrderDetailModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export default function OrderDetailModal({
     null,
   );
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+
+  const { canManageOrder } = usePermissions();
 
   useEffect(() => {
     if (isOpen && orderId) {
@@ -69,8 +72,10 @@ export default function OrderDetailModal({
   };
 
   const handleCardClick = (item: OrderItemResponse) => {
-    setSelectedItem(item);
-    setIsStatusModalOpen(true);
+    if (canManageOrder) {
+      setSelectedItem(item);
+      setIsStatusModalOpen(true);
+    }
   };
 
   if (!isOpen) return null;
@@ -116,7 +121,11 @@ export default function OrderDetailModal({
               {order.orderItems.map((item) => (
                 <div
                   key={item.orderItemId}
-                  className="bg-zinc-900/80 border border-zinc-700 rounded-xl p-4 hover:border-purple-500/50 transition-colors cursor-pointer"
+                  className={`bg-zinc-900/80 border border-zinc-700 rounded-xl p-4 transition-colors ${
+                    canManageOrder
+                      ? "hover:border-purple-500/50 cursor-pointer"
+                      : ""
+                  }`}
                   onClick={() => handleCardClick(item)}
                 >
                   <div className="flex gap-4">

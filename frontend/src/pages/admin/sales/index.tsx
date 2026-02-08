@@ -3,7 +3,13 @@ import LineChart from "./components/LineChart";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { FaClockRotateLeft, FaDownload, FaPrint } from "react-icons/fa6";
 import { FaCheck } from "react-icons/fa";
-import { IoClose, IoSearch, IoFilter, IoSwapVertical } from "react-icons/io5";
+import {
+  IoClose,
+  IoSearch,
+  IoFilter,
+  IoSwapVertical,
+  IoChevronDown,
+} from "react-icons/io5";
 import {
   getSalesStats,
   getTransactions,
@@ -45,6 +51,15 @@ const getStatusDisplay = (status: TransactionStatus) => {
   }
 };
 
+// Period labels mapping
+const periodLabels = {
+  DAILY: "Daily revenue analysis",
+  WEEKLY: "Weekly revenue analysis",
+  MONTHLY: "Monthly revenue analysis",
+  YEARLY: "Yearly revenue analysis",
+  ALL_TIME: "All-time revenue analysis",
+};
+
 const Index = () => {
   // Stats State
   const [stats, setStats] = useState<SalesStats>({
@@ -53,6 +68,11 @@ const Index = () => {
     labels: [],
     data: [],
   });
+
+  // Period State
+  const [period, setPeriod] = useState<
+    "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY" | "ALL_TIME"
+  >("DAILY");
 
   // Transactions State
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -91,11 +111,15 @@ const Index = () => {
   const [exporting, setExporting] = useState(false);
 
   // Permissions - check if user can approve/reject transactions
-  const { canApproveTransactions } = usePermissions();
+  const { canApproveTransactions, canManageOrder } = usePermissions();
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [period]);
 
   useEffect(() => {
     // Debounced search / filter update
@@ -115,7 +139,7 @@ const Index = () => {
     setStatsLoading(true);
     try {
       const [statsData, historyData] = await Promise.all([
-        getSalesStats("WEEKLY"),
+        getSalesStats(period),
         getFullHistory(),
       ]);
       setStats(statsData);
@@ -240,12 +264,41 @@ const Index = () => {
                     Sales Performance
                   </h2>
                   <p className="text-xs text-gray-400 mt-1">
-                    Weekly revenue analysis
+                    {periodLabels[period]}
                   </p>
                 </div>
-                <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Live
+                <div className="flex items-center gap-3">
+                  {/* Period Dropdown */}
+                  <div className="relative">
+                    <select
+                      value={period}
+                      onChange={(e) =>
+                        setPeriod(
+                          e.target.value as
+                            | "DAILY"
+                            | "WEEKLY"
+                            | "MONTHLY"
+                            | "YEARLY"
+                            | "ALL_TIME",
+                        )
+                      }
+                      className="bg-[#1a0b4d] border border-purple-500/20 text-sm px-4 py-2 pr-8 rounded-lg outline-none focus:border-purple-500 appearance-none cursor-pointer"
+                    >
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="YEARLY">Yearly</option>
+                      <option value="ALL_TIME">All-time</option>
+                    </select>
+                    <IoChevronDown
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                      size={14}
+                    />
+                  </div>
+                  <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Live
+                  </div>
                 </div>
               </div>
 
@@ -411,7 +464,7 @@ const Index = () => {
                   ) : transactions.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={canApproveTransactions ? 7 : 6}
+                        colSpan={canManageOrder ? 7 : 6}
                         className="py-12 text-center text-gray-400"
                       >
                         No transactions found matching your criteria.
@@ -423,15 +476,15 @@ const Index = () => {
                       return (
                         <tr
                           key={t.id}
-                          className={`hover:bg-white/5 transition-colors group ${t.status === "CLAIMED" ? "cursor-pointer" : ""}`}
+                          className={`group ${t.status === "CLAIMED" ? "hover:bg-white/5 transition-colors cursor-pointer" : ""}`}
                           onClick={() =>
                             t.status === "CLAIMED" && handleViewOrderDetails(t)
                           }
                         >
-                          <td className="px-4 py-3 font-mono text-gray-400 text-xs">
+                          <td className="px-4 py-3  text-gray-400 text-xs">
                             #{t.orderId}
                           </td>
-                          <td className="px-4 py-3 font-mono text-gray-400 text-xs">
+                          <td className="px-4 py-3  text-gray-400 text-xs">
                             {t.idNumber}
                           </td>
                           <td className="px-4 py-3 font-medium text-white">
@@ -442,7 +495,7 @@ const Index = () => {
                               {t.membershipType}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right font-mono text-emerald-400 font-medium">
+                          <td className="px-4 py-3 text-right  text-emerald-400 font-medium">
                             ₱{t.amount.toLocaleString()}
                           </td>
                           <td className="px-4 py-3 text-gray-400 text-xs">
