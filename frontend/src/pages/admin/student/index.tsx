@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import StudentTable from "../merch/components/StudentTable";
+import StudentTable from "./components/StudentTable";
 import AddStudentModal from "../merch/components/AddStudentModal";
 import StudentDetailModal from "./components/StudentDetailModal";
 import { getStudents } from "../../../api/student";
@@ -9,7 +9,8 @@ import type { StudentResponse } from "../../../interfaces/student/StudentRespons
 
 const StudentsPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<StudentResponse | null>(null);
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentResponse | null>(null);
   const [students, setStudents] = useState<StudentResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
