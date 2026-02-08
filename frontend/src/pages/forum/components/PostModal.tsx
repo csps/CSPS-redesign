@@ -106,7 +106,7 @@ const PostModal = ({
 
           {/* Post Content */}
           <div className="text-gray-300 text-sm leading-relaxed space-y-4">
-            <div className="w-full bg-[#1e1e1e] rounded-lg border border-gray-700 p-8 flex items-center justify-center text-gray-500 font-mono text-sm mb-4">
+            <div className="w-full bg-[#1e1e1e] rounded-lg border border-gray-700 p-8 flex items-center justify-center text-gray-500 text-sm mb-4">
               [Code/Image Content]
             </div>
             <p>{postData?.content || "Post content goes here..."}</p>
