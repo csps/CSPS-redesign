@@ -11,7 +11,7 @@ interface RadialChartProps {
 }
 
 // Component
-export default function RadialChart({
+function RadialChart({
   members = 75,
   nonMembers = 25,
   totalCount = 1000,
@@ -76,3 +76,5 @@ export default function RadialChart({
     </div>
   );
 }
+
+export default RadialChart;
