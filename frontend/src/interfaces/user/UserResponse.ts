@@ -1,4 +1,5 @@
 import type { UserRole } from "../../enums/UserRole";
+import type { AdminPosition } from "../../enums/AdminPosition";
 
 // User Response DTO
 export interface UserResponse {
@@ -10,4 +11,5 @@ export interface UserResponse {
   birthDate: string; // ISO format date string
   email: string;
   role: UserRole;
+  position?: AdminPosition; // Admin position for role-based access
 }
