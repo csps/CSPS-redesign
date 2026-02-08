@@ -3,6 +3,7 @@ import type { UserResponse } from "../interfaces/user/UserResponse";
 import {
   isExecutivePosition,
   isFinancePosition,
+  AdminPosition,
 } from "../enums/AdminPosition";
 
 /**
@@ -28,30 +29,32 @@ export const usePermissions = () => {
   const permissions = {
     // Can view finance dashboard
     canViewFinance: isExecutive || isFinance || isGeneralAdmin,
-    
+
     // Can view sales page
     canViewSales: isExecutive || isFinance || isGeneralAdmin,
-    
+
     // Can perform CRUD operations on finance/sales
     // Only executives and finance members can edit
     canEditFinance: isExecutive || isFinance,
-    
+
     // Can manage students (add, edit, delete)
     canManageStudents: isExecutive,
-    
+
     // Can manage events (create, update, delete)
     // Only executives can manage events - finance and general admins see read-only
     canManageEvents: isExecutive,
-    
+
     // Can manage merchandise (add, edit, delete products, update orders)
     // Only executives and finance can edit - general admins see read-only
     canManageMerch: isExecutive || isFinance,
-    
+
     // Can approve/reject transactions
-    canApproveTransactions: isExecutive || isFinance,
-    
+    canApproveTransactions: isFinance || isExecutive,
+
     // Can view admin dashboard
     canViewDashboard: isExecutive || isGeneralAdmin,
+
+    canManageOrder: isExecutive || isFinance,
   };
 
   return {
