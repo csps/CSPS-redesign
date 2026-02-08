@@ -1,96 +1,93 @@
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  Filler,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-);
-
-const LineChart = () => {
-  const labels = ["Week 1", "Week 2", "Week 3", "Week 4"];
-
-  const data = {
-    labels,
-    datasets: [
-      {
-        data: [260, 80, 180, 240],
-        borderColor: "#FFD54A",
-        borderWidth: 3,
-        tension: 0.45,
-        pointRadius: 0,
-        fill: true,
-        backgroundColor: (context: { chart: { ctx: any; chartArea: any } }) => {
-          const { ctx, chartArea } = context.chart;
-          if (!chartArea) return;
-
-          const gradient = ctx.createLinearGradient(
-            0,
-            chartArea.top,
-            0,
-            chartArea.bottom,
-          );
-
-          gradient.addColorStop(0, "rgba(255, 213, 74, 0.35)");
-          gradient.addColorStop(1, "rgba(255, 213, 74, 0)");
-
-          return gradient;
-        },
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: "#2A1465",
-        titleColor: "#fff",
-        bodyColor: "#FFD54A",
-        displayColors: false,
-        callbacks: {
-          label: (ctx: { raw: any }) => `₱${ctx.raw}.00`,
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: { color: "#BFAFFF" },
-      },
-      y: {
-        grid: { color: "rgba(255,255,255,0.06)" },
-        ticks: { color: "#BFAFFF" },
-      },
-    },
-  };
-
+  ResponsiveContainer,
+} from "recharts";
+interface LineChartProps {
+  data: number[];
+  labels: string[];
+  totalSales: number;
+}
+export default function LineChart({
+  data,
+  labels,
+  totalSales,
+}: LineChartProps) {
+  // Transform data for Recharts
+  const chartData = labels.map((label, index) => ({
+    name: label,
+    value: data[index] || 0,
+  }));
   return (
-    <div
-      style={{
-        height: 320,
-        borderRadius: 16,
-      }}
-    >
-      <h3 style={{ color: "#fff", marginBottom: 4 }}>Total Sales</h3>
-      <h1 style={{ color: "#FFD54A", marginTop: 0 }}>₱7,666.00</h1>
-
-      <Line data={data} options={options} />
-    </div>
+    <ResponsiveContainer width="100%" height="100%">
+      <AreaChart
+        data={chartData}
+        margin={{
+          top: 10,
+          right: 10,
+          left: 0,
+          bottom: 0,
+        }}
+      >
+        <defs>
+          <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#9333ea" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke="rgba(255,255,255,0.05)"
+        />
+        <XAxis
+          dataKey="name"
+          axisLine={false}
+          tickLine={false}
+          tick={{
+            fill: "#9ca3af",
+            fontSize: 12,
+          }}
+          dy={10}
+        />
+        <YAxis
+          axisLine={false}
+          tickLine={false}
+          tick={{
+            fill: "#9ca3af",
+            fontSize: 12,
+          }}
+          tickFormatter={(value) => `₱${value}`}
+        />
+        <Tooltip
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="bg-[#18181b] border border-purple-500/20 px-3 py-2 rounded-lg shadow-xl backdrop-blur-md">
+                  <p className="text-gray-400 text-xs mb-1">{label}</p>
+                  <p className="text-purple-400 text-sm font-bold">
+                    ₱{Number(payload[0].value).toLocaleString()}
+                  </p>
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke="#9333ea"
+          strokeWidth={3}
+          fillOpacity={1}
+          fill="url(#colorValue)"
+          animationDuration={1500}
+        />
+      </AreaChart>
+    </ResponsiveContainer>
   );
-};
-
-export default LineChart;
+}
