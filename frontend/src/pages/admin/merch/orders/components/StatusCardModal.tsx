@@ -13,6 +13,7 @@ interface StatusCardModalProps {
   orderItem: OrderItemResponse;
   currentStatus: OrderStatus;
   onStatusUpdate: (status: OrderStatus) => void;
+  canEdit?: boolean;
 }
 
 const statusOptions = [
@@ -27,6 +28,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
   orderItem,
   currentStatus,
   onStatusUpdate,
+  canEdit = true,
 }) => {
   const [tempStatus, setTempStatus] = useState<OrderStatus>(currentStatus);
   const [isSaving, setIsSaving] = useState(false);
@@ -42,11 +44,10 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
   };
 
   const handleClose = () => {
-    setTempStatus(currentStatus); // Reset temp status on close
+    setTempStatus(currentStatus);
     onClose();
   };
 
-  // Reset temp status when modal opens with new current status
   React.useEffect(() => {
     if (isOpen) {
       setTempStatus(currentStatus);
@@ -57,7 +58,6 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -66,20 +66,18 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
             onClick={handleClose}
           />
 
-          {/* Modal Content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed inset-0 flex items-center justify-center z-50 p-4"
           >
-            <div className="w-full max-w-2xl bg-[#1E1E3F] border border-white/10 rounded-3xl overflow-hidden">
+            <div className="w-full max-w-2xl bg-[#1E1E3F] border border-white/10 rounded-2xl overflow-hidden">
               {/* Header */}
               <div className="relative px-6 py-5 border-b border-white/5 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                    ORDER #{orderItem.orderId}
+                  <p className="text-xs text-gray-500 mb-1">
+                    Order #{orderItem.orderId}
                   </p>
                   <h2 className="text-xl font-bold text-white">
                     Manage Order Status
@@ -87,7 +85,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                 </div>
                 <button
                   onClick={handleClose}
-                  className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                  className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
                 >
                   <FiX size={20} />
                 </button>
@@ -95,16 +93,11 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
 
               {/* Content */}
               <div className="p-6">
-                {/* Order Details */}
-                <div className="flex gap-6 mb-8">
+                <div className="flex flex-col sm:flex-row gap-6 mb-8">
                   {/* Image */}
-                  <div className="shrink-0 w-32 h-32 bg-[#151530] rounded-2xl flex items-center justify-center p-3 overflow-hidden border border-white/5">
+                  <div className="shrink-0 w-32 h-32 bg-black/20 rounded-xl flex items-center justify-center p-2 overflow-hidden border border-white/5">
                     <img
-                      src={
-                        orderItem.s3ImageKey
-                          ? S3_BASE_URL + orderItem.s3ImageKey
-                          : ""
-                      }
+                      src={orderItem.s3ImageKey ? S3_BASE_URL + orderItem.s3ImageKey : ""}
                       alt={orderItem.merchName}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -112,69 +105,41 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
 
                   {/* Info */}
                   <div className="flex-1">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                      CSPS OFFICIAL • {orderItem.merchType}
+                    <p className="text-xs text-gray-400 mb-1">
+                      CSPS Official • {orderItem.merchType}
                     </p>
                     <h3 className="text-2xl font-bold text-white mb-2">
                       {orderItem.merchName}
                     </h3>
-                    <p className="text-2xl font-bold text-[#FDE006] mb-3">
+                    <p className="text-2xl font-bold text-white mb-4">
                       ₱{orderItem.totalPrice.toLocaleString()}
                     </p>
 
-                    {/* Details Row */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-gray-400">
-                      <p className="text-[11px] font-medium uppercase">
-                        Qty:{" "}
-                        <span className="text-white font-bold">
-                          {orderItem.quantity}
-                        </span>
-                      </p>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
+                      <p>Qty: <span className="font-bold text-white">{orderItem.quantity}</span></p>
                       {isClothing && orderItem.size && (
-                        <p className="text-[11px] font-medium uppercase">
-                          Size:{" "}
-                          <span className="text-white font-bold">
-                            {orderItem.size}
-                          </span>
-                        </p>
+                        <p>Size: <span className="font-bold text-white">{orderItem.size}</span></p>
                       )}
                       {isClothing && orderItem.color && (
-                        <p className="text-[11px] font-medium uppercase">
-                          Color:{" "}
-                          <span className="text-white font-bold">
-                            {orderItem.color}
-                          </span>
-                        </p>
-                      )}
-                      {orderItem.design && (
-                        <p className="text-[11px] font-medium uppercase">
-                          Design:{" "}
-                          <span className="text-white font-bold">
-                            {orderItem.design}
-                          </span>
-                        </p>
+                        <p>Color: <span className="font-bold text-white">{orderItem.color}</span></p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Student Info */}
-                <div className="bg-white/5 border border-white/5 rounded-xl p-4 mb-6">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
-                    CUSTOMER
-                  </p>
-                  <p className="text-white font-bold">
-                    {orderItem.studentName}
-                  </p>
-                  <p className="text-white/50 text-sm">{orderItem.studentId}</p>
+                {/* Customer Section */}
+                <div className="bg-black/20 border border-white/5 rounded-xl p-4 mb-8">
+                  <p className="text-xs text-gray-500 mb-2">CUSTOMER</p>
+                  <p className="text-white font-bold">{orderItem.studentName}</p>
+                  <p className="text-gray-400 text-sm">{orderItem.studentId}</p>
                 </div>
 
-                {/* Status Selection - Button Grid */}
+                {/* Status Selection */}
                 <div>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">
-                    SELECT STATUS
+                  <p className="text-xs text-gray-500 mb-4">
+                    {canEdit ? "SELECT STATUS" : "CURRENT STATUS"}
                   </p>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {statusOptions.map((option) => {
                       const style = statusStyles[option.value];
                       const isSelected = tempStatus === option.value;
@@ -182,19 +147,15 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                       return (
                         <button
                           key={option.value}
-                          onClick={() => setTempStatus(option.value)}
-                          className={`relative px-4 py-4 rounded-xl border-2 transition-all ${
+                          onClick={() => canEdit && setTempStatus(option.value)}
+                          disabled={!canEdit}
+                          className={`px-4 py-4 rounded-xl border transition-all text-sm font-bold ${
                             isSelected
                               ? `${style.bg} ${style.border} ${style.color}`
-                              : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10"
+                              : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
                           }`}
                         >
-                          {isSelected && (
-                            <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-current" />
-                          )}
-                          <span className="text-xs font-bold uppercase tracking-wider">
-                            {option.label}
-                          </span>
+                          {option.label}
                         </button>
                       );
                     })}
@@ -203,33 +164,26 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t border-white/5 flex justify-between items-center">
-                <div>
-                  {hasChanges && (
-                    <p className="text-[11px] text-yellow-400 font-medium">
-                      You have unsaved changes
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleClose}
-                    className="px-6 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors"
-                  >
-                    Cancel
-                  </button>
+              <div className="px-6 py-5 border-t border-white/5 flex justify-end items-center gap-3 bg-black/10">
+                <button
+                  onClick={handleClose}
+                  className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-white transition-colors"
+                >
+                  {canEdit ? "Cancel" : "Close"}
+                </button>
+                {canEdit && (
                   <button
                     onClick={handleSave}
                     disabled={!hasChanges || isSaving}
-                    className={`px-8 py-3 rounded-xl font-bold transition-all ${
+                    className={`px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${
                       hasChanges
-                        ? "bg-[#FDE006] hover:brightness-110 text-black"
-                        : "bg-white/10 text-white/40 cursor-not-allowed"
+                        ? "bg-[#FDE006] text-black hover:bg-gray-200"
+                        : "bg-[#FDE006]/5 text-gray-500 cursor-not-allowed"
                     }`}
                   >
                     {isSaving ? "Saving..." : "Save Changes"}
                   </button>
-                </div>
+                )}
               </div>
             </div>
           </motion.div>
