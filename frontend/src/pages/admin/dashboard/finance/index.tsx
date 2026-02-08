@@ -11,6 +11,8 @@ import {
   type StudentMembershipDTO,
 } from "../../../../api/dashboard";
 import { getSalesStats, type SalesStats } from "../../../../api/sales";
+import { useNavigate } from "react-router-dom";
+import OrderDetailModal from "../../sales/components/OrderDetailModal";
 
 // Loading Skeleton Component
 const LoadingSkeleton = ({ className }: { className?: string }) => (
@@ -82,6 +84,12 @@ const Index = () => {
   const [salesStats, setSalesStats] = useState<SalesStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Order detail modal state
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [selectedStudentName, setSelectedStudentName] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -139,8 +147,18 @@ const Index = () => {
         previous: "$0.00 previous period",
       };
 
-  // Count orders by status for stats display
-  const pendingCount = orders.filter((o) => o.status === "PENDING").length;
+  // Order detail modal handlers
+  const handleOrderClick = (order: OrderSummaryDTO) => {
+    setSelectedOrderId(order.orderId);
+    setSelectedStudentName(order.studentName);
+    setIsOrderModalOpen(true);
+  };
+
+  const handleCloseOrderModal = () => {
+    setIsOrderModalOpen(false);
+    setSelectedOrderId(null);
+    setSelectedStudentName("");
+  };
   const toBeClaimedCount = orders.filter(
     (o) => o.status === "TO_BE_CLAIMED",
   ).length;
@@ -153,18 +171,7 @@ const Index = () => {
         <div className="py-6 space-y-8">
           {/* Error Banner */}
           {error && (
-            <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg flex items-center gap-3">
-              <svg
-                className="w-5 h-5 flex-shrink-0"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+            <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
@@ -172,10 +179,10 @@ const Index = () => {
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                 Finance Overview
               </h1>
-              <p className="text-gray-400 mt-1">
+              <p className="text-gray-400 mt-2 text-base">
                 Track your inventory, orders, and membership statistics
               </p>
             </div>
@@ -215,31 +222,15 @@ const Index = () => {
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-purple-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                      />
-                    </svg>
-                  </div>
-                  <h2 className="text-xl font-semibold">Inventory</h2>
+                  <h2 className="text-2xl font-bold">Inventory</h2>
                 </div>
                 <span className="text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded">
                   {inventory.length} items
                 </span>
               </div>
-
               <div className="bg-purple-900/20 rounded-lg overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-[2fr_1fr_1fr] text-xs text-gray-400 uppercase tracking-wider px-4 py-3 border-b border-purple-500/20">
+                <div className="grid grid-cols-[2fr_1fr_1fr] text-xs text-gray-400 uppercase px-4 py-3 border-b border-purple-500/20">
                   <div>Product</div>
                   <div className="text-center">Stock</div>
                   <div className="text-center">Status</div>
@@ -269,7 +260,8 @@ const Index = () => {
                     inventory.map((item: InventorySummaryDTO) => (
                       <div
                         key={item.id}
-                        className="grid grid-cols-[2fr_1fr_1fr] items-center px-4 py-3 hover:bg-purple-500/5 transition-colors"
+                        className="grid grid-cols-[2fr_1fr_1fr] cursor-pointer items-center px-4 py-3 hover:bg-purple-500/5 transition-colors"
+                        onClick={() => navigate(`/admin/merch/${item.id}`)}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
@@ -287,9 +279,7 @@ const Index = () => {
                             {item.name}
                           </span>
                         </div>
-                        <div className="text-center font-mono text-sm">
-                          {item.stock}
-                        </div>
+                        <div className="text-center  text-sm">{item.stock}</div>
                         <div className="flex justify-center">
                           <StatusBadge
                             status={item.stockStatus}
@@ -307,36 +297,19 @@ const Index = () => {
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-blue-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                      />
-                    </svg>
-                  </div>
-                  <h2 className="text-xl font-semibold">Order Status</h2>
+                  <h2 className="text-2xl font-bold">Order Status</h2>
                 </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="bg-amber-500/20 text-amber-400 px-2 py-1 rounded">
-                    {pendingCount} pending
-                  </span>
-                  <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded">
-                    {toBeClaimedCount} to claim
-                  </span>
-                </div>
+                <h2
+                  className="cursor-pointer hover:text-violet-400"
+                  onClick={() => navigate("/admin/merch/orders")}
+                >
+                  See more
+                </h2>
               </div>
 
               <div className="bg-purple-900/20 rounded-lg overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] text-xs text-gray-400 uppercase tracking-wider px-4 py-3 border-b border-purple-500/20">
+                <div className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] text-xs text-gray-400 uppercase px-4 py-3 border-b border-purple-500/20">
                   <div>Customer</div>
                   <div className="text-center">Order #</div>
                   <div className="text-center">Product</div>
@@ -365,7 +338,8 @@ const Index = () => {
                     orders.map((order: OrderSummaryDTO) => (
                       <div
                         key={order.orderItemId}
-                        className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] items-center px-4 py-3 hover:bg-purple-500/5 transition-colors"
+                        className="grid grid-cols-[1.5fr_1fr_1.5fr_1fr] items-center px-4 py-3 hover:bg-purple-500/5 transition-colors cursor-pointer"
+                        onClick={() => handleOrderClick(order)}
                       >
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold">
@@ -375,7 +349,7 @@ const Index = () => {
                             {order.studentName}
                           </span>
                         </div>
-                        <div className="text-center font-mono text-sm text-gray-300">
+                        <div className="text-center  text-sm text-gray-300">
                           {order.referenceNumber}
                         </div>
                         <div className="text-center text-sm text-gray-300 truncate px-2">
@@ -395,31 +369,13 @@ const Index = () => {
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                    <svg
-                      className="w-5 h-5 text-emerald-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
-                  </div>
-                  <h2 className="text-xl font-semibold">Membership Status</h2>
+                  <h2 className="text-2xl font-bold">Membership Status</h2>
                 </div>
-                <span className="text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded">
-                  {students.length} shown
-                </span>
               </div>
 
               <div className="bg-purple-900/20 rounded-lg overflow-hidden">
                 {/* Table Header */}
-                <div className="grid grid-cols-[2fr_1fr_1fr] text-xs text-gray-400 uppercase tracking-wider px-4 py-3 border-b border-purple-500/20">
+                <div className="grid grid-cols-[2fr_1fr_1fr] text-xs text-gray-400 uppercase px-4 py-3 border-b border-purple-500/20">
                   <div>Name</div>
                   <div className="text-center">ID Number</div>
                   <div className="text-center">Status</div>
@@ -456,7 +412,7 @@ const Index = () => {
                             {student.fullName}
                           </span>
                         </div>
-                        <div className="text-center font-mono text-sm text-gray-300">
+                        <div className="text-center  text-sm text-gray-300">
                           {student.idNumber}
                         </div>
                         <div className="flex justify-center">
@@ -475,29 +431,8 @@ const Index = () => {
             {/* Member to Non-Member Ratio Section */}
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-yellow-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"
-                    />
-                  </svg>
-                </div>
                 <div>
-                  <h2 className="text-xl font-semibold">
+                  <h2 className="text-2xl font-bold">
                     Member to Non-Member Ratio
                   </h2>
                   <p className="text-xs text-gray-400">
@@ -587,6 +522,13 @@ const Index = () => {
           </div>
         </div>
       </div>
+      {/* Order Detail Modal */}
+      <OrderDetailModal
+        isOpen={isOrderModalOpen}
+        orderId={selectedOrderId}
+        studentName={selectedStudentName}
+        onClose={handleCloseOrderModal}
+      />
     </div>
   );
 };

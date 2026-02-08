@@ -69,14 +69,14 @@ const Index = () => {
             stock: merch.totalStockQuantity ?? 0,
             imageKey: merch.s3ImageKey,
             isLowStock: (merch.totalStockQuantity ?? 0) < LOW_STOCK_THRESHOLD,
-          })
+          }),
         );
         setInventory(inventoryItems.slice(0, 5)); // Show top 5
 
         // Set pending orders
         setTotalPendingOrders(pendingOrdersData.totalElements);
         setPendingOrders(
-          pendingOrdersData.content.slice(0, MAX_PENDING_ORDERS_DISPLAY)
+          pendingOrdersData.content.slice(0, MAX_PENDING_ORDERS_DISPLAY),
         );
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -111,9 +111,7 @@ const Index = () => {
 
   // Loading skeleton component
   const LoadingSkeleton = ({ className }: { className?: string }) => (
-    <div
-      className={`animate-pulse bg-gray-700/50 rounded ${className}`}
-    ></div>
+    <div className={`animate-pulse bg-gray-700/50 rounded ${className}`}></div>
   );
 
   return (
@@ -226,7 +224,7 @@ const Index = () => {
 
                         {/* Stocks */}
                         <div className="flex justify-center md:justify-center">
-                          <span className="font-mono">{item.stock}</span>
+                          <span>{item.stock}</span>
                         </div>
 
                         {/* Status */}

@@ -67,7 +67,7 @@ function Chart({
     <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-4 hover:border-purple-500/50 transition-colors shadow-sm">
       <div className="flex justify-between items-start mb-1">
         <div>
-          <h3 className="text-zinc-500 text-xs font-medium uppercase tracking-wide flex items-center gap-1">
+          <h3 className="text-zinc-500 text-xs font-medium uppercase flex items-center gap-1">
             {title} <span className="opacity-50 text-[10px]">ⓘ</span>
           </h3>
           <p className="text-white text-xl font-bold mt-1">{value}</p>
