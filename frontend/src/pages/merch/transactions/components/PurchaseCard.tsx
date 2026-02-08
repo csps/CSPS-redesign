@@ -89,7 +89,10 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
                     ₱{item.totalPrice.toLocaleString()}
                   </p>
                   <p className="text-sm text-gray-400">
-                    Qty: <span className="font-bold text-gray-200">{item.quantity}</span>
+                    Qty:{" "}
+                    <span className="font-bold text-gray-200">
+                      {item.quantity}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -99,18 +102,25 @@ const PurchaseCard = memo(({ purchase }: PurchaseCardProps) => {
                 {isClothing && (
                   <>
                     <p>
-                      Size: <span className="font-bold text-white">{item.size || "N/A"}</span>
+                      Size:{" "}
+                      <span className="font-bold text-white">
+                        {item.size || "N/A"}
+                      </span>
                     </p>
                     <p>
-                      Color: <span className="font-bold text-white">{item.color}</span>
+                      Color:{" "}
+                      <span className="font-bold text-white">{item.color}</span>
                     </p>
                   </>
                 )}
                 <p>
-                  Date: <span className="font-bold text-white">{new Date(item.createdAt).toLocaleDateString()}</span>
+                  Date:{" "}
+                  <span className="font-bold text-white">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </span>
                 </p>
                 <p className="ml-0 sm:ml-auto text-xs text-gray-500">
-                  ID: <span className="font-mono">#{purchase.orderId}</span>
+                  ID: <span>#{purchase.orderId}</span>
                 </p>
               </div>
             </div>
