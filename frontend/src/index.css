@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @import "swiper/css";
@@ -6,18 +7,63 @@
 @import "react-calendar/dist/Calendar.css";
 
 body {
+  /* Prioritizing Inter for the Stripe aesthetic */
   font-family:
-    "SF Pro Text",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    "Open Sans",
-    "Helvetica Neue",
-    sans-serif;
+    "Inter", "SF Pro Display", "-apple-system", "BlinkMacSystemFont",
+    "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+
+  /* The "Smoothness" Secret: Rendering optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6; /* Airy line height for minimalism */
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  background-color: #111827; /* zinc-900 - dark default */
+  min-height: 100vh;
+}
+
+html {
+  background-color: #111827; /* zinc-900 - dark default */
+}
+
+#root {
+  background-color: #111827; /* zinc-900 - dark default */
+  min-height: 100vh;
+}
+
+/* Headings */
+h1 {
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h2 {
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+h3,
+h4 {
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+h5,
+h6 {
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+/* UI Labels and Buttons */
+button,
+label,
+.ui-label {
+  font-weight: 500;
 }
 
 /* Global button cursor */
@@ -41,6 +87,7 @@ button {
 .swiper-pagination-bullet-active {
   @apply bg-white opacity-100 w-3 h-3;
 }
+
 /* === Calendar Overrides === */
 .react-calendar {
   width: 100% !important;
@@ -51,14 +98,14 @@ button {
   font-family: inherit;
 }
 
-/* === Month Navigation Header (left aligned) === */
+/* === Month Navigation Header === */
 .react-calendar__navigation {
   display: flex !important;
   justify-content: flex-start !important;
   align-items: center !important;
   gap: 0.5rem !important;
   padding: 0.5rem 1rem !important;
-  margin-bottom: 1rem !important;
+  margin-bottom: 1.5rem !important; /* Increased space for clarity */
   width: fit-content !important;
 }
 
@@ -68,11 +115,12 @@ button {
   color: white !important;
   font-size: 1.2rem !important;
   cursor: pointer !important;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
 .react-calendar__navigation button:hover {
   color: #c084fc !important;
+  opacity: 0.8;
 }
 
 .react-calendar__navigation__prev2-button,
@@ -84,7 +132,9 @@ button {
   flex-grow: 1 !important;
   text-align: center !important;
   font-size: 1.25rem !important;
-  font-weight: 600 !important;
+  /* Stripe Style: Bold and Tightly Spaced */
+  font-weight: 700 !important;
+  letter-spacing: -0.025em !important;
   color: white !important;
   pointer-events: none !important;
   white-space: nowrap !important;
@@ -112,10 +162,12 @@ button {
   display: grid !important;
   grid-template-columns: repeat(7, 1fr) !important;
   text-align: center !important;
-  margin-bottom: 0.3rem !important;
+  margin-bottom: 0.5rem !important;
   border-radius: 8px !important;
   padding: 0.5rem 0 !important;
-  font-weight: 500 !important;
+  /* Stripe Style: Medium weight with subtle tracking */
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
   color: #e0e0e0 !important;
   border: none !important;
 }
@@ -135,9 +187,12 @@ button {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  border-radius: 12px !important;
+  border-radius: 12px !important; /* Rounded corners for that modern feel */
   position: relative !important;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease-in-out;
+  /* Stripe Style: Clean digits */
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
 }
 
 /* === Hover Effects === */
@@ -150,8 +205,10 @@ button {
 
 /* === Active Tile === */
 .react-calendar__tile--active {
-  background: rgba(0, 0, 0, 0.25) !important;
-  color: gray !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important; /* Emphasize active date */
 }
 
 /* === Today Highlight === */
@@ -174,15 +231,10 @@ button {
   cursor: default !important;
 }
 
-.react-calendar__tile--active {
-  background: rgba(2255, 255, 255, 0.15) !important;
-  color: white !important;
-  border-radius: 12px !important;
-}
-
 .react-calendar__tile:focus {
   background: transparent !important;
   color: inherit !important;
+  outline: none;
 }
 
 .tab-shape {
