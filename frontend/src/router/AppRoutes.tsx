@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useAuthStore } from "../store/auth_store";
 import PageTransition from "../components/PageTransition";
+import type { UserResponse } from "../interfaces/user/UserResponse";
+import { getAdminHomeRoute } from "./routePermissions";
 
 import LoginPage from "../pages/login";
 import ContactUsPage from "../pages/contact";
@@ -21,9 +23,11 @@ import AdminDashboardPage from "../pages/admin/dashboard";
 import AdminEventPage from "../pages/admin/event/page";
 import AdminProductsPage from "../pages/admin/products";
 
-import AdminForumPage from "../pages/admin/forum";
 import AdminMerchPage from "../pages/admin/student";
 import AdminMercheOrdersPage from "../pages/admin/merch/orders";
+
+import AdminFinancePage from "../pages/admin/dashboard/finance";
+import AdminSalesPage from "../pages/admin/sales";
 
 import NotFoundPage from "../pages/notFound";
 import LoadingPage from "../pages/loading";
@@ -33,27 +37,29 @@ import AdminMerchProductView from "../pages/admin/merch/productView";
 import ProfilePage from "../components/ProfilePage";
 import LandingPage from "../pages/landing";
 
-// Home route component - redirects authenticated users to dashboard
+// Home route component - redirects authenticated users to appropriate dashboard
 const HomeRoute = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
-  // If authenticated, redirect to appropriate dashboard
+  // If authenticated, redirect to appropriate dashboard based on role and position
   if (isAuthenticated && user) {
-    return (
-      <Navigate
-        to={user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard"}
-        replace
-      />
-    );
+    if (user.role === "ADMIN") {
+      const adminUser = user as UserResponse;
+      const adminHome = getAdminHomeRoute(adminUser.position);
+      return <Navigate to={adminHome} replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
   }
 
   // Not authenticated - show landing page
   return <LandingPage />;
 };
+
 const routers = [
   // Home route - redirects authenticated users to dashboard
   { path: "/", element: <HomeRoute /> },
+  
   // Public routes - protected by PublicRoute to prevent authenticated access
   {
     element: <PublicRoute />,
@@ -81,24 +87,27 @@ const routers = [
     ],
   },
 
-  // Admin Protected Routes
+  // Admin Protected Routes (position-based access is checked in ProtectedRoute)
   {
     element: <ProtectedRoute allowedRole="ADMIN" />,
     children: [
       { path: "/admin/dashboard", element: <AdminDashboardPage /> },
       { path: "/admin/profile", element: <ProfilePage /> },
       { path: "/admin/event", element: <AdminEventPage /> },
-      // { path: "/admin/dashboard/finance", element: <AdminFinancePage /> },
+      { path: "/admin/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
-      // { path: "/admin/sales", element: <AdminSalesPage /> },
-      { path: "/admin/forum", element: <AdminForumPage /> },
+      { path: "/admin/sales", element: <AdminSalesPage /> },
+      // { path: "/admin/forum", element: <AdminForumPage /> },
       { path: "/admin/students", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
       { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
     ],
   },
 
-  // 404 fallback
+  // Explicit 404 route (for position-based access denials)
+  { path: "/404", element: <NotFoundPage /> },
+  
+  // Catch-all 404 fallback
   { path: "*", element: <NotFoundPage /> },
 ];
 
