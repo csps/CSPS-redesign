@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 import { IoMdAdd } from "react-icons/io";
-import { FiEdit3, FiTrash2 } from "react-icons/fi";
+import { FiEdit3, FiTrash2, FiEye } from "react-icons/fi";
 import ProductModal from "./components/ProductModal";
 import { MerchType } from "../../../enums/MerchType";
 import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchResponse";
@@ -16,6 +16,7 @@ import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
 import DeleteConfirmationModal from "../merch/productView/components/DeleteConfirmationModal";
 import { toast } from "sonner";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +30,8 @@ const Index = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const navigator = useNavigate();
+  const { canManageMerch } = usePermissions();
+  
   const navigate = (merchId: number) => {
     navigator(`/admin/merch/${merchId}`);
   };
@@ -87,13 +90,15 @@ const Index = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Products Inventory
           </h1>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="cursor-pointer flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
-          >
-            <IoMdAdd className="text-lg sm:text-xl" />
-            <span>Add Product</span>
-          </button>
+          {canManageMerch && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="cursor-pointer flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
+            >
+              <IoMdAdd className="text-lg sm:text-xl" />
+              <span>Add Product</span>
+            </button>
+          )}
         </div>
 
         {/* Filter Bar Section */}
@@ -191,20 +196,31 @@ const Index = () => {
                       </span>
                     )}
                   </div>
-                  {/* Action Buttons (Visible on hover or card bottom) */}
+                  {/* Action Buttons - Show Edit/Delete for managers, View for read-only */}
                   <div className="flex gap-2 mt-auto">
-                    <button
-                      onClick={() => navigate(item.merchId)}
-                      className="cursor-pointer flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
-                    >
-                      <FiEdit3 className="text-sm" /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(item)}
-                      className="cursor-pointer flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
-                    >
-                      <FiTrash2 className="text-sm" /> Delete
-                    </button>
+                    {canManageMerch ? (
+                      <>
+                        <button
+                          onClick={() => navigate(item.merchId)}
+                          className="cursor-pointer flex-1 bg-[#f9a8f1] text-black py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                        >
+                          <FiEdit3 className="text-sm" /> Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(item)}
+                          className="cursor-pointer flex-1 bg-[#EF4444] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                        >
+                          <FiTrash2 className="text-sm" /> Delete
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => navigate(item.merchId)}
+                        className="cursor-pointer flex-1 bg-[#6366F1] text-white py-2 rounded-lg flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:brightness-110"
+                      >
+                        <FiEye className="text-sm" /> View
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
