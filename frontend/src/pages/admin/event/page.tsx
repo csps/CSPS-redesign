@@ -11,6 +11,7 @@ import EventDetailModal from "../../events/components/EventDetailModal";
 import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 import AddEventModal from "./addEventModal";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
+import { usePermissions } from "../../../hooks/usePermissions";
 
 interface EventSectionProps {
   refreshTrigger?: number;
@@ -280,6 +281,7 @@ const RecentEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
 const Page = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const { canManageEvents } = usePermissions();
 
   const handleEventAdded = () => {
     setRefreshTrigger((prev) => prev + 1);
@@ -297,15 +299,21 @@ const Page = () => {
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                 Event Management
               </h1>
-              <p className="text-white/60">Create and manage your organization's events</p>
+              <p className="text-white/60">
+                {canManageEvents 
+                  ? "Create and manage your organization's events" 
+                  : "View your organization's events"}
+              </p>
             </div>
-            <button
-              onClick={() => setIsOpen(true)}
-              className="flex items-center gap-2 bg-[#FDE006] text-black px-6 py-3 rounded-xl font-bold hover:brightness-110 transition"
-            >
-              <IoMdAdd className="text-xl" />
-              <span>Add New Event</span>
-            </button>
+            {canManageEvents && (
+              <button
+                onClick={() => setIsOpen(true)}
+                className="flex items-center gap-2 bg-[#FDE006] text-black px-6 py-3 rounded-xl font-bold hover:brightness-110 transition"
+              >
+                <IoMdAdd className="text-xl" />
+                <span>Add New Event</span>
+              </button>
+            )}
           </div>
 
           {/* Events Sections */}
