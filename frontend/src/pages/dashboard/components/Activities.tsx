@@ -41,6 +41,14 @@ const Activities = () => {
         </p>
       </div>
 
+      {events.length === 0 && (
+        <div className="w-full h-[200px] flex items-center justify-center border border-dashed border-zinc-800 rounded-lg">
+          <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+            No activities available
+          </span>
+        </div>
+      )}
+
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {[1, 2, 3].map((i) => (
