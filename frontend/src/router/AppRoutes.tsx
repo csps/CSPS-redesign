@@ -34,7 +34,7 @@ import LoadingPage from "../pages/loading";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { PublicRoute } from "./PublicRoute";
 import AdminMerchProductView from "../pages/admin/merch/productView";
-import ProfilePage from "../components/ProfilePage";
+import ProfilePage from "../pages/profile/ProfilePage";
 import LandingPage from "../pages/landing";
 
 // Home route component - redirects authenticated users to appropriate dashboard
@@ -59,7 +59,7 @@ const HomeRoute = () => {
 const routers = [
   // Home route - redirects authenticated users to dashboard
   { path: "/", element: <HomeRoute /> },
-  
+
   // Public routes - protected by PublicRoute to prevent authenticated access
   {
     element: <PublicRoute />,
@@ -106,7 +106,7 @@ const routers = [
 
   // Explicit 404 route (for position-based access denials)
   { path: "/404", element: <NotFoundPage /> },
-  
+
   // Catch-all 404 fallback
   { path: "*", element: <NotFoundPage /> },
 ];

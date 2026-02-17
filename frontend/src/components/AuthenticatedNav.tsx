@@ -275,7 +275,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
             {student?.user.lastName || ""}
           </span>
           <span className="text-xs text-purple-200/60 truncate">
-            Student Account
+            {isAdmin ? "Admin" : "Student"} Account
           </span>
         </div>
       </div>
@@ -290,7 +290,8 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         </p>
         <div className="flex items-center justify-between group cursor-default px-1">
           <span className="text-sm text-white/90 font-medium">
-            ID: {isAdmin ? student.user.userId : student?.studentId}
+            {isAdmin ? "Admin" : "Student"} ID:{" "}
+            {isAdmin ? student.user.userId : student?.studentId}
           </span>
           {/* Checkmark to mimic the 'Selected' state in the image */}
           <svg
@@ -483,31 +484,60 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
         <LogoSection />
 
         <ul className="flex gap-10 justify-center flex-1">
-          {getAuthenticatedNavbar(isAdmin, adminPosition).map((navItem, index) => {
-            const isMerchandise = navItem.name === "Merchandise";
-            // base active detection (matches nav.to or nested paths)
-            let isActive = isRouteActive(navItem.name, location, navItem.to);
+          {getAuthenticatedNavbar(isAdmin, adminPosition).map(
+            (navItem, index) => {
+              const isMerchandise = navItem.name === "Merchandise";
+              // base active detection (matches nav.to or nested paths)
+              let isActive = isRouteActive(navItem.name, location, navItem.to);
 
-            // explicit override: treat Merchandise active for admin merch routes
-            if (
-              isMerchandise &&
-              (location.startsWith("/merch") ||
-                (isAdmin && location.startsWith("/admin/merch")))
-            ) {
-              isActive = true;
-            }
+              // explicit override: treat Merchandise active for admin merch routes
+              if (
+                isMerchandise &&
+                (location.startsWith("/merch") ||
+                  (isAdmin && location.startsWith("/admin/merch")))
+              ) {
+                isActive = true;
+              }
 
-            if (isMerchandise) {
+              if (isMerchandise) {
+                return (
+                  <li
+                    key={`nav-${index}`}
+                    className="relative z-50"
+                    onMouseEnter={() => setOpenDropdown("Merchandise")}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <div
+                      onClick={handleMerchandiseClick}
+                      className={`cursor-pointer text-lg font-medium transition-all ${
+                        isActive
+                          ? "text-white"
+                          : "text-gray-400 hover:text-gray-200"
+                      }`}
+                    >
+                      <NavItemContent
+                        isActive={isActive}
+                        icon={navItem.icon}
+                        name={navItem.name}
+                      />
+                    </div>
+                    <AnimatePresence>
+                      {openDropdown === "Merchandise" && (
+                        <MerchandiseDropdown
+                          location={location}
+                          isAdmin={isAdmin}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              }
+
               return (
-                <li
-                  key={`nav-${index}`}
-                  className="relative z-50"
-                  onMouseEnter={() => setOpenDropdown("Merchandise")}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                >
-                  <div
-                    onClick={handleMerchandiseClick}
-                    className={`cursor-pointer text-lg font-medium transition-all ${
+                <li key={`nav-${index}`}>
+                  <Link
+                    to={navItem.to}
+                    className={`relative cursor-pointer text-lg font-medium transition-all ${
                       isActive
                         ? "text-white"
                         : "text-gray-400 hover:text-gray-200"
@@ -518,38 +548,11 @@ const DesktopAuthenticatedNav: React.FC<DesktopNavProps> = ({ location }) => {
                       icon={navItem.icon}
                       name={navItem.name}
                     />
-                  </div>
-                  <AnimatePresence>
-                    {openDropdown === "Merchandise" && (
-                      <MerchandiseDropdown
-                        location={location}
-                        isAdmin={isAdmin}
-                      />
-                    )}
-                  </AnimatePresence>
+                  </Link>
                 </li>
               );
-            }
-
-            return (
-              <li key={`nav-${index}`}>
-                <Link
-                  to={navItem.to}
-                  className={`relative cursor-pointer text-lg font-medium transition-all ${
-                    isActive
-                      ? "text-white"
-                      : "text-gray-400 hover:text-gray-200"
-                  }`}
-                >
-                  <NavItemContent
-                    isActive={isActive}
-                    icon={navItem.icon}
-                    name={navItem.name}
-                  />
-                </Link>
-              </li>
-            );
-          })}
+            },
+          )}
         </ul>
       </nav>
       <StudentProfile student={student} />
@@ -612,87 +615,89 @@ const MobileAuthenticatedNav: React.FC = () => {
 
             <nav className="mt-6">
               <ul className="space-y-3 sm:space-y-5">
-                {getAuthenticatedNavbar(isAdmin, adminPosition).map((navItem, index) => {
-                  const isMerchandise = navItem.name === "Merchandise";
+                {getAuthenticatedNavbar(isAdmin, adminPosition).map(
+                  (navItem, index) => {
+                    const isMerchandise = navItem.name === "Merchandise";
 
-                  if (isMerchandise) {
+                    if (isMerchandise) {
+                      return (
+                        <li key={`mobile-nav-${index}`}>
+                          <button
+                            onClick={() => toggleMobileDropdown("Merchandise")}
+                            className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors w-full text-left flex items-center justify-between px-3 py-2 rounded-lg"
+                          >
+                            {navItem.name}
+                            <span
+                              className={`transform transition-transform ${
+                                openMobileDropdown === "Merchandise"
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
+                            >
+                              ▼
+                            </span>
+                          </button>
+                          <AnimatePresence>
+                            {openMobileDropdown === "Merchandise" && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="mt-3 ml-4 space-y-2 border-l border-purple-200/40 pl-4"
+                              >
+                                {(isAdmin
+                                  ? [
+                                      {
+                                        to: "/admin/merch/products",
+                                        label: "Products",
+                                      },
+                                      {
+                                        to: "/admin/merch/orders",
+                                        label: "Orders",
+                                      },
+                                    ]
+                                  : [
+                                      { to: "/merch", label: "Products" },
+                                      {
+                                        to: "/merch/transactions",
+                                        label: "Transaction",
+                                      },
+                                      { to: "/merch/cart", label: "Cart" },
+                                    ]
+                                ).map((item) => (
+                                  <Link
+                                    key={item.to}
+                                    to={item.to}
+                                    onClick={() => {
+                                      toggleMenu();
+                                      setOpenMobileDropdown(null);
+                                    }}
+                                    className="text-gray-300 text-sm hover:text-white transition-colors block py-2"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </li>
+                      );
+                    }
+
                     return (
                       <li key={`mobile-nav-${index}`}>
-                        <button
-                          onClick={() => toggleMobileDropdown("Merchandise")}
-                          className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors w-full text-left flex items-center justify-between px-3 py-2 rounded-lg"
+                        <Link
+                          to={navItem.to}
+                          onClick={toggleMenu}
+                          className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors block px-3 py-2 rounded-lg"
                         >
                           {navItem.name}
-                          <span
-                            className={`transform transition-transform ${
-                              openMobileDropdown === "Merchandise"
-                                ? "rotate-180"
-                                : ""
-                            }`}
-                          >
-                            ▼
-                          </span>
-                        </button>
-                        <AnimatePresence>
-                          {openMobileDropdown === "Merchandise" && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="mt-3 ml-4 space-y-2 border-l border-purple-200/40 pl-4"
-                            >
-                              {(isAdmin
-                                ? [
-                                    {
-                                      to: "/admin/merch/products",
-                                      label: "Products",
-                                    },
-                                    {
-                                      to: "/admin/merch/orders",
-                                      label: "Orders",
-                                    },
-                                  ]
-                                : [
-                                    { to: "/merch", label: "Products" },
-                                    {
-                                      to: "/merch/transactions",
-                                      label: "Transaction",
-                                    },
-                                    { to: "/merch/cart", label: "Cart" },
-                                  ]
-                              ).map((item) => (
-                                <Link
-                                  key={item.to}
-                                  to={item.to}
-                                  onClick={() => {
-                                    toggleMenu();
-                                    setOpenMobileDropdown(null);
-                                  }}
-                                  className="text-gray-300 text-sm hover:text-white transition-colors block py-2"
-                                >
-                                  {item.label}
-                                </Link>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
+                        </Link>
                       </li>
                     );
-                  }
-
-                  return (
-                    <li key={`mobile-nav-${index}`}>
-                      <Link
-                        to={navItem.to}
-                        onClick={toggleMenu}
-                        className="text-white text-base sm:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors block px-3 py-2 rounded-lg"
-                      >
-                        {navItem.name}
-                      </Link>
-                    </li>
-                  );
-                })}
+                  },
+                )}
               </ul>
 
               {student && (
