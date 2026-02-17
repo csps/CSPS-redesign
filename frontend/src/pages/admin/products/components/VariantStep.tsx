@@ -117,7 +117,9 @@ const VariantStep: React.FC<VariantStepProps> = ({
                 <FaPlus className="text-purple-400 text-xl" />
               </div>
               <p className="text-white/60 mb-2">No variants yet</p>
-              <p className="text-white/40 text-sm">Click below to add your first variant</p>
+              <p className="text-white/40 text-sm">
+                Click below to add your first variant
+              </p>
             </div>
           ) : (
             formState.clothingVariants.map(
@@ -178,7 +180,9 @@ const VariantStep: React.FC<VariantStepProps> = ({
                   <FaPlus className="text-purple-400 text-xl" />
                 </div>
                 <p className="text-white/60 mb-2">No variants yet</p>
-                <p className="text-white/40 text-sm">Click below to add your first variant</p>
+                <p className="text-white/40 text-sm">
+                  Click below to add your first variant
+                </p>
               </div>
             ) : (
               formState.nonClothingVariants.map(

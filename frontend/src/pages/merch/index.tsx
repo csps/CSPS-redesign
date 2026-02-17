@@ -100,11 +100,6 @@ const Index = () => {
                     alt={c.merchName}
                     className="w-full h-full object-contain relative z-10 transition-transform duration-500 ease-out group-hover:scale-110"
                   />
-
-                  {/* Floating Action Button - Glass Style */}
-                  <div className="absolute top-4 right-4 w-10 h-10 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-[-10px] group-hover:translate-y-0">
-                    <span className="text-white text-lg">♡</span>
-                  </div>
                 </div>
 
                 {/* Info Section - Clean and left-aligned */}

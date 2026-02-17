@@ -91,7 +91,10 @@ const Index = () => {
       grouped[item.orderId].totalPrice += item.totalPrice;
     });
 
-    return Object.values(grouped);
+    return Object.values(grouped).sort(
+      (a, b) =>
+        new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime(),
+    );
   }, [items, searchQuery]);
 
   return (
@@ -128,7 +131,7 @@ const Index = () => {
               placeholder="Search orders..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-black/20 border border-white/5 rounded-xl sm:rounded-2xl text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all text-sm font-medium"
+              className="w-full pl-11 pr-4 py-3  border border-white/5 rounded-xl sm:rounded-2xl text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all text-sm font-medium"
             />
           </div>
         </div>
@@ -158,7 +161,6 @@ const Index = () => {
                 {/* Responsive Header: Stacks price and ID on mobile if needed */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between px-2 mb-4 gap-2">
                   <div className="flex items-center gap-3">
-    
                     <div className="h-[1px] flex-1 min-w-[20px] bg-white/5 sm:hidden" />
                   </div>
 
@@ -187,9 +189,6 @@ const Index = () => {
               <Pagination
                 currentPage={currentPage}
                 totalPages={paginationInfo.totalPages}
-                pageNumber={paginationInfo.number}
-                first={paginationInfo.first}
-                last={paginationInfo.last}
                 onPageChange={setCurrentPage}
               />
             </div>
