@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { FaTimes, FaPlus, FaGraduationCap, FaUserShield } from "react-icons/fa";
 import { toast } from "sonner";
 import type { StudentResponse } from "../../../../interfaces/student/StudentResponse";
 import type {
@@ -12,12 +11,38 @@ import {
 } from "../../../../api/studentMembership";
 import { usePermissions } from "../../../../hooks/usePermissions";
 import GrantAdminAccessModal from "./GrantAdminAccessModal";
+import { AdminPosition } from "../../../../enums/AdminPosition";
 
 interface StudentDetailModalProps {
   student: StudentResponse;
   onClose: () => void;
 }
 
+/**
+ * Formats a position enum value into a human-readable string.
+ *
+ * @param {AdminPosition} position - The raw position enum value.
+ * @returns {string} A human-readable representation of the position.
+ */
+const formatPosition = (position: AdminPosition): string => {
+  if (position === "VP_INTERNAL") return "VP Internal";
+  if (position === "VP_EXTERNAL") return "VP External";
+  if (position === "PIO") return "PIO";
+  if (position === "PRO") return "PRO";
+
+  return position
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
+/**
+ * A modal component for viewing and managing student-specific data.
+ * Adheres to Stripe-inspired design principles: tight tracking, generous spacing, and structural minimalism.
+ *
+ * @param {StudentDetailModalProps} props - Component properties.
+ * @returns {JSX.Element} The rendered modal.
+ */
 const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   student,
   onClose,
@@ -73,7 +98,7 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
       };
 
       await createStudentMembership(request);
-      toast.success("Membership added successfully!");
+      toast.success("Membership added successfully");
       setShowAddForm(false);
       setNewMembership({ academicYear: 1, semester: 1, status: "current" });
       await fetchMemberships();
@@ -103,91 +128,84 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div className="relative w-full max-w-xl bg-gradient-to-b from-[#1e1a4a] to-[#151238] rounded-2xl border border-white/10 overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div className="relative w-full max-w-2xl bg-[#110e31] border border-zinc-800 rounded-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
           {/* Header */}
-          <div className="px-6 pt-6 pb-4 border-b border-white/10">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-white">
-                  Student Details
-                </h2>
-                <p className="text-white/50 text-sm mt-1">
-                  View and manage student information
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition"
-              >
-                <FaTimes size={14} />
-              </button>
+          <div className="px-10 pt-10 pb-6 border-b border-zinc-800 flex items-start justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-white tracking-[-0.025em] leading-[1.2]">
+                Student profile
+              </h2>
+              <p className="text-zinc-400 text-sm mt-1 tracking-[-0.01em]">
+                Manage academic and administrative records
+              </p>
             </div>
           </div>
-
           {/* Content */}
-          <div className="px-6 py-5 max-h-[60vh] overflow-y-auto space-y-5">
-            {/* Student Info */}
-            <div>
-              <p className="text-white/40 text-xs uppercase tracking-wider mb-2">
-                Student Information
-              </p>
-              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
-                    {student.user.firstName.charAt(0)}
-                    {student.user.lastName.charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-semibold truncate">
+          <div className="px-10 py-10 max-h-[60vh] overflow-y-auto space-y-12 custom-scrollbar">
+            {/* Identity Section */}
+            <div className="flex items-center justify-center gap-8">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white tracking-[-0.025em] leading-[1.2]">
                       {student.user.firstName}{" "}
                       {student.user.middleName
                         ? `${student.user.middleName} `
                         : ""}
                       {student.user.lastName}
                     </h3>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm">
-                      <span className="text-white/50">
-                        ID:{" "}
-                        <span className="text-white">{student.studentId}</span>
-                      </span>
-                      <span className="text-white/50">
-                        Year:{" "}
-                        <span className="text-white">
-                          {student.yearLevel}
-                          {getYearSuffix(student.yearLevel)}
-                        </span>
-                      </span>
-                    </div>
-                    <p className="text-white/50 text-sm mt-1 truncate">
+                    <p className="text-zinc-400 text-sm tracking-[-0.01em] mt-1">
                       {student.user.email}
                     </p>
+                  </div>
+                  {student.adminPosition && (
+                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]">
+                      {formatPosition(student.adminPosition)}
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-4 mt-4">
+                  <div className="text-xs tracking-[-0.01em]">
+                    <span className="text-zinc-500 font-medium">
+                      Student ID{" "}
+                    </span>
+                    <span className="text-zinc-200 font-semibold">
+                      {student.studentId}
+                    </span>
+                  </div>
+                  <div className="text-xs tracking-[-0.01em]">
+                    <span className="text-zinc-500 font-medium">
+                      Year level{" "}
+                    </span>
+                    <span className="text-zinc-200 font-semibold">
+                      {student.yearLevel}
+                      {getYearSuffix(student.yearLevel)}
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Membership History */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-white/40 text-xs uppercase tracking-wider">
-                  Membership History
-                </p>
+            {/* Memberships Section */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-zinc-400 tracking-[-0.01em]">
+                  Membership history
+                </h4>
                 <button
                   onClick={() => setShowAddForm(!showAddForm)}
-                  className="flex items-center gap-1.5 text-purple-400 text-sm font-medium hover:text-purple-300 transition"
+                  className="text-purple-400 text-sm font-medium hover:text-purple-300 transition-colors"
                 >
-                  <FaPlus size={10} />
-                  Add
+                  {showAddForm ? "Cancel" : "Add record"}
                 </button>
               </div>
 
-              {/* Add Form */}
               {showAddForm && (
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10 mb-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-white/40 text-xs mb-1.5">
+                <div className="bg-zinc-800/40 rounded-xl p-8 border border-zinc-800 space-y-6 animate-in fade-in slide-in-from-top-2">
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-zinc-500">
                         Year
                       </label>
                       <select
@@ -198,16 +216,18 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                             academicYear: parseInt(e.target.value),
                           })
                         }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 [&>option]:bg-[#1e1a4a] [&>option]:text-white"
+                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
                       >
-                        <option value={1}>1st</option>
-                        <option value={2}>2nd</option>
-                        <option value={3}>3rd</option>
-                        <option value={4}>4th</option>
+                        {[1, 2, 3, 4].map((y) => (
+                          <option key={y} value={y}>
+                            {y}
+                            {getYearSuffix(y)} year
+                          </option>
+                        ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-white/40 text-xs mb-1.5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-zinc-500">
                         Semester
                       </label>
                       <select
@@ -218,14 +238,14 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                             semester: parseInt(e.target.value),
                           })
                         }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 [&>option]:bg-[#1e1a4a] [&>option]:text-white"
+                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
                       >
-                        <option value={1}>1st</option>
-                        <option value={2}>2nd</option>
+                        <option value={1}>1st semester</option>
+                        <option value={2}>2nd semester</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-white/40 text-xs mb-1.5">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-zinc-500">
                         Status
                       </label>
                       <select
@@ -236,81 +256,55 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                             status: e.target.value as "current" | "future",
                           })
                         }
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-purple-500 [&>option]:bg-[#1e1a4a] [&>option]:text-white"
+                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
                       >
                         <option value="current">Active</option>
                         <option value="future">Inactive</option>
                       </select>
                     </div>
                   </div>
-                  <div className="flex justify-end gap-2 mt-3">
-                    <button
-                      onClick={() => setShowAddForm(false)}
-                      className="px-3 py-1.5 text-white/60 text-sm hover:text-white transition"
-                    >
-                      Cancel
-                    </button>
+                  <div className="flex justify-end">
                     <button
                       onClick={handleAddMembership}
                       disabled={isSubmitting}
-                      className="px-4 py-1.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition disabled:opacity-50"
+                      className="px-6 py-2.5 rounded-lg bg-purple-600 text-white text-sm font-medium hover:bg-purple-500 transition-all disabled:opacity-50"
                     >
-                      {isSubmitting ? "Adding..." : "Add"}
+                      {isSubmitting ? "Saving..." : "Save record"}
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Membership List */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {loading ? (
-                  <div className="flex items-center justify-center py-6">
-                    <div className="w-5 h-5 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                  <div className="py-12 text-center text-zinc-500 text-sm font-medium animate-pulse">
+                    Loading records...
                   </div>
                 ) : memberships.length === 0 ? (
-                  <div className="text-center py-6 border border-dashed border-white/10 rounded-xl">
-                    <FaGraduationCap
-                      className="mx-auto text-white/20 mb-2"
-                      size={24}
-                    />
-                    <p className="text-white/40 text-sm">
-                      No membership history
+                  <div className="py-12 text-center border border-dashed border-zinc-800 rounded-xl">
+                    <p className="text-zinc-500 text-sm font-medium">
+                      No history found
                     </p>
                   </div>
                 ) : (
                   memberships.map((membership) => (
                     <div
                       key={membership.membershipId}
-                      className="bg-white/5 rounded-xl px-4 py-3 border border-white/5 flex items-center justify-between"
+                      className="flex items-center justify-between px-6 py-4 rounded-xl border border-zinc-800 bg-zinc-800/20 hover:bg-zinc-800/40 transition-colors"
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                            membership.active
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-white/10 text-white/40"
-                          }`}
-                        >
-                          <FaGraduationCap size={14} />
-                        </div>
-                        <div>
-                          <p className="text-white text-sm font-medium">
-                            {membership.academicYear}
-                            {getYearSuffix(membership.academicYear)} Year -{" "}
-                            {membership.semester}
-                            {membership.semester === 1 ? "st" : "nd"} Sem
-                          </p>
-                          <p className="text-white/40 text-xs">
-                            {formatDate(membership.dateJoined)}
-                          </p>
-                        </div>
+                      <div className="space-y-1">
+                        <p className="text-zinc-100 text-sm font-semibold tracking-[-0.01em]">
+                          {membership.academicYear}
+                          {getYearSuffix(membership.academicYear)} year,{" "}
+                          {membership.semester}
+                          {membership.semester === 1 ? "st" : "nd"} semester
+                        </p>
+                        <p className="text-zinc-500 text-xs tracking-[-0.01em]">
+                          Joined {formatDate(membership.dateJoined)}
+                        </p>
                       </div>
                       <span
-                        className={`px-2 py-0.5 rounded text-xs font-medium ${
-                          membership.active
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-white/10 text-white/50"
-                        }`}
+                        className={`text-xs font-semibold tracking-[-0.01em] ${membership.active ? "text-purple-400" : "text-zinc-600"}`}
                       >
                         {membership.active ? "Active" : "Inactive"}
                       </span>
@@ -322,29 +316,29 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-white/10 flex justify-between items-center">
+          <div className="px-10 py-8 border-t border-zinc-800 flex justify-between items-center">
             {isExecutive ? (
               <button
                 onClick={() => setShowGrantAdminModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition"
+                className="text-purple-400 text-sm font-medium hover:text-purple-300 transition-colors"
               >
-                <FaUserShield size={12} />
-                Grant Admin Access
+                {student.adminPosition
+                  ? "Change administrative role"
+                  : "Promote to administrator"}
               </button>
             ) : (
               <div />
             )}
             <button
               onClick={onClose}
-              className="px-5 py-2 text-white/60 text-sm font-medium hover:text-white transition"
+              className="px-8 py-2.5 rounded-lg bg-[#FDE006] text-black text-sm font-medium hover:bg-zinc-700 transition-all"
             >
-              Close
+              Done
             </button>
           </div>
         </div>
       </div>
 
-      {/* Grant Admin Access Modal */}
       <GrantAdminAccessModal
         student={student}
         isOpen={showGrantAdminModal}

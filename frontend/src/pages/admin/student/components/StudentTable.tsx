@@ -2,6 +2,26 @@ import { useState, useMemo } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import SearchFilter from "../../merch/components/SearchFilter"; // <--- Import the new component
 import type { StudentResponse } from "../../../../interfaces/student/StudentResponse";
+import { AdminPosition } from "../../../../enums/AdminPosition";
+
+/**
+ * Formats a position enum value into a human-readable string.
+ * Special cases for acronyms like VP, PIO, and PRO are handled specifically.
+ *
+ * @param {AdminPosition} position - The raw position enum value from the API.
+ * @returns {string} A human-readable representation of the position.
+ */
+const formatPosition = (position: AdminPosition): string => {
+  if (position === "VP_INTERNAL") return "VP Internal";
+  if (position === "VP_EXTERNAL") return "VP External";
+  if (position === "PIO") return "PIO";
+  if (position === "PRO") return "PRO";
+
+  return position
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 const StudentTable = ({
   students,
@@ -30,6 +50,7 @@ const StudentTable = ({
     middle: student.user.middleName || "",
     email: student.user.email,
     year: `${student.yearLevel}${student.yearLevel === 1 ? "st" : student.yearLevel === 2 ? "nd" : student.yearLevel === 3 ? "rd" : "th"}`,
+    adminPosition: student.adminPosition,
   }));
 
   // --- FILTERING LOGIC ---
@@ -92,6 +113,7 @@ const StudentTable = ({
               <th className="px-6 py-4">Middle Name</th>
               <th className="px-6 py-4">Email</th>
               <th className="px-6 py-4">Year</th>
+              <th className="px-6 py-4">Position</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -101,7 +123,7 @@ const StudentTable = ({
                 <tr
                   key={index}
                   onClick={() => onStudentClick?.(students[index])}
-                  className="hover:bg-white/5 transition-colors group cursor-pointer"
+                  className={`hover:bg-white/5 transition-colors group cursor-pointer ${student.adminPosition ? "bg-purple-500/5" : ""}`}
                 >
                   <td className="px-6 py-4">
                     <input
@@ -133,6 +155,15 @@ const StudentTable = ({
                     </span>
                   </td>
                   <td className="px-6 py-4">
+                    {student.adminPosition ? (
+                      <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                        {formatPosition(student.adminPosition)}
+                      </span>
+                    ) : (
+                      <span className="text-white/30 text-xs">—</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
                     <div className="flex justify-center items-center gap-2">
                       <button
                         onClick={(e) => {
@@ -150,7 +181,7 @@ const StudentTable = ({
             ) : (
               <tr>
                 <td
-                  colSpan={8}
+                  colSpan={9}
                   className="text-center py-10 text-white/30 italic"
                 >
                   No students found matching your criteria.
@@ -210,6 +241,6 @@ const StudentTable = ({
       </div>
     </div>
   );
-};
+}
 
 export default StudentTable;
