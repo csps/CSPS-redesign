@@ -25,14 +25,14 @@ function RadialChart({
       ctx.save();
 
       // Subtitle
-      ctx.font = "12px Inter, sans-serif";
+      ctx.font = "10px Inter, sans-serif";
       ctx.fillStyle = "#a5a5c9";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("Members", width / 2, height / 2 - 18);
 
       // Main value
-      ctx.font = "bold 36px Inter, sans-serif";
+      ctx.font = "bold 24px Inter, sans-serif";
       ctx.fillStyle = "#ffffff";
       ctx.fillText(totalCount.toString(), width / 2, height / 2 + 10);
 

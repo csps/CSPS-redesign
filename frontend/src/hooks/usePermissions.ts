@@ -35,7 +35,7 @@ export const usePermissions = () => {
 
     // Can perform CRUD operations on finance/sales
     // Only executives and finance members can edit
-    canEditFinance: isExecutive || isFinance,
+    canEditFinance: isFinance,
 
     // Can manage students (add, edit, delete)
     canManageStudents: isExecutive,
@@ -54,7 +54,7 @@ export const usePermissions = () => {
     // Can view admin dashboard
     canViewDashboard: isExecutive || isGeneralAdmin,
 
-    canManageOrder: isExecutive || isFinance,
+    canManageOrder: isFinance,
   };
 
   return {

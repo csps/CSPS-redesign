@@ -6,7 +6,7 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   title: string;
   message: string;
-  type: "approve" | "reject";
+  type: "approve" | "reject" | "pending";
 }
 
 const ConfirmationModal = ({

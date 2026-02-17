@@ -3,6 +3,7 @@ import type {
   StudentMembershipRequest,
   StudentMembershipResponse,
 } from "../interfaces/student/StudentMembership";
+import type { PaginatedResponse } from "../interfaces/paginated";
 
 /**
  * Create a new student membership
@@ -32,6 +33,23 @@ export const getAllStudentMemberships = async (): Promise<
 };
 
 /**
+ * Get all student memberships (Paginated)
+ * Endpoint: GET /api/student-memberships/paginated
+ */
+export const getPaginatedStudentMemberships = async (
+  page: number = 0,
+  size: number = 7
+): Promise<PaginatedResponse<StudentMembershipResponse>> => {
+  const response = await api.get<PaginatedResponse<StudentMembershipResponse>>(
+    "/student-memberships/paginated",
+    {
+      params: { page, size },
+    }
+  );
+  return response.data;
+};
+
+/**
  * Get membership by ID
  * Endpoint: GET /api/student-memberships/{membershipId}
  */
@@ -53,6 +71,24 @@ export const getStudentMembershipsByStudentId = async (
 ): Promise<StudentMembershipResponse[]> => {
   const response = await api.get<StudentMembershipResponse[]>(
     `/student-memberships/student/${studentId}`
+  );
+  return response.data;
+};
+
+/**
+ * Get student memberships by student ID (Paginated)
+ * Endpoint: GET /api/student-memberships/student/{studentId}/paginated
+ */
+export const getPaginatedStudentMembershipsByStudentId = async (
+  studentId: string,
+  page: number = 0,
+  size: number = 7
+): Promise<PaginatedResponse<StudentMembershipResponse>> => {
+  const response = await api.get<PaginatedResponse<StudentMembershipResponse>>(
+    `/student-memberships/student/${studentId}/paginated`,
+    {
+      params: { page, size },
+    }
   );
   return response.data;
 };

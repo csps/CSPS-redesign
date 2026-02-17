@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import LineChart from "./components/LineChart";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { FaClockRotateLeft, FaDownload, FaPrint } from "react-icons/fa6";
@@ -103,7 +103,7 @@ const Index = () => {
   }>({ isOpen: false, orderId: null, studentName: "" });
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    type: "approve" | "reject";
+    type: "approve" | "reject" | "pending";
     id: number | null;
   }>({ isOpen: false, type: "approve", id: null });
 
@@ -178,14 +178,17 @@ const Index = () => {
     }
   };
 
-  const handleActionClick = (id: number, type: "approve" | "reject") => {
+  const handleActionClick = (
+    id: number,
+    type: "approve" | "reject" | "pending",
+  ) => {
     setConfirmModal({ isOpen: true, type, id });
   };
 
   const handleConfirmAction = async () => {
     if (!confirmModal.id) return;
     try {
-      if (confirmModal.type === "approve") {
+      if (confirmModal.type === "approve" || confirmModal.type === "pending") {
         await approveTransaction(confirmModal.id);
         setTransactions((prev) =>
           prev.map((t) =>
@@ -211,6 +214,10 @@ const Index = () => {
       console.error("Action failed:", error);
     }
   };
+
+  useEffect(() => {
+    console.log(`ORDER IS: ${confirmModal.isOpen} WITH ${confirmModal.id}`);
+  }, [confirmModal.isOpen]);
 
   const handleViewOrderDetails = (transaction: Transaction) => {
     setOrderDetailModal({
@@ -476,9 +483,11 @@ const Index = () => {
                       return (
                         <tr
                           key={t.id}
-                          className={`group ${t.status === "CLAIMED" ? "hover:bg-white/5 transition-colors cursor-pointer" : ""}`}
+                          className={`group ${t.status === "CLAIMED" || t.status === "PENDING" ? "hover:bg-white/5 transition-colors cursor-pointer" : ""}`}
                           onClick={() =>
-                            t.status === "CLAIMED" && handleViewOrderDetails(t)
+                            (t.status === "CLAIMED" ||
+                              t.status === "PENDING") &&
+                            handleViewOrderDetails(t)
                           }
                         >
                           <td className="px-4 py-3  text-gray-400 text-xs">
@@ -556,9 +565,6 @@ const Index = () => {
                 <Pagination
                   currentPage={currentPage}
                   totalPages={paginationInfo.totalPages}
-                  pageNumber={paginationInfo.number}
-                  first={paginationInfo.first}
-                  last={paginationInfo.last}
                   onPageChange={handlePageChange}
                 />
               </div>

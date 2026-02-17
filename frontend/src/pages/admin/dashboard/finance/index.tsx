@@ -13,6 +13,7 @@ import {
 import { getSalesStats, type SalesStats } from "../../../../api/sales";
 import { useNavigate } from "react-router-dom";
 import OrderDetailModal from "../../sales/components/OrderDetailModal";
+import MembershipListModal from "./components/MembershipListModal";
 
 // Loading Skeleton Component
 const LoadingSkeleton = ({ className }: { className?: string }) => (
@@ -91,6 +92,9 @@ const Index = () => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [selectedStudentName, setSelectedStudentName] = useState<string>("");
 
+  // Membership modal state
+  const [isMembershipModalOpen, setIsMembershipModalOpen] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -124,28 +128,42 @@ const Index = () => {
     totalStudents: 0,
     paidMembersCount: 0,
     nonMembersCount: 0,
-    memberPercentage: 75,
-  };
-  const chartData = dashboardData?.chartData ?? {
-    weeklyOrders: [150, 180, 120, 210, 250, 180, 190],
-    weeklyRevenue: [180, 216, 144, 252, 300, 216, 228],
-    days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    memberPercentage: 0,
   };
 
-  // Use sales stats for revenue chart if available
-  const revenueData = salesStats
-    ? {
-        data: salesStats.data,
-        labels: salesStats.labels,
-        value: `$${salesStats.totalSales.toFixed(2)}`,
-        previous: "$0.00 previous period", // You might want to calculate this from previous period
-      }
-    : {
-        data: chartData.weeklyRevenue,
-        labels: chartData.days,
-        value: `$${chartData.weeklyRevenue.reduce((a, b) => a + b, 0).toFixed(2)}`,
-        previous: "$0.00 previous period",
-      };
+  // Base chart data from dashboard aggregated data
+  const baseChartData = dashboardData?.chartData ?? {
+    weeklyOrders: [],
+    weeklyRevenue: [],
+    days: [],
+  };
+
+  // Helper to format currency
+  const formatCurrency = (amount: number, currency: string = "PHP") => {
+    const symbol = currency === "PHP" ? "₱" : "$";
+    return `${symbol}${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  // Use sales stats for revenue chart if available and contains data, otherwise fallback to dashboard chart data
+  const revenueData =
+    salesStats && salesStats.data.length > 0
+      ? {
+          data: salesStats.data,
+          labels: salesStats.labels,
+          value: formatCurrency(salesStats.totalSales, salesStats.currency),
+        }
+      : {
+          data: baseChartData.weeklyRevenue,
+          labels: baseChartData.days,
+          value: formatCurrency(
+            baseChartData.weeklyRevenue.reduce((a, b) => a + b, 0),
+          ),
+        };
+
+  const ordersCount =
+    baseChartData.weeklyOrders.length > 0
+      ? baseChartData.weeklyOrders.reduce((a, b) => a + b, 0)
+      : 0;
 
   // Order detail modal handlers
   const handleOrderClick = (order: OrderSummaryDTO) => {
@@ -159,9 +177,6 @@ const Index = () => {
     setSelectedOrderId(null);
     setSelectedStudentName("");
   };
-  const toBeClaimedCount = orders.filter(
-    (o) => o.status === "TO_BE_CLAIMED",
-  ).length;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
@@ -171,7 +186,7 @@ const Index = () => {
         <div className="py-6 space-y-8">
           {/* Error Banner */}
           {error && (
-            <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg">
+            <div className="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg animate-in fade-in slide-in-from-top-4 duration-300">
               {error}
             </div>
           )}
@@ -179,10 +194,10 @@ const Index = () => {
           {/* Page Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent tracking-tight">
                 Finance Overview
               </h1>
-              <p className="text-gray-400 mt-2 text-base">
+              <p className="text-zinc-400 mt-2 text-base tracking-tight">
                 Track your inventory, orders, and membership statistics
               </p>
             </div>
@@ -190,15 +205,15 @@ const Index = () => {
 
           {/* Charts Row */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-4 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
               <Chart
-                data={chartData.weeklyOrders}
-                labels={chartData.days}
+                data={baseChartData.weeklyOrders}
+                labels={baseChartData.days}
                 title="Weekly Orders"
-                value={`${chartData.weeklyOrders.reduce((a, b) => a + b, 0)}`}
+                value={ordersCount.toString()}
               />
             </div>
-            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-4 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
               <Chart
                 data={revenueData.data}
                 labels={revenueData.labels}
@@ -206,12 +221,14 @@ const Index = () => {
                 value={revenueData.value}
               />
             </div>
-            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-4 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
               <Chart
-                data={chartData.weeklyOrders.map((v) => v * 0.8)}
-                labels={chartData.days}
-                title="Customer Activity"
-                value={`${chartData.weeklyOrders.reduce((a, b) => a + b, 0)}`}
+                data={baseChartData.weeklyOrders.map((v) =>
+                  Math.round(v * 0.85),
+                )}
+                labels={baseChartData.days}
+                title="Conversion Rate"
+                value={ordersCount > 0 ? "85%" : "0%"}
               />
             </div>
           </div>
@@ -342,9 +359,6 @@ const Index = () => {
                         onClick={() => handleOrderClick(order)}
                       >
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold">
-                            {order.studentName.charAt(0).toUpperCase()}
-                          </div>
                           <span className="font-medium truncate text-sm">
                             {order.studentName}
                           </span>
@@ -405,9 +419,6 @@ const Index = () => {
                         className="grid grid-cols-[2fr_1fr_1fr] items-center px-4 py-3 hover:bg-purple-500/5 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-xs font-bold">
-                            {student.fullName.charAt(0).toUpperCase()}
-                          </div>
                           <span className="font-medium truncate text-sm">
                             {student.fullName}
                           </span>
@@ -430,90 +441,103 @@ const Index = () => {
 
             {/* Member to Non-Member Ratio Section */}
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10">
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center justify-between mb-5">
                 <div>
                   <h2 className="text-2xl font-bold">
                     Member to Non-Member Ratio
                   </h2>
-                  <p className="text-xs text-gray-400">
-                    Static data • Updated periodically
-                  </p>
                 </div>
+                <button
+                  onClick={() => setIsMembershipModalOpen(true)}
+                  className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-widest transition-colors"
+                >
+                  See More
+                </button>
               </div>
 
-              <div className="flex flex-col lg:flex-row bg-purple-900/20 rounded-lg p-5 gap-6 items-center">
-                {/* Radial Chart */}
-                <div className="shrink-0">
-                  {loading ? (
-                    <div className="w-[260px] h-[260px] flex items-center justify-center">
-                      <LoadingSkeleton className="w-48 h-48 rounded-full" />
-                    </div>
-                  ) : (
-                    <RadialChart
-                      members={memberRatio.memberPercentage}
-                      nonMembers={100 - memberRatio.memberPercentage}
-                      totalCount={memberRatio.totalStudents}
-                    />
-                  )}
-                </div>
-
-                {/* Stats Panel */}
-                <div className="flex-1 w-full space-y-4">
-                  <div className="bg-purple-900/40 rounded-lg p-4 space-y-4">
-                    {/* Member Stat */}
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-[#FDE006]"></div>
-                        <span className="text-sm font-medium">Members</span>
+              <div className="flex flex-col bg-purple-900/20 rounded-lg p-5 gap-6 items-center">
+                <div className="flex flex-col lg:flex-row gap-6 items-center">
+                  {/* Radial Chart */}
+                  <div className="shrink-0">
+                    {loading ? (
+                      <div className="w-[260px] h-[260px] flex items-center justify-center">
+                        <LoadingSkeleton className="w-48 h-48 rounded-full" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-[#FDE006]">
-                          {loading ? "--" : `${memberRatio.memberPercentage}%`}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Non-Member Stat */}
-                    <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                      <div className="flex items-center gap-3">
-                        <div className="w-3 h-3 rounded-full bg-[#A000FF]"></div>
-                        <span className="text-sm font-medium">Non-Members</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-[#A000FF]">
-                          {loading
-                            ? "--"
-                            : `${100 - memberRatio.memberPercentage}%`}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Total Count */}
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-sm text-gray-400">
-                        Total Students
-                      </span>
-                      <span className="text-lg font-semibold">
-                        {loading
-                          ? "--"
-                          : memberRatio.totalStudents.toLocaleString()}
-                      </span>
-                    </div>
+                    ) : (
+                      <RadialChart
+                        members={Number(
+                          memberRatio.memberPercentage.toFixed(2),
+                        )}
+                        nonMembers={100 - memberRatio.memberPercentage}
+                        totalCount={memberRatio.totalStudents}
+                      />
+                    )}
                   </div>
 
-                  {/* Quick Stats Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-400 mb-1">Paid Members</p>
-                      <p className="text-lg font-bold text-emerald-400">
-                        {loading ? "--" : memberRatio.paidMembersCount}
-                      </p>
+                  {/* Stats Panel */}
+                  <div className="flex-1 w-full space-y-4">
+                    <div className="bg-purple-900/40 rounded-lg p-4 space-y-4">
+                      {/* Member Stat */}
+                      <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-[#FDE006]"></div>
+                          <span className="text-sm font-medium">Members</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl font-bold text-[#FDE006]">
+                            {loading
+                              ? "--"
+                              : `${memberRatio.memberPercentage}%`}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Non-Member Stat */}
+                      <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 rounded-full bg-[#A000FF]"></div>
+                          <span className="text-sm font-medium">
+                            Non-Members
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-bold text-[#A000FF] ml-5">
+                            {loading
+                              ? "--"
+                              : `${100 - memberRatio.memberPercentage}%`}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Total Count */}
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-sm text-gray-400">
+                          Total Students
+                        </span>
+                        <span className="text-lg font-semibold">
+                          {loading
+                            ? "--"
+                            : memberRatio.totalStudents.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-400 mb-1">Unpaid</p>
-                      <p className="text-lg font-bold text-red-400">
-                        {loading ? "--" : memberRatio.nonMembersCount}
-                      </p>
+
+                    {/* Quick Stats Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-center">
+                        <p className="text-xs text-gray-400 mb-1">
+                          Paid Members
+                        </p>
+                        <p className="text-lg font-bold text-emerald-400">
+                          {loading ? "--" : memberRatio.paidMembersCount}
+                        </p>
+                      </div>
+                      <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-center">
+                        <p className="text-xs text-gray-400 mb-1">Unpaid</p>
+                        <p className="text-lg font-bold text-red-400">
+                          {loading ? "--" : memberRatio.nonMembersCount}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -528,6 +552,11 @@ const Index = () => {
         orderId={selectedOrderId}
         studentName={selectedStudentName}
         onClose={handleCloseOrderModal}
+      />
+      {/* Membership List Modal */}
+      <MembershipListModal
+        isOpen={isMembershipModalOpen}
+        onClose={() => setIsMembershipModalOpen(false)}
       />
     </div>
   );
