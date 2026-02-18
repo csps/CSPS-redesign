@@ -13,6 +13,7 @@ import {
   PasswordConfirmModal,
 } from "./components/PasswordModals";
 import EmailVerificationModal from "../../components/EmailVerificationModal";
+import EmailUpdateModal from "./components/EmailUpdateModal";
 
 /**
  * ProfilePage component.
@@ -42,6 +43,7 @@ const ProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>("credentials");
   const [isEditing, setIsEditing] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showEmailUpdateModal, setShowEmailUpdateModal] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -109,6 +111,15 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleEmailUpdateSuccess = async () => {
+    // Refresh the user profile to pick up the updated email
+    try {
+      await refreshProfile();
+    } catch {
+      // Profile will refresh on next load
+    }
+  };
+
   if (!student) return null; // Or a loading spinner
 
   return (
@@ -128,6 +139,7 @@ const ProfilePage: React.FC = () => {
             {activeTab === "credentials" && (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <CredentialsTab
+                  onUpdateEmail={() => setShowEmailUpdateModal(true)}
                   formData={formData}
                   studentId={student.studentId}
                   isEditing={isEditing}
@@ -173,6 +185,12 @@ const ProfilePage: React.FC = () => {
         email={student.user.email || ""}
         onClose={() => setShowVerificationModal(false)}
         onVerified={handleVerified}
+      />
+      <EmailUpdateModal
+        isOpen={showEmailUpdateModal}
+        onClose={() => setShowEmailUpdateModal(false)}
+        currentEmail={student.user.email || ""}
+        onSuccess={handleEmailUpdateSuccess}
       />
     </Layout>
   );

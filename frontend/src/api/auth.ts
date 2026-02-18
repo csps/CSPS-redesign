@@ -6,6 +6,11 @@ import api from "./api";
 import type { StudentResponse } from "../interfaces/student/StudentResponse";
 import type { AuthUser } from "../types/auth";
 import type { ChangePasswordRequest } from "../interfaces/auth/ChangePasswordRequest";
+import type {
+  InitiateEmailUpdateRequest,
+  ConfirmEmailUpdateRequest,
+} from "../interfaces/auth/EmailUpdateRequest";
+import type { EmailUpdateApiResponse } from "../interfaces/auth/EmailVerificationResponse";
 
 export const login = async (authRequest: AuthRequest) => {
   const response = await api.post("/auth/login", authRequest);
@@ -130,6 +135,42 @@ export const changePassword = async (
     const response = await api.post(
       "/auth/change-password",
       changePasswordRequest,
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Initiates the email update process
+ * Sends a verification code to the user's current email
+ */
+export const initiateEmailUpdate = async (
+  request: InitiateEmailUpdateRequest,
+): Promise<EmailUpdateApiResponse> => {
+  try {
+    const response = await api.post<EmailUpdateApiResponse>(
+      "/auth/email/update/initiate",
+      request,
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Confirms the email update with verification code
+ * Updates the user's email address if code is valid
+ */
+export const confirmEmailUpdate = async (
+  request: ConfirmEmailUpdateRequest,
+): Promise<EmailUpdateApiResponse> => {
+  try {
+    const response = await api.post<EmailUpdateApiResponse>(
+      "/auth/email/update/confirm",
+      request,
     );
     return response.data;
   } catch (err) {

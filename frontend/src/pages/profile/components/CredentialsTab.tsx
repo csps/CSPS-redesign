@@ -27,6 +27,7 @@ interface CredentialsTabProps {
   onSave: () => void;
   onDiscard: () => void;
   onVerifyEmail?: () => void;
+  onUpdateEmail?: () => void;
 }
 
 /**
@@ -48,6 +49,7 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
   onSave,
   onDiscard,
   onVerifyEmail,
+  onUpdateEmail,
 }) => {
   const formattedBirthDate = formData.birthDate
     ? new Date(formData.birthDate + "T00:00:00").toLocaleDateString("en-US", {
@@ -153,8 +155,18 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
                   className={inputStyles.base}
                 />
               }
-              isLast
+              isLast={!isVerified}
             />
+            {isVerified && onUpdateEmail && (
+              <div className="border-t border-white/5 pt-4 mt-4">
+                <button
+                  onClick={onUpdateEmail}
+                  className="w-full text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border border-purple-500/30 text-purple-400 bg-purple-500/5 hover:bg-purple-500/15 transition-all duration-200"
+                >
+                  Update Email Address
+                </button>
+              </div>
+            )}
           </ProfileCard>
         </div>
       </div>
