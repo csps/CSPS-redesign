@@ -1,58 +1,68 @@
 import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
 import Footer from "../../../../components/Footer";
-import StatusCard from "./components/StatusCard";
-import { PurchaseFilter } from "../../../merch/transactions/components/PurchaseFilter";
+import OrderGroup from "./components/OrderGroup";
+import StatusHeader from "./components/StatusHeader";
 import Pagination from "../../../merch/transactions/components/Pagination";
-import { getOrderItemByStatus, getOrdersByDate } from "../../../../api/order";
+import { getOrdersByDate, type OrderSearchParams } from "../../../../api/order";
 import type {
   PaginatedOrdersResponse,
   OrderItemResponse,
+  OrderResponse,
 } from "../../../../interfaces/order/OrderResponse";
-import type { PaginationParams } from "../../../../interfaces/pagination_params";
-import { FiSearch, FiPackage } from "react-icons/fi";
-import { OrderStatus } from "../../../../enums/OrderStatus";
+import { FiPackage } from "react-icons/fi";
+import Layout from "../../../../components/Layout";
 
 const Index = () => {
   const [items, setItems] = useState<OrderItemResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Filters
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(3);
   const [paginationInfo, setPaginationInfo] =
     useState<PaginatedOrdersResponse | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Reset page when status changes
+  // Reset page when filters change
   useEffect(() => {
     setCurrentPage(0);
-  }, [selectedStatus]);
+  }, [selectedStatus, searchQuery, startDate, endDate]);
 
-  // Fetch orders on component mount and when page or status changes
+  // Fetch orders
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        if (selectedStatus === "All") {
-          const response = await getOrdersByDate({
-            page: currentPage,
-            size: pageSize,
-          } as PaginationParams);
-
-          const orderItems = Array.isArray(response.content)
-            ? response.content.flatMap((order) => order.orderItems || [])
-            : [];
-          setItems(orderItems);
-          setPaginationInfo(response);
-        } else {
-          const fetchedItems = await getOrderItemByStatus(
-            selectedStatus as OrderStatus,
-          );
-          setItems(fetchedItems.content || []);
-          setPaginationInfo(fetchedItems as any);
-        }
         setError(null);
+
+        const params: OrderSearchParams = {
+          page: currentPage,
+          size: pageSize,
+          status: selectedStatus,
+          studentName: searchQuery, // Search acts as student name/ID filter
+          startDate: startDate ? `${startDate}T00:00:00` : undefined,
+          endDate: endDate ? `${endDate}T23:59:59` : undefined,
+        };
+
+        // If searchQuery looks like an ID (digits), use studentId instead
+        if (/^\d+$/.test(searchQuery)) {
+          params.studentId = searchQuery;
+          delete params.studentName;
+        }
+
+        const response = await getOrdersByDate(params);
+
+        const orderItems = Array.isArray(response.content)
+          ? response.content.flatMap((order) => order.orderItems || [])
+          : [];
+        setItems(orderItems);
+        setPaginationInfo(response);
       } catch (err) {
         setError("Failed to load orders. Please try again later.");
         setItems([]);
@@ -61,26 +71,47 @@ const Index = () => {
       }
     };
 
-    fetchData();
-  }, [currentPage, pageSize, selectedStatus]);
+    const debounceTimer = setTimeout(() => {
+      fetchData();
+    }, 500);
 
-  // Filter items by search
-  const filteredItems = useMemo(() => {
+    return () => clearTimeout(debounceTimer);
+  }, [currentPage, pageSize, selectedStatus, searchQuery, startDate, endDate]);
+
+  // Group items by orderId (Client-side grouping for display)
+  const groupedOrders = useMemo(() => {
     if (!Array.isArray(items)) return [];
 
-    if (!searchQuery) return items;
+    const groups: Record<number, OrderResponse> = {};
 
-    return items.filter(
-      (item) =>
-        item.merchName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.studentId.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [items, searchQuery]);
+    items.forEach((item) => {
+      if (!groups[item.orderId]) {
+        groups[item.orderId] = {
+          orderId: item.orderId,
+          studentName: item.studentName,
+          orderDate: item.createdAt,
+          totalPrice: 0, // Recalculated below
+          orderItems: [],
+        };
+      }
+      groups[item.orderId].orderItems.push(item);
+    });
+
+    // Calculate totals and sort
+    return Object.values(groups)
+      .map((group) => ({
+        ...group,
+        totalPrice: group.orderItems.reduce(
+          (sum, item) => sum + item.totalPrice,
+          0,
+        ),
+      }))
+      .sort((a, b) => b.orderId - a.orderId);
+  }, [items]);
 
   return (
     <>
-      <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
+      <Layout>
         <div className="relative w-full max-w-[90rem] p-6 text-white">
           <AuthenticatedNav />
 
@@ -97,23 +128,17 @@ const Index = () => {
             </div>
 
             {/* Filter & Search Section */}
-            <div className="bg-[#1E1E3F] rounded-2xl border border-white/5 p-5 mb-6">
-              <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
-                <PurchaseFilter
-                  selectedStatus={selectedStatus}
-                  onStatusChange={setSelectedStatus}
-                />
-                <div className="relative w-full lg:w-auto lg:min-w-[350px]">
-                  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40" size={18} />
-                  <input
-                    type="text"
-                    placeholder="Search by merch, student name, or ID..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-purple-500/50 transition-colors"
-                  />
-                </div>
-              </div>
+            <div className="bg-[#1E1E3F] rounded-2xl border border-white/5 p-6 mb-6">
+              <StatusHeader
+                selectedStatus={selectedStatus}
+                onStatusChange={setSelectedStatus}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                startDate={startDate}
+                onStartDateChange={setStartDate}
+                endDate={endDate}
+                onEndDateChange={setEndDate}
+              />
             </div>
 
             {/* Loading State */}
@@ -131,25 +156,30 @@ const Index = () => {
             )}
 
             {/* Empty State */}
-            {!loading && !error && filteredItems.length === 0 && (
+            {!loading && !error && groupedOrders.length === 0 && (
               <div className="bg-[#1E1E3F] border border-white/5 rounded-2xl p-16 text-center">
                 <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
                   <FiPackage className="text-white/30" size={36} />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">No Orders Found</h3>
+                <h3 className="text-xl font-bold text-white mb-2">
+                  No Orders Found
+                </h3>
                 <p className="text-white/50 max-w-md mx-auto">
-                  {searchQuery 
-                    ? "No orders match your search criteria. Try adjusting your search terms."
+                  {searchQuery ||
+                  selectedStatus !== "All" ||
+                  startDate ||
+                  endDate
+                    ? "No orders match your search criteria. Try adjusting your filters."
                     : "There are no orders to display at the moment."}
                 </p>
               </div>
             )}
 
             {/* Orders List */}
-            {!loading && !error && filteredItems.length > 0 && (
-              <div className="space-y-4">
-                {filteredItems.map((item) => (
-                  <StatusCard key={item.orderItemId} orderItem={item} />
+            {!loading && !error && groupedOrders.length > 0 && (
+              <div className="space-y-6">
+                {groupedOrders.map((order) => (
+                  <OrderGroup key={order.orderId} order={order} />
                 ))}
               </div>
             )}
@@ -163,16 +193,13 @@ const Index = () => {
                   <Pagination
                     currentPage={currentPage}
                     totalPages={paginationInfo.totalPages}
-                    pageNumber={paginationInfo.number}
-                    first={paginationInfo.first}
-                    last={paginationInfo.last}
                     onPageChange={setCurrentPage}
                   />
                 </div>
               )}
           </div>
         </div>
-      </div>
+      </Layout>{" "}
       <Footer />
     </>
   );

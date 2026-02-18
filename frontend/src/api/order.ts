@@ -15,6 +15,15 @@ import type { OrderStatus } from "../enums/OrderStatus";
 const ORDERS = "orders";
 const ORDER_ITEMS = "order-items";
 
+export interface OrderSearchParams extends PaginationParams {
+  studentName?: string;
+  studentId?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+  sort?: string;
+}
+
 /**
  * Create a new order.
  * Endpoint: POST /api/orders
@@ -260,27 +269,49 @@ export const deleteOrderItem = async (id: number): Promise<void> => {
 };
 
 export const getOrdersByDate = async (
-  paginationParams?: PaginationParams,
+  searchParams?: OrderSearchParams,
 ): Promise<PaginatedOrdersResponse> => {
   try {
     const params = new URLSearchParams();
 
-    if (paginationParams) {
-      if (paginationParams.page !== undefined) {
-        params.append("page", paginationParams.page.toString());
+    if (searchParams) {
+      if (searchParams.page !== undefined) {
+        params.append("page", searchParams.page.toString());
       }
-      if (paginationParams.size !== undefined) {
-        params.append("size", paginationParams.size.toString());
+      if (searchParams.size !== undefined) {
+        params.append("size", searchParams.size.toString());
+      }
+      if (searchParams.studentName) {
+        params.append("studentName", searchParams.studentName);
+      }
+      if (searchParams.studentId) {
+        params.append("studentId", searchParams.studentId);
+      }
+      if (searchParams.status && searchParams.status !== "All") {
+        params.append("status", searchParams.status);
+      }
+      if (searchParams.startDate) {
+        params.append("startDate", searchParams.startDate);
+      }
+      if (searchParams.endDate) {
+        params.append("endDate", searchParams.endDate);
+      }
+      if (searchParams.sort) {
+        params.append("sort", searchParams.sort);
       }
     }
 
+    // Default sort if not provided
+    if (!params.has("sort")) {
+      params.append("sort", "orderDate,desc");
+    }
+
     const url = params.toString()
-      ? `${ORDERS}/sorted-by-date?${params.toString()}`
-      : ORDERS;
+      ? `${ORDERS}/search?${params.toString()}`
+      : `${ORDERS}/search`;
 
     const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
 
-    console.log("getOrdersByDate:", response);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching orders:", err);

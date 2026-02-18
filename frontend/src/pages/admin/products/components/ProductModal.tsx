@@ -119,14 +119,18 @@ const ProductModal: React.FC<ProductModalProps> = ({
           {currentStep > 1 ? (
             <FaCheck className="text-white text-lg" />
           ) : (
-            <FaBox className={`text-lg ${currentStep === 1 ? "text-white" : "text-white/40"}`} />
+            <FaBox
+              className={`text-lg ${currentStep === 1 ? "text-white" : "text-white/40"}`}
+            />
           )}
           {currentStep === 1 && (
             <div className="absolute inset-0 rounded-2xl bg-purple-400/20 animate-pulse" />
           )}
         </div>
         <div className="hidden sm:block">
-          <p className={`text-sm font-bold ${currentStep >= 1 ? "text-white" : "text-white/40"}`}>
+          <p
+            className={`text-sm font-bold ${currentStep >= 1 ? "text-white" : "text-white/40"}`}
+          >
             Product Info
           </p>
           <p className="text-xs text-white/40">Basic details</p>
@@ -151,13 +155,17 @@ const ProductModal: React.FC<ProductModalProps> = ({
               : "bg-white/10"
           }`}
         >
-          <FaLayerGroup className={`text-lg ${currentStep >= 2 ? "text-white" : "text-white/40"}`} />
+          <FaLayerGroup
+            className={`text-lg ${currentStep >= 2 ? "text-white" : "text-white/40"}`}
+          />
           {currentStep === 2 && (
             <div className="absolute inset-0 rounded-2xl bg-purple-400/20 animate-pulse" />
           )}
         </div>
         <div className="hidden sm:block">
-          <p className={`text-sm font-bold ${currentStep >= 2 ? "text-white" : "text-white/40"}`}>
+          <p
+            className={`text-sm font-bold ${currentStep >= 2 ? "text-white" : "text-white/40"}`}
+          >
             Variants
           </p>
           <p className="text-xs text-white/40">Stock & options</p>
@@ -172,7 +180,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
       <div className="relative bg-gradient-to-b from-[#1e1a4a] to-[#151238] rounded-3xl border border-white/10 p-10 max-w-md w-full text-center overflow-hidden">
         {/* Background glow effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-green-500/20 rounded-full blur-3xl" />
-        
+
         <div className="relative z-10">
           {/* Success Icon */}
           <div className="mb-6">
@@ -192,14 +200,15 @@ const ProductModal: React.FC<ProductModalProps> = ({
               </svg>
             </div>
           </div>
-          
+
           <h3 className="text-2xl font-bold text-white mb-3">
-            Product Created! 🎉
+            Product Created!
           </h3>
           <p className="text-white/60 mb-8 leading-relaxed">
-            Your new merchandise has been successfully added to the catalog and is ready for sale.
+            Your new merchandise has been successfully added to the catalog and
+            is ready for sale.
           </p>
-          
+
           <button
             onClick={() => {
               setShowSuccessModal(false);
@@ -223,7 +232,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
             <div className="relative px-6 md:px-10 pt-8 pb-6 border-b border-white/5">
               {/* Background accent */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              
+
               {/* Close Button */}
               <button
                 onClick={handleClose}
@@ -260,8 +269,12 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     <FaTimes className="text-red-400" size={14} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-red-400">{submitError}</p>
-                    <p className="text-xs text-red-400/60 mt-1">Please check your inputs and try again.</p>
+                    <p className="text-sm font-medium text-red-400">
+                      {submitError}
+                    </p>
+                    <p className="text-xs text-red-400/60 mt-1">
+                      Please check your inputs and try again.
+                    </p>
                   </div>
                 </div>
               )}

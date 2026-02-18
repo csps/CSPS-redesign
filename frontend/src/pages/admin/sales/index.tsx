@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import LineChart from "./components/LineChart";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { FaClockRotateLeft, FaDownload, FaPrint } from "react-icons/fa6";
@@ -18,6 +18,7 @@ import {
   getFullHistory,
   exportTransactionsCSV,
   printTransactionsSummary,
+  printOrderSummary,
   type SalesStats,
   type Transaction,
   type TransactionStatus,
@@ -28,6 +29,7 @@ import OrderDetailModal from "./components/OrderDetailModal";
 import { usePermissions } from "../../../hooks/usePermissions";
 import Pagination from "../../merch/transactions/components/Pagination";
 import type { TransactionParams } from "../../../api/sales";
+import order from "../../../api/order";
 
 // Status display mapping
 const getStatusDisplay = (status: TransactionStatus) => {
@@ -79,6 +81,7 @@ const Index = () => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [printingId, setPrintingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<TransactionStatus | "">("");
   const [yearFilter, setYearFilter] = useState("2026");
@@ -185,11 +188,25 @@ const Index = () => {
     setConfirmModal({ isOpen: true, type, id });
   };
 
+  const handlePrint = async (transaction: Transaction) => {
+    setPrintingId(transaction.id);
+    try {
+      const orderData = await order.getOrderById(transaction.orderId);
+      if (orderData) {
+        printOrderSummary(orderData);
+      }
+    } catch (err) {
+      console.error(`Error fetching order ${transaction.orderId}:`, err);
+    } finally {
+      setPrintingId(null);
+    }
+  };
+
   const handleConfirmAction = async () => {
     if (!confirmModal.id) return;
     try {
       if (confirmModal.type === "approve" || confirmModal.type === "pending") {
-        await approveTransaction(confirmModal.id);
+        const updatedTransaction = await approveTransaction(confirmModal.id);
         setTransactions((prev) =>
           prev.map((t) =>
             t.id === confirmModal.id
@@ -197,6 +214,10 @@ const Index = () => {
               : t,
           ),
         );
+        // Automatically print summary for the approved transaction
+        if (updatedTransaction) {
+          handlePrint(updatedTransaction);
+        }
       } else {
         await rejectTransaction(confirmModal.id);
         setTransactions((prev) =>
@@ -301,10 +322,6 @@ const Index = () => {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
                       size={14}
                     />
-                  </div>
-                  <div className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs border border-emerald-500/20 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Live
                   </div>
                 </div>
               </div>
@@ -543,6 +560,22 @@ const Index = () => {
                                       <IoClose size={16} />
                                     </button>
                                   </>
+                                ) : t.status === "CLAIMED" ? (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handlePrint(t);
+                                    }}
+                                    disabled={printingId === t.id}
+                                    className="w-8 h-8 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center transition-colors disabled:opacity-50"
+                                    title="Print Receipt"
+                                  >
+                                    {printingId === t.id ? (
+                                      <div className="w-4 h-4 border-2 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+                                    ) : (
+                                      <FaPrint size={12} />
+                                    )}
+                                  </button>
                                 ) : (
                                   <span className="text-xs text-gray-500 italic">
                                     —

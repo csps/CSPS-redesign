@@ -25,7 +25,7 @@ const Index = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(2);
+  const [pageSize] = useState(6);
   const [paginationInfo, setPaginationInfo] =
     useState<PaginatedOrdersResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -114,15 +114,13 @@ const Index = () => {
         </header>
 
         {/* Filter & Search Bar - Responsive stacking */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 bg-white/5 border border-white/10 p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] backdrop-blur-md">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 bg-white/5 border border-white/10 p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] backdrop-blur-md relative z-10">
           {/* PurchaseFilter should ideally be responsive internally, 
               but here we ensure it doesn't break the parent layout */}
-          <div className="w-full lg:flex-1 overflow-x-auto no-scrollbar">
-            <PurchaseFilter
-              selectedStatus={selectedStatus}
-              onStatusChange={setSelectedStatus}
-            />
-          </div>
+          <PurchaseFilter
+            selectedStatus={selectedStatus}
+            onStatusChange={setSelectedStatus}
+          />
 
           <div className="relative w-full lg:max-w-md">
             <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/30" />

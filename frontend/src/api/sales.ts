@@ -1,4 +1,5 @@
 import api from "./api";
+import type { OrderResponse } from "../interfaces/order/OrderResponse";
 
 // ==================== Types ====================
 
@@ -277,6 +278,211 @@ export const printTransactionsSummary = (
 
       <div class="footer">
         <p>Computer Science and Physics Society (CSPS)</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+  }, 250);
+};
+
+/**
+ * Print a single transaction summary/receipt
+ */
+export const printSingleTransaction = (transaction: Transaction): void => {
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Please allow popups to print the summary.");
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Transaction Receipt - #${transaction.id}</title>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .receipt-container { max-width: 600px; margin: 0 auto; border: 1px solid #eee; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header { text-align: center; border-bottom: 2px solid #41169C; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #41169C; margin: 0; font-size: 24px; }
+        .header p { color: #666; margin: 5px 0 0; font-size: 14px; }
+        .info-grid { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
+        .info-item { flex: 1 1 200px; margin-bottom: 5px; }
+        .info-label { font-size: 11px; color: #999; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        .info-value { font-size: 16px; color: #111; font-weight: 500; }
+        .amount-section { background: #f8f7ff; padding: 20px; border-radius: 8px; text-align: right; margin-top: 20px; }
+        .amount-total { font-size: 28px; font-weight: bold; color: #41169C; }
+        .status-badge { display: inline-block; padding: 4px 12px; font-size: 12px; font-weight: bold; text-transform: uppercase; border-radius: 20px; }
+        .status-CLAIMED { background: #e6fffa; color: #059669; border: 1px solid #b2f5ea; }
+        .status-PENDING { background: #fffaf0; color: #d97706; border: 1px solid #fbd38d; }
+        .status-REJECTED { background: #fff5f5; color: #dc2626; border: 1px solid #feb2b2; }
+        .footer { margin-top: 40px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
+        @media print { 
+          body { padding: 0; }
+          .receipt-container { border: none; box-shadow: none; max-width: 100%; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt-container">
+        <div class="header">
+          <h1>CSPS Transaction Receipt</h1>
+          <p>Computer Science and Physics Society</p>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Transaction ID</div>
+            <div class="info-value">#${transaction.id}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Order ID</div>
+            <div class="info-value">#${transaction.orderId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Date</div>
+            <div class="info-value">${new Date(transaction.date).toLocaleDateString()}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Status</div>
+            <div class="info-value"><span class="status-badge status-${transaction.status}">${transaction.status === "CLAIMED" ? "Approved" : transaction.status}</span></div>
+          </div>
+        </div>
+
+        <div class="info-item" style="border-top: 1px dashed #eee; padding-top: 20px;">
+          <div class="info-label">Student Name</div>
+          <div class="info-value">${transaction.studentName}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">ID Number</div>
+          <div class="info-value">${transaction.idNumber}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Membership Type</div>
+          <div class="info-value">${transaction.membershipType}</div>
+        </div>
+
+        <div class="amount-section">
+          <div class="info-label">Total Amount Paid</div>
+          <div class="amount-total">₱${transaction.amount.toLocaleString()}</div>
+        </div>
+
+        <div class="footer">
+          <p>Thank you for your transaction!</p>
+          <p>&copy; ${new Date().getFullYear()} CSPS - Computer Science and Physics Society</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => {
+    printWindow.print();
+  }, 250);
+};
+
+/**
+ * Print a detailed order summary including items
+ */
+export const printOrderSummary = (order: OrderResponse): void => {
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Please allow popups to print the summary.");
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Order Summary - #${order.orderId}</title>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .summary-container { max-width: 800px; margin: 0 auto; border: 1px solid #eee; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header { text-align: center; border-bottom: 2px solid #41169C; padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { color: #41169C; margin: 0; font-size: 24px; }
+        .header p { color: #666; margin: 5px 0 0; font-size: 14px; }
+        .info-grid { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 30px; }
+        .info-item { flex: 1 1 150px; }
+        .info-label { font-size: 11px; color: #999; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        .info-value { font-size: 16px; color: #111; font-weight: 500; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { text-align: left; font-size: 12px; color: #999; text-transform: uppercase; padding: 10px; border-bottom: 2px solid #eee; font-weight: bold; }
+        td { padding: 15px 10px; border-bottom: 1px solid #eee; font-size: 14px; vertical-align: top; }
+        .total-section { text-align: right; margin-top: 30px; padding-top: 20px; border-top: 2px solid #41169C; }
+        .total-label { font-size: 14px; color: #666; text-transform: uppercase; font-weight: bold; }
+        .total-amount { font-size: 28px; font-weight: bold; color: #41169C; }
+        .footer { margin-top: 50px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
+        @media print { body { padding: -100; } .summary-container { border: none; box-shadow: none; width: 100%; max-width: 100%; } }
+      </style>
+    </head>
+    <body>
+      <div class="summary-container">
+        <div class="header">
+          <h1>CSPS Order Summary</h1>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Order ID</div>
+            <div class="info-value">#${order.orderId}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Date</div>
+            <div class="info-value">${new Date(order.orderDate).toLocaleDateString()}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Customer Name</div>
+            <div class="info-value">${order.studentName}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Item Description</th>
+              <th>Quantity</th>
+              <th style="text-align: right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.orderItems
+              .map(
+                (item) => `
+              <tr>
+                <td>
+                  <div style="font-weight: bold;">${item.merchName}</div>
+                  <div style="font-size: 12px; color: #666;">
+                    ${item.merchType} ${item.size ? `• Size: ${item.size}` : ""} ${item.color ? `• Color: ${item.color}` : ""}
+                  </div>
+                </td>
+                <td>${item.quantity}</td>
+                <td style="text-align: right;">₱${item.totalPrice.toLocaleString()}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <span class="total-label">Grand Total:</span>
+          <div class="total-amount">₱${order.totalPrice.toLocaleString()}</div>
+        </div>
+
+        <div class="footer">
+          <p>This is a computer-generated summary.</p>
+          <p>&copy; ${new Date().getFullYear()} CSPS</p>
+        </div>
       </div>
     </body>
     </html>

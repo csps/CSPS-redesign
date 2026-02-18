@@ -1,9 +1,10 @@
 import React, { type ChangeEvent } from "react";
-import { FaCloudUploadAlt, FaChevronDown, FaArrowRight } from "react-icons/fa";
+import { FaCloudUploadAlt, FaArrowRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { MerchType } from "../../../../enums/MerchType";
 import type { ValidationErrors } from "../util/validation";
 import type { MerchFormState } from "../../../../hooks/useMerchForm";
+import CustomDropdown from "../../../../components/CustomDropdown";
 
 interface MerchInfoStepProps {
   formState: MerchFormState;
@@ -23,22 +24,26 @@ const InputBlock = ({
   children,
   className = "",
   rightElement,
+  noPadding = false,
 }: {
   label: string;
   error?: string;
   children: React.ReactNode;
   className?: string;
   rightElement?: React.ReactNode;
+  noPadding?: boolean;
 }) => (
   <div className={`group relative ${className}`}>
     <div
-      className={`relative w-full bg-white/[0.03] hover:bg-white/[0.05] rounded-2xl px-5 py-4 border-2 transition-all duration-200 ${
+      className={`relative w-full bg-white/[0.03] hover:bg-white/[0.05] rounded-2xl border-2 transition-all duration-200 ${
         error
           ? "border-red-500/50 bg-red-500/5"
           : "border-transparent focus-within:border-purple-500/50 focus-within:bg-white/[0.05]"
-      }`}
+      } ${noPadding ? "p-1.5" : "px-5 py-4"}`}
     >
-      <div className="flex justify-between items-center mb-2">
+      <div
+        className={`flex justify-between items-center ${noPadding ? "px-3.5 pt-2.5 mb-1" : "mb-2"}`}
+      >
         <label className="block text-white/50 text-xs font-semibold uppercase tracking-wider group-focus-within:text-purple-300 transition-colors">
           {label}
         </label>
@@ -80,6 +85,14 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
       onMerchImageUpload(index, file);
     }
   };
+
+  const categoryOptions = [
+    { label: "Select a category...", value: "" },
+    ...Object.entries(MerchType).map(([key, value]) => ({
+      label: key.charAt(0) + key.slice(1).toLowerCase(),
+      value: value,
+    })),
+  ];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
@@ -126,9 +139,15 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                   Drag & drop or click to browse
                 </span>
                 <div className="flex items-center justify-center gap-2 mt-3">
-                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">PNG</span>
-                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">JPG</span>
-                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">WebP</span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">
+                    PNG
+                  </span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">
+                    JPG
+                  </span>
+                  <span className="px-3 py-1 bg-white/5 rounded-full text-xs text-white/50">
+                    WebP
+                  </span>
                 </div>
               </div>
             </div>
@@ -195,30 +214,18 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
           </div>
 
           {/* Row 2: Category */}
-          <InputBlock label="Product Category" error={errors.merchType}>
-            <div className="relative w-full">
-              <select
-                value={formState.merchType}
-                onChange={(e) =>
-                  onMerchTypeChange(e.target.value as MerchType | "")
-                }
-                className={`w-full bg-transparent text-lg font-medium appearance-none focus:outline-none cursor-pointer transition-all duration-200 pr-10 [&>option]:bg-[#2a2650] [&>option]:text-white [&>option]:font-medium ${
-                  formState.merchType ? "text-white" : "text-white/40"
-                }`}
-              >
-                <option value="" className="text-white/40">
-                  Select a category...
-                </option>
-                {Object.entries(MerchType).map(([key, value]) => (
-                  <option key={value} value={value} className="text-white">
-                    {key}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white/40 group-focus-within:text-purple-400 transition-colors duration-200">
-                <FaChevronDown size={14} />
-              </div>
-            </div>
+          <InputBlock
+            label="Product Category"
+            error={errors.merchType}
+            noPadding
+          >
+            <CustomDropdown
+              options={categoryOptions}
+              value={formState.merchType}
+              onChange={(val) => onMerchTypeChange(val as MerchType | "")}
+              placeholder="Select category..."
+              className="bg-transparent border-none !px-0 !py-0 ring-0 focus:ring-0"
+            />
           </InputBlock>
 
           {/* Row 3: Description */}

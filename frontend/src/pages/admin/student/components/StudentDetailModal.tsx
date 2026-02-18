@@ -12,6 +12,7 @@ import {
 import { usePermissions } from "../../../../hooks/usePermissions";
 import GrantAdminAccessModal from "./GrantAdminAccessModal";
 import { AdminPosition } from "../../../../enums/AdminPosition";
+import CustomDropdown from "../../../../components/CustomDropdown";
 
 interface StudentDetailModalProps {
   student: StudentResponse;
@@ -126,6 +127,21 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
     });
   };
 
+  const yearOptions = [1, 2, 3, 4].map((y) => ({
+    label: `${y}${getYearSuffix(y)} year`,
+    value: y.toString(),
+  }));
+
+  const semesterOptions = [
+    { label: "1st semester", value: "1" },
+    { label: "2nd semester", value: "2" },
+  ];
+
+  const statusOptions = [
+    { label: "Active", value: "current" },
+    { label: "Inactive", value: "future" },
+  ];
+
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -203,65 +219,40 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
 
               {showAddForm && (
                 <div className="bg-zinc-800/40 rounded-xl p-8 border border-zinc-800 space-y-6 animate-in fade-in slide-in-from-top-2">
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-zinc-500">
-                        Year
-                      </label>
-                      <select
-                        value={newMembership.academicYear}
-                        onChange={(e) =>
-                          setNewMembership({
-                            ...newMembership,
-                            academicYear: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
-                      >
-                        {[1, 2, 3, 4].map((y) => (
-                          <option key={y} value={y}>
-                            {y}
-                            {getYearSuffix(y)} year
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-zinc-500">
-                        Semester
-                      </label>
-                      <select
-                        value={newMembership.semester}
-                        onChange={(e) =>
-                          setNewMembership({
-                            ...newMembership,
-                            semester: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
-                      >
-                        <option value={1}>1st semester</option>
-                        <option value={2}>2nd semester</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-zinc-500">
-                        Status
-                      </label>
-                      <select
-                        value={newMembership.status}
-                        onChange={(e) =>
-                          setNewMembership({
-                            ...newMembership,
-                            status: e.target.value as "current" | "future",
-                          })
-                        }
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2.5 text-zinc-200 text-sm focus:border-purple-500 outline-none transition-colors"
-                      >
-                        <option value="current">Active</option>
-                        <option value="future">Inactive</option>
-                      </select>
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <CustomDropdown
+                      label="Year"
+                      options={yearOptions}
+                      value={newMembership.academicYear.toString()}
+                      onChange={(val) =>
+                        setNewMembership({
+                          ...newMembership,
+                          academicYear: parseInt(val),
+                        })
+                      }
+                    />
+                    <CustomDropdown
+                      label="Semester"
+                      options={semesterOptions}
+                      value={newMembership.semester.toString()}
+                      onChange={(val) =>
+                        setNewMembership({
+                          ...newMembership,
+                          semester: parseInt(val),
+                        })
+                      }
+                    />
+                    <CustomDropdown
+                      label="Status"
+                      options={statusOptions}
+                      value={newMembership.status}
+                      onChange={(val) =>
+                        setNewMembership({
+                          ...newMembership,
+                          status: val as "current" | "future",
+                        })
+                      }
+                    />
                   </div>
                   <div className="flex justify-end">
                     <button

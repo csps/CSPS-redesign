@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { FaPlus, FaBox, FaTrash } from "react-icons/fa";
 import { ClothingSizing } from "../../../../../enums/ClothingSizing";
 import type { MerchVariantResponse } from "../../../../../interfaces/merch_variant/MerchVariantResponse";
+import CustomDropdown from "../../../../../components/CustomDropdown";
 
 interface StockManagementProps {
+  // ... rest of the props ...
   variant: MerchVariantResponse;
   variantIndex: number;
   editedStocks: { [key: number]: { [key: string]: number } };
@@ -103,22 +105,19 @@ const StockManagement: React.FC<StockManagementProps> = ({
         {/* Inline Add Size - only show when canEdit */}
         {canEdit && isClothing && availableSizes.length > 0 && (
           <div className="flex items-center gap-2">
-            <select
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-              className="px-3 py-2 bg-black/40 border border-white/20 text-white text-sm rounded-lg focus:outline-none focus:border-purple-500 transition-all lg:mr-1"
-            >
-              <option value="">Add size...</option>
-              {availableSizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
+            <div className="w-40">
+              <CustomDropdown
+                options={availableSizes.map(s => ({ label: s, value: s }))}
+                value={selectedSize}
+                onChange={setSelectedSize}
+                placeholder="Add size..."
+                className="!bg-transparent"
+              />
+            </div>
             <button
               onClick={handleAddSize}
               disabled={!selectedSize}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-xl font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 h-[46px]"
             >
               <FaPlus size={12} /> Add
             </button>

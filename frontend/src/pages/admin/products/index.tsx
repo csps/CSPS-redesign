@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 import { IoMdAdd } from "react-icons/io";
@@ -17,12 +17,14 @@ import Layout from "../../../components/Layout";
 import DeleteConfirmationModal from "../merch/productView/components/DeleteConfirmationModal";
 import { toast } from "sonner";
 import { usePermissions } from "../../../hooks/usePermissions";
+import CustomDropdown from "../../../components/CustomDropdown";
 
 const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [merch, setMerch] = useState<MerchSummaryResponse[]>([]);
   const [activeTag, setActiveTag] = useState<string>("ALL");
   const [loading, setLoading] = useState<boolean>(false);
+  const [stockFilter, setStockFilter] = useState<string>("All Status");
 
   // Delete state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -80,6 +82,20 @@ const Index = () => {
     }
   };
 
+  const stockOptions = [
+    { label: "All Stock Status", value: "All Status" },
+    { label: "In Stock", value: "In Stock" },
+    { label: "Out of Stock", value: "Out of Stock" },
+  ];
+
+  const categoryOptions = [
+    { label: "All Categories", value: "ALL" },
+    ...Object.entries(MerchType).map(([key, value]) => ({
+      label: key.charAt(0) + key.slice(1).toLowerCase(),
+      value: value,
+    })),
+  ];
+
   return (
     <Layout>
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
@@ -102,32 +118,34 @@ const Index = () => {
         </div>
 
         {/* Filter Bar Section */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8 lg:mb-10">
-          <div className="flex-1">
+        <div className="flex flex-col lg:flex-row gap-4 mb-8 lg:mb-10 items-end">
+          <div className="flex-1 w-full">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 px-1">
+              Search
+            </label>
             <input
               type="text"
-              placeholder="Search products..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white/60 focus:outline-none focus:border-white/20 placeholder:text-white/40"
+              placeholder="Search products by name or ID..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-purple-500/50 transition-all"
             />
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
-            <select className="bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white/60 focus:outline-none min-w-[180px] [&>option]:bg-[#1E293B] [&>option]:text-white">
-              <option>All Stock Status</option>
-              <option>In Stock</option>
-              <option>Out of Stock</option>
-            </select>
-            <select
-              value={activeTag}
-              onChange={(e) => setActiveTag(e.target.value)}
-              className="bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-white/60 focus:outline-none min-w-[180px] [&>option]:bg-[#1E293B] [&>option]:text-white"
-            >
-              <option value="ALL">All Categories</option>
-              {Object.values(MerchType).map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
+          <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+            <div className="w-full sm:w-56">
+              <CustomDropdown
+                label="Stock Status"
+                options={stockOptions}
+                value={stockFilter}
+                onChange={setStockFilter}
+              />
+            </div>
+            <div className="w-full sm:w-56">
+              <CustomDropdown
+                label="Category"
+                options={categoryOptions}
+                value={activeTag}
+                onChange={setActiveTag}
+              />
+            </div>
           </div>
         </div>
 

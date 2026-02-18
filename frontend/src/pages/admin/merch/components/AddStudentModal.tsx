@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FaTimes, FaCloudUploadAlt, FaChevronDown } from "react-icons/fa";
+import { FaTimes, FaCloudUploadAlt } from "react-icons/fa";
+import CustomDropdown from "../../../../components/CustomDropdown";
 
 interface AddStudentModalProps {
   onClose: () => void;
@@ -18,8 +19,6 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
     isMember: false,
   });
 
-  const [showYearDropdown, setShowYearDropdown] = useState(false);
-
   // --- HANDLERS ---
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,6 +28,13 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
     // Add logic to send data to backend here
     onClose();
   };
+
+  const yearOptions = ["1st Year", "2nd Year", "3rd Year", "4th Year"].map(
+    (y) => ({
+      label: y,
+      value: y,
+    }),
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -172,41 +178,14 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
             </div>
 
             {/* Row 4: Year Level & Contact */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Custom Dropdown for Year Level */}
-              <div className="space-y-2 relative">
-                <label className="text-white/80 text-sm pl-1">Year Level</label>
-                <div
-                  className="w-full bg-[#352f5b] text-white px-4 py-3 rounded-xl flex justify-between items-center cursor-pointer border border-transparent hover:border-purple-500 transition"
-                  onClick={() => setShowYearDropdown(!showYearDropdown)}
-                >
-                  <span className="font-semibold text-purple-300">
-                    Year Level:{" "}
-                    <span className="text-white">{formData.yearLevel}</span>
-                  </span>
-                  <FaChevronDown className="text-sm" />
-                </div>
-
-                {/* Dropdown Menu */}
-                {showYearDropdown && (
-                  <div className="absolute top-full mt-2 w-full bg-[#2c264e] border border-white/10 rounded-xl shadow-xl z-20 overflow-hidden">
-                    {["1st Year", "2nd Year", "3rd Year", "4th Year"].map(
-                      (year) => (
-                        <div
-                          key={year}
-                          onClick={() => {
-                            setFormData({ ...formData, yearLevel: year });
-                            setShowYearDropdown(false);
-                          }}
-                          className="px-4 py-3 text-white hover:bg-purple-600/50 cursor-pointer transition"
-                        >
-                          {year}
-                        </div>
-                      ),
-                    )}
-                  </div>
-                )}
-              </div>
+              <CustomDropdown
+                label="Year Level"
+                options={yearOptions}
+                value={formData.yearLevel}
+                onChange={(val) => setFormData({ ...formData, yearLevel: val })}
+              />
 
               <div className="space-y-2">
                 <label className="text-white/80 text-sm pl-1">

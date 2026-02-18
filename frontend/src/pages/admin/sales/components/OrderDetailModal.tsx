@@ -9,6 +9,8 @@ import { formatDate } from "../../../../helper/dateUtils";
 import { OrderStatus } from "../../../../enums/OrderStatus";
 import StatusCardModal from "../../merch/orders/components/StatusCardModal";
 import { usePermissions } from "../../../../hooks/usePermissions";
+import { printOrderSummary } from "../../../../api/sales";
+import { Printer } from "lucide-react";
 
 interface OrderDetailModalProps {
   isOpen: boolean;
@@ -96,12 +98,23 @@ export default function OrderDetailModal({
               {studentName} - Order #{orderId}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors text-xl"
-          >
-            ×
-          </button>
+          <div className="flex items-center gap-2">
+            {order && (
+              <button
+                onClick={() => printOrderSummary(order)}
+                className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                title="Print Order Summary"
+              >
+                <Printer size={20} />
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors text-xl"
+            >
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Content */}

@@ -69,7 +69,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
   return (
     <>
       <div
-        className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-[#1E1E3F] p-4 sm:p-5 border border-white/10 rounded-xl mb-4 ${
+        className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 bg-[#1E1E3F] p-4 sm:p-5 border border-white/10 rounded-xl ${
           canManageOrder
             ? "cursor-pointer hover:bg-[#252552] transition-colors"
             : ""
@@ -77,7 +77,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
         onClick={() => canManageOrder && setModalOpen(true)}
       >
         {/* Image Container */}
-        <div className="shrink-0 w-full sm:w-32 sm:h-32 md:w-40 md:h-40 bg-black/20 rounded-lg flex items-center justify-center p-2 overflow-hidden border border-white/5">
+        <div className="shrink-0 w-full sm:w-24 sm:h-24 md:w-32 md:h-32 bg-black/20 rounded-lg flex items-center justify-center p-2 overflow-hidden border border-white/5">
           <img
             src={orderItem.s3ImageKey ? S3_BASE_URL + orderItem.s3ImageKey : ""}
             alt={orderItem.merchName}
@@ -89,17 +89,17 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
         <div className="flex flex-col flex-1 w-full py-1">
           <div className="flex flex-col sm:flex-row justify-between items-start w-full gap-2 sm:gap-0">
             <div className="space-y-1">
-              <p className="text-xs text-gray-400">
-                CSPS Official • {orderItem.merchType}
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                {orderItem.merchType}
               </p>
               {/* BOLDED: Product Name */}
-              <h3 className="text-lg sm:text-xl font-bold text-white">
+              <h3 className="text-lg font-bold text-white leading-tight">
                 {orderItem.merchName}
               </h3>
 
               <div className="pt-2">
                 <span
-                  className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${statusStyle.bg} ${statusStyle.color} ${statusStyle.border}`}
+                  className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${statusStyle.bg} ${statusStyle.color} ${statusStyle.border}`}
                 >
                   {statusLabels[currentStatus] || currentStatus}
                 </span>
@@ -109,10 +109,10 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
             {/* Price & Quantity */}
             <div className="text-left sm:text-right w-full sm:w-auto flex sm:flex-col justify-between items-end mt-2 sm:mt-0">
               {/* BOLDED: Price */}
-              <p className="text-lg sm:text-xl font-bold text-white">
+              <p className="text-lg font-bold text-white">
                 ₱{orderItem.totalPrice.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-xs text-gray-500 font-medium">
                 Qty:{" "}
                 <span className="font-bold text-gray-300">
                   {orderItem.quantity}
@@ -122,44 +122,33 @@ const StatusCard: React.FC<StatusCardProps> = ({ orderItem }) => {
           </div>
 
           {/* Row Footer with Details */}
-          <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-400">
+          <div className="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-400">
             {isClothing && (
               <>
-                <p>
-                  Size:{" "}
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-gray-500 uppercase tracking-widest">Size</span>
                   <span className="font-bold text-white">
                     {orderItem.size || "N/A"}
                   </span>
-                </p>
-                <p>
-                  Color:{" "}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-gray-500 uppercase tracking-widest">Color</span>
                   <span className="font-bold text-white">
                     {orderItem.color || "N/A"}
                   </span>
-                </p>
+                </div>
               </>
             )}
             {orderItem.design && (
-              <p>
-                Design:{" "}
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-gray-500 uppercase tracking-widest">Design</span>
                 <span className="font-bold text-white">{orderItem.design}</span>
-              </p>
+              </div>
             )}
-            <p>
-              Student:{" "}
-              <span className="font-bold text-white">
-                {orderItem.studentName}
-              </span>
-            </p>
-            <p>
-              Date:{" "}
-              <span className="font-bold text-white">
-                {new Date(orderItem.createdAt).toLocaleDateString()}
-              </span>
-            </p>
-            <p className="ml-0 sm:ml-auto text-xs text-gray-500">
-              ID: #{orderItem.orderId}
-            </p>
+            <div className="flex items-center gap-2 ml-auto">
+              <span className="font-bold text-gray-500 uppercase tracking-widest">Item ID</span>
+              <span className="font-bold text-white">#{orderItem.orderItemId}</span>
+            </div>
           </div>
         </div>
       </div>
