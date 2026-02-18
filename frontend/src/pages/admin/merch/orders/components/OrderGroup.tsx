@@ -4,7 +4,6 @@ import type {
   OrderItemResponse,
 } from "../../../../../interfaces/order/OrderResponse";
 import StatusCard from "./StatusCard";
-import { FiUser, FiCalendar, FiHash } from "react-icons/fi";
 
 interface OrderGroupProps {
   order: OrderResponse;

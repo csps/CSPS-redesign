@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 import { IoMdAdd } from "react-icons/io";
@@ -28,12 +28,13 @@ const Index = () => {
 
   // Delete state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [merchToDelete, setMerchToDelete] = useState<MerchSummaryResponse | null>(null);
+  const [merchToDelete, setMerchToDelete] =
+    useState<MerchSummaryResponse | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const navigator = useNavigate();
   const { canManageMerch } = usePermissions();
-  
+
   const navigate = (merchId: number) => {
     navigator(`/admin/merch/${merchId}`);
   };

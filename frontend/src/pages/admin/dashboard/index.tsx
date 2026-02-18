@@ -27,14 +27,12 @@ const Index = () => {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      setError(null);
       try {
         const [dash, anns, events] = await Promise.all([
           getFinanceDashboard(),
@@ -46,7 +44,6 @@ const Index = () => {
         setUpcomingEvents(events);
       } catch (err) {
         console.error("Dashboard fetch error:", err);
-        setError("Failed to synchronize dashboard data.");
       } finally {
         setIsLoading(false);
       }

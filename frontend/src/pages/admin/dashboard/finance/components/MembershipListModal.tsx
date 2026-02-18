@@ -39,7 +39,7 @@ const MembershipListModal: React.FC<MembershipListModalProps> = ({
     setLoading(true);
     try {
       const result = await getPaginatedStudentMemberships(pageNumber, 7);
-      setMemberships(result.content);
+      setMemberships(result.content || []);
       setTotalPages(result.totalPages);
       setTotalElements(result.totalElements);
       setPage(pageNumber);

@@ -12,11 +12,7 @@ interface LineChartProps {
   labels: string[];
   totalSales: number;
 }
-export default function LineChart({
-  data,
-  labels,
-  totalSales,
-}: LineChartProps) {
+export default function LineChart({ data, labels }: LineChartProps) {
   // Transform data for Recharts
   const chartData = labels.map((label, index) => ({
     name: label,

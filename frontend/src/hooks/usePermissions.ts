@@ -1,10 +1,6 @@
 import { useAuthStore } from "../store/auth_store";
 import type { UserResponse } from "../interfaces/user/UserResponse";
-import {
-  isExecutivePosition,
-  isFinancePosition,
-  AdminPosition,
-} from "../enums/AdminPosition";
+import { isExecutivePosition, isFinancePosition } from "../enums/AdminPosition";
 
 /**
  * Hook to check user permissions based on role and position.
