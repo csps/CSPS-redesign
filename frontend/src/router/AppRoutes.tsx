@@ -9,6 +9,7 @@ import { getAdminHomeRoute } from "./routePermissions";
 import LoginPage from "../pages/login";
 import ContactUsPage from "../pages/contact";
 import ForgotPasswordPage from "../pages/forgotPassword";
+import ResetPasswordPage from "../pages/resetPassword";
 import DashboardPage from "../pages/dashboard";
 import EventsPage from "../pages/events";
 import EventViewPage from "../pages/events/eventView";
@@ -67,6 +68,7 @@ const routers = [
       { path: "/login", element: <LoginPage /> },
       { path: "/contact-us", element: <ContactUsPage /> },
       { path: "/forgot-password", element: <ForgotPasswordPage /> },
+      { path: "/reset-password", element: <ResetPasswordPage /> },
     ],
   },
 

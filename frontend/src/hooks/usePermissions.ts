@@ -49,7 +49,7 @@ export const usePermissions = () => {
     canManageMerch: isExecutive || isFinance,
 
     // Can approve/reject transactions
-    canApproveTransactions: isFinance || isExecutive,
+    canApproveTransactions: isFinance,
 
     // Can view admin dashboard
     canViewDashboard: isExecutive || isGeneralAdmin,

@@ -12,4 +12,5 @@ export interface UserResponse {
   email: string;
   role: UserRole;
   position?: AdminPosition; // Admin position for role-based access
+  isVerified?: boolean;
 }

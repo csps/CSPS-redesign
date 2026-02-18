@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth_store";
 import { usePasswordChange } from "../../hooks/usePasswordChange";
+import { profile as refreshProfile } from "../../api/auth";
 import type { StudentResponse } from "../../interfaces/student/StudentResponse";
 import Layout from "../../components/Layout";
 import ProfileSidebar, { type ActiveTab } from "./components/ProfileSidebar";
@@ -11,6 +12,7 @@ import {
   PasswordSuccessModal,
   PasswordConfirmModal,
 } from "./components/PasswordModals";
+import EmailVerificationModal from "../../components/EmailVerificationModal";
 
 /**
  * ProfilePage component.
@@ -39,6 +41,7 @@ const ProfilePage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<ActiveTab>("credentials");
   const [isEditing, setIsEditing] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -96,6 +99,16 @@ const ProfilePage: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleVerified = async () => {
+    setShowVerificationModal(false);
+    // Refresh the user profile to pick up isVerified = true
+    try {
+      await refreshProfile();
+    } catch {
+      // Profile will refresh on next load
+    }
+  };
+
   if (!student) return null; // Or a loading spinner
 
   return (
@@ -118,10 +131,12 @@ const ProfilePage: React.FC = () => {
                   formData={formData}
                   studentId={student.studentId}
                   isEditing={isEditing}
+                  isVerified={student.user.isVerified ?? true}
                   setIsEditing={setIsEditing}
                   onFieldChange={handleFieldChange}
                   onSave={handleSaveProfile}
                   onDiscard={handleDiscardProfile}
+                  onVerifyEmail={() => setShowVerificationModal(true)}
                 />
               </div>
             )}
@@ -142,7 +157,6 @@ const ProfilePage: React.FC = () => {
         </main>
       </div>
 
-
       {/* Modals */}
       <PasswordConfirmModal
         isOpen={showConfirmModal}
@@ -153,6 +167,12 @@ const ProfilePage: React.FC = () => {
       <PasswordSuccessModal
         isOpen={isPasswordSuccess}
         onClose={() => setPasswordSuccess(false)}
+      />
+      <EmailVerificationModal
+        isOpen={showVerificationModal}
+        email={student.user.email || ""}
+        onClose={() => setShowVerificationModal(false)}
+        onVerified={handleVerified}
       />
     </Layout>
   );

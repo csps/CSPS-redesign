@@ -42,7 +42,7 @@ const Announcements = () => {
       <div className="w-full flex justify-between mb-5">
         <p className="md:text-xl lg:text-4xl font-semibold">Announcements</p>
         <p
-          className="text-xs mt-[.3rem] lg:text-lg font-semibold"
+          className="text-xs mt-[.3rem] text-purple-400 cursor-pointer hover:text-purple-300 lg:text-lg font-semibold"
           onClick={() =>
             window.open("https://www.facebook.com/UCMainCSPS", "_blank")
           }

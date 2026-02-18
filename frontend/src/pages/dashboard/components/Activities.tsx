@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAllEvents } from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import { useInView } from "../../../hooks/useInView";
+import EventDetailModal from "../../events/components/EventDetailModal";
 
 const Activities = () => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { ref, isInView } = useInView();
 
   useEffect(() => {
@@ -25,6 +30,11 @@ const Activities = () => {
     fetchEvents();
   }, [isInView]);
 
+  const handleEventClick = (event: EventResponse) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
   return (
     <div ref={ref} className="w-full">
       <div className="w-full flex justify-between items-end mb-10">
@@ -36,7 +46,10 @@ const Activities = () => {
             Community Highlights
           </p>
         </div>
-        <p className="text-xs lg:text-sm font-bold text-purple-400 cursor-pointer hover:text-purple-300 uppercase">
+        <p 
+          onClick={() => navigate("/events")}
+          className="text-xs lg:text-sm font-bold cursor-pointer text-purple-400 hover:text-purple-300 uppercase"
+        >
           Read more
         </p>
       </div>
@@ -64,7 +77,8 @@ const Activities = () => {
           {events.slice(0, 2).map((event) => (
             <div
               key={event.eventId}
-              className="group relative flex flex-col bg-white/15 backdrop-blur-2xl border border-white/20 p-4 md:p-5 rounded-[2.5rem] transition-all duration-500 hover:border-white/40 hover:bg-[#1a1a1a] h-[350px] md:h-[450px] lg:h-[520px] shadow-[0_0_40px_rgba(0,0,0,1)]"
+              onClick={() => handleEventClick(event)}
+              className="group relative flex flex-col bg-white/15 backdrop-blur-2xl border border-white/20 p-4 md:p-5 rounded-[2.5rem] transition-all duration-500 hover:border-white/40 hover:bg-[#1a1a1a] h-[350px] md:h-[450px] lg:h-[520px] shadow-[0_0_40px_rgba(0,0,0,1)] cursor-pointer"
             >
               {/* Image Container with Inset Contrast */}
               <div className="w-full h-40 md:h-48 lg:h-60 bg-black/60 rounded-[2rem] overflow-hidden border border-white/10 relative shadow-2xl mb-4 md:mb-6">
@@ -114,7 +128,8 @@ const Activities = () => {
             {events.slice(2, 4).map((event) => (
               <div
                 key={event.eventId}
-                className="group bg-[#121212]/90 backdrop-blur-2xl border border-white/20 p-4 rounded-[2rem] flex flex-col h-[248px] transition-all duration-300 hover:border-white/40 shadow-xl"
+                onClick={() => handleEventClick(event)}
+                className="group bg-[#121212]/90 backdrop-blur-2xl border border-white/20 p-4 rounded-[2rem] flex flex-col h-[248px] transition-all duration-300 hover:border-white/40 shadow-xl cursor-pointer"
               >
                 <div className="flex gap-4 items-start mb-4">
                   <div className="w-16 h-16 shrink-0 bg-black rounded-2xl border border-white/20 overflow-hidden">
@@ -150,6 +165,12 @@ const Activities = () => {
           </div>
         </div>
       )}
+
+      <EventDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        event={selectedEvent}
+      />
     </div>
   );
 };
