@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { MdOutlineClose, MdEmail, MdCheckCircle } from "react-icons/md";
+import { motion, AnimatePresence } from "framer-motion";
 import { initiateEmailUpdate, confirmEmailUpdate } from "../../../api/auth";
 import type {
   InitiateEmailUpdateRequest,
@@ -45,7 +46,6 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
     setError(null);
     setSuccessMessage(null);
 
-    // Validation
     if (!newEmail.trim()) {
       setError("Please enter your new email address");
       return;
@@ -69,7 +69,7 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
 
       await initiateEmailUpdate(request);
       setSuccessMessage(
-        `Verification code sent to ${currentEmail}. Please check your email.`,
+        `Verification code sent to ${currentEmail}. Please check your inbox.`,
       );
       setStep("confirm");
     } catch (err: unknown) {
@@ -86,7 +86,6 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
     setError(null);
     setSuccessMessage(null);
 
-    // Validation
     if (!verificationCode.trim()) {
       setError("Please enter the verification code");
       return;
@@ -107,7 +106,6 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
       await confirmEmailUpdate(request);
       setSuccessMessage("Email updated successfully!");
 
-      // Close modal after a brief delay
       setTimeout(() => {
         resetForm();
         onClose();
@@ -123,158 +121,174 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-[#1A1625] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between bg-gradient-to-r from-purple-600/20 to-pink-600/20 px-6 py-5 border-b border-white/10">
-          <h2 className="text-xl font-semibold text-white">
-            {step === "request" ? "Update Email" : "Verify Email"}
-          </h2>
-          <button
-            onClick={handleClose}
-            disabled={isLoading}
-            className="text-gray-400 hover:text-white disabled:opacity-50 transition-colors"
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="w-full max-w-md bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden flex flex-col"
           >
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="px-6 py-6">
-          {/* Info Section */}
-          <div className="mb-6 p-4 bg-blue-600/10 border border-blue-500/20 rounded-lg">
-            <p className="text-sm text-gray-300">
-              {step === "request" ? (
-                <>
-                  A verification code will be sent to your current email (
-                  <span className="font-medium text-white">{currentEmail}</span>
-                  )
-                </>
-              ) : (
-                <>
-                  Check your email at{" "}
-                  <span className="font-medium text-white">{currentEmail}</span>{" "}
-                  for the verification code
-                </>
-              )}
-            </p>
-          </div>
-
-          {step === "request" && (
-            <>
-              {/* New Email Input */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  New Email Address
-                </label>
-                <input
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="Enter your new email"
-                  disabled={isLoading}
-                  className="w-full px-4 py-2 bg-[#2A2433] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50 transition-all"
-                />
+            {/* header */}
+            <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-gray-800/30">
+              <div>
+                <h2 className="text-xl font-bold text-white">
+                  {step === "request" ? "Update Email" : "Verify Update"}
+                </h2>
+                <p className="text-xs text-white/40 mt-1 font-medium tracking-wide">
+                  {step === "request"
+                    ? "Change your primary account email"
+                    : "Enter the code sent to your inbox"}
+                </p>
               </div>
-            </>
-          )}
-
-          {step === "confirm" && (
-            <>
-              {/* Verification Code Input */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Verification Code
-                </label>
-                <input
-                  type="text"
-                  value={verificationCode}
-                  onChange={(e) =>
-                    setVerificationCode(
-                      e.target.value.replace(/\s/g, "").toUpperCase(),
-                    )
-                  }
-                  placeholder="Enter 6-digit code"
-                  disabled={isLoading}
-                  maxLength={6}
-                  className="w-full px-4 py-2 bg-[#2A2433] border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 disabled:opacity-50 transition-all tracking-widest text-center font-mono text-lg"
-                />
-              </div>
-
-              {/* New Email Display */}
-              <div className="mb-6 p-3 bg-gray-800/50 border border-white/5 rounded-lg">
-                <p className="text-xs text-gray-400 mb-1">Updating to:</p>
-                <p className="text-sm font-medium text-white">{newEmail}</p>
-              </div>
-            </>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-6 p-3 bg-red-600/10 border border-red-500/30 rounded-lg">
-              <p className="text-sm text-red-400">{error}</p>
+              <button
+                onClick={handleClose}
+                disabled={isLoading}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+              >
+                <MdOutlineClose size={20} />
+              </button>
             </div>
-          )}
 
-          {/* Success Message */}
-          {successMessage && (
-            <div className="mb-6 p-3 bg-green-600/10 border border-green-500/30 rounded-lg">
-              <p className="text-sm text-green-400">{successMessage}</p>
-            </div>
-          )}
+            {/* body */}
+            <div className="px-8 py-8 space-y-6 bg-gray-900/50">
+              {/* current email context */}
+              <div className="p-5 bg-white/5 border border-white/5 rounded-2xl">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/20 mb-1.5">
+                  Current Address
+                </p>
+                <p className="text-sm font-semibold text-white/90">
+                  {currentEmail}
+                </p>
+              </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={handleClose}
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 border border-white/10 text-white rounded-lg hover:bg-white/5 disabled:opacity-50 transition-all"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={
-                step === "request" ? handleRequestCode : handleConfirmEmail
-              }
-              disabled={isLoading}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span
-                    className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
-                    aria-hidden="true"
+              {step === "request" && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+                    New Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="you@university.edu"
+                    disabled={isLoading}
+                    className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all font-medium"
                   />
-                  Processing...
-                </span>
-              ) : step === "request" ? (
-                "Request Code"
-              ) : (
-                "Confirm Email Update"
+                </div>
               )}
-            </button>
-          </div>
 
-          {/* Back Link */}
-          {step === "confirm" && (
-            <button
-              onClick={() => {
-                setStep("request");
-                setVerificationCode("");
-                setError(null);
-              }}
-              disabled={isLoading}
-              className="mt-4 w-full text-sm text-gray-400 hover:text-gray-300 disabled:opacity-50 transition-colors"
-            >
-              Back to email entry
-            </button>
-          )}
+              {step === "confirm" && (
+                <>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+                      Verification Code
+                    </label>
+                    <input
+                      type="text"
+                      value={verificationCode}
+                      onChange={(e) =>
+                        setVerificationCode(
+                          e.target.value.replace(/\s/g, "").toUpperCase(),
+                        )
+                      }
+                      placeholder="Enter 6-digit code"
+                      disabled={isLoading}
+                      maxLength={6}
+                      className="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-xl text-lg text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all text-center font-mono tracking-[0.5em]"
+                    />
+                  </div>
+
+                  <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-purple-400/60 mb-1">
+                      Target Address
+                    </p>
+                    <p className="text-sm font-semibold text-purple-200/90">
+                      {newEmail}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {/* error */}
+              {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+                  <p className="text-red-400 text-xs font-bold uppercase tracking-wide">
+                    Error
+                  </p>
+                  <p className="text-red-400/80 text-sm mt-0.5 font-medium">
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* success */}
+              {successMessage && (
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+                  <p className="text-green-400 text-xs font-bold uppercase tracking-wide">
+                    Success
+                  </p>
+                  <p className="text-green-400/80 text-sm mt-0.5 font-medium">
+                    {successMessage}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* footer */}
+            <div className="flex items-center gap-4 px-8 py-6 border-t border-white/5 bg-gray-800/30">
+              {step === "confirm" && (
+                <button
+                  onClick={() => {
+                    setStep("request");
+                    setVerificationCode("");
+                    setError(null);
+                  }}
+                  disabled={isLoading}
+                  className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors px-2"
+                >
+                  Back
+                </button>
+              )}
+              <div className="flex-1" />
+              <button
+                onClick={handleClose}
+                disabled={isLoading}
+                className="px-6 py-3 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={
+                  step === "request" ? handleRequestCode : handleConfirmEmail
+                }
+                disabled={isLoading}
+                className="px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-black bg-[#FDE006] hover:brightness-110 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-yellow-500/10 active:scale-95 flex items-center gap-3"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    Processing
+                  </>
+                ) : step === "request" ? (
+                  <>
+                    <MdEmail size={18} />
+                    Send Code
+                  </>
+                ) : (
+                  <>
+                    <MdCheckCircle size={18} />
+                    Confirm Update
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };
 

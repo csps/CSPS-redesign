@@ -124,7 +124,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col md:flex-row min-h-[calc(100vh-64px)] bg-[#242050] text-white font-sans">
+      <div className="flex flex-col md:flex-row min-h-screen bg-transparent text-white">
         {/* Sidebar Navigation */}
         <ProfileSidebar
           activeTab={activeTab}
@@ -133,11 +133,20 @@ const ProfilePage: React.FC = () => {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto ">
-          {/* Tab Content */}
-          <section className="px-6 md:px-10 pb-12 pt-6 max-w-7xl mx-auto my-20">
+        <main className="flex-1 overflow-y-auto custom-scrollbar">
+          <section className="px-6 md:px-12 pt-10 pb-24 max-w-6xl">
+            {/* Header Section */}
+            <div className="mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+              <h1 className="text-4xl font-extrabold text-white tracking-tight">
+                Profile
+              </h1>
+              <p className="text-white/40 mt-2 text-sm font-medium tracking-wide">
+                Manage your identity and account security.
+              </p>
+            </div>
+
             {activeTab === "credentials" && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
                 <CredentialsTab
                   onUpdateEmail={() => setShowEmailUpdateModal(true)}
                   formData={formData}
@@ -154,7 +163,7 @@ const ProfilePage: React.FC = () => {
             )}
 
             {activeTab === "password" && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
                 <PasswordTab
                   passwordForm={passwordForm}
                   onPasswordChange={handlePasswordChange}

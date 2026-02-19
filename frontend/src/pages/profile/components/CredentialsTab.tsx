@@ -5,8 +5,9 @@ import {
   SectionLabel,
   inputStyles,
 } from "./ProfileUIElements";
-import { IconPencil, IconX, IconCheck } from "./Icons";
+import { IconPencil, IconX } from "./Icons";
 import { FiAlertTriangle } from "react-icons/fi";
+import { MdCheck } from "react-icons/md";
 
 interface CredentialsTabProps {
   formData: {
@@ -32,12 +33,7 @@ interface CredentialsTabProps {
 
 /**
  * Credentials management tab.
- *
- * Displays personal and academic information. Name and year level are read-only.
- * Adheres to the new deep purple theme with white/40 text and white/10 borders.
- *
- * @param {CredentialsTabProps} props - Component properties
- * @returns {JSX.Element} The rendered credentials tab
+ * Displays personal and academic information with edit support.
  */
 const CredentialsTab: React.FC<CredentialsTabProps> = ({
   formData,
@@ -60,40 +56,76 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
     : "—";
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Left column: Personal & Contact */}
-      <div className="space-y-8">
-        {/* Personal Info */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="space-y-10">
+        {/* personal info */}
+        <div>
           <SectionLabel
-            title="Personal identity"
+            title="Personal"
             action={
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all duration-300 ${
+                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${
                   isEditing
-                    ? "border-red-500/30 text-red-400 bg-red-500/5 hover:bg-red-500/10"
-                    : "border-white/10 text-white/40 hover:border-purple-500/50 hover:text-purple-400 hover:bg-white/5"
+                    ? "border-red-500/30 text-red-400 hover:bg-red-500/10"
+                    : "border-white/10 text-white/40 hover:text-white hover:bg-white/5 hover:border-white/20"
                 }`}
               >
                 {isEditing ? (
                   <>
-                    <IconX className="w-3 h-3" />
-                    Discard
+                    <IconX className="w-3.5 h-3.5" />
+                    Cancel
                   </>
                 ) : (
                   <>
-                    <IconPencil className="w-3 h-3" />
-                    Edit contact
+                    <IconPencil className="w-3.5 h-3.5" />
+                    Edit
                   </>
                 )}
               </button>
             }
           />
+
           <ProfileCard>
-            <DetailRow label="First name" value={formData.firstName || "—"} />
-            <DetailRow label="Last name" value={formData.lastName || "—"} />
-            <DetailRow label="Middle name" value={formData.middleName || "—"} />
+            <DetailRow
+              label="First name"
+              value={formData.firstName || "—"}
+              isEditing={isEditing}
+              editInput={
+                <input
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={onFieldChange}
+                  className={inputStyles.base}
+                />
+              }
+            />
+            <DetailRow
+              label="Last name"
+              value={formData.lastName || "—"}
+              isEditing={isEditing}
+              editInput={
+                <input
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={onFieldChange}
+                  className={inputStyles.base}
+                />
+              }
+            />
+            <DetailRow
+              label="Middle name"
+              value={formData.middleName || "—"}
+              isEditing={isEditing}
+              editInput={
+                <input
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={onFieldChange}
+                  className={inputStyles.base}
+                />
+              }
+            />
             <DetailRow
               label="Birth date"
               value={formattedBirthDate}
@@ -112,31 +144,31 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
           </ProfileCard>
         </div>
 
-        {/* Contact Info */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75">
-          <SectionLabel title="Contact access" />
+        {/* contact info */}
+        <div>
+          <SectionLabel title="Security & Contact" />
 
-          {/* Email Not Verified Warning */}
+          {/* email not verified warning */}
           {!isVerified && (
-            <div className="mb-4 flex items-center gap-4 bg-yellow-500/10 border border-yellow-500/25 rounded-2xl px-6 py-4 animate-in fade-in slide-in-from-bottom-2 duration-400">
-              <div className="shrink-0 w-10 h-10 bg-yellow-500/15 rounded-full flex items-center justify-center">
+            <div className="mb-4 flex items-center gap-4 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl px-5 py-4 shadow-lg shadow-yellow-500/5">
+              <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
                 <FiAlertTriangle className="w-5 h-5 text-yellow-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-yellow-300 tracking-tight">
-                  Email not verified
+                <p className="text-sm font-bold text-yellow-400 uppercase tracking-wide">
+                  Action Required
                 </p>
-                <p className="text-[11px] text-yellow-400/60 font-medium mt-0.5 leading-relaxed">
-                  Verify your email to enable password recovery and full account
-                  access.
+                <p className="text-xs text-yellow-400/60 mt-0.5 font-medium">
+                  Your email is not verified. Please verify to ensure full
+                  account access.
                 </p>
               </div>
               {onVerifyEmail && (
                 <button
                   onClick={onVerifyEmail}
-                  className="shrink-0 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border border-yellow-500/30 text-yellow-400 bg-yellow-500/5 hover:bg-yellow-500/15 transition-all duration-200"
+                  className="shrink-0 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl bg-yellow-400 text-black hover:brightness-110 transition-all shadow-lg shadow-yellow-400/20"
                 >
-                  Verify now
+                  Verify
                 </button>
               )}
             </div>
@@ -155,15 +187,15 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
                   className={inputStyles.base}
                 />
               }
-              isLast={!isVerified}
+              isLast={!(isVerified && onUpdateEmail)}
             />
             {isVerified && onUpdateEmail && (
-              <div className="border-t border-white/5 pt-4 mt-4">
+              <div className="px-8 py-4 border-t border-white/5 bg-white/[0.01]">
                 <button
                   onClick={onUpdateEmail}
-                  className="w-full text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl border border-purple-500/30 text-purple-400 bg-purple-500/5 hover:bg-purple-500/15 transition-all duration-200"
+                  className="text-xs font-bold uppercase tracking-widest text-purple-400 hover:text-purple-300 transition-colors"
                 >
-                  Update Email Address
+                  Update email address
                 </button>
               </div>
             )}
@@ -171,13 +203,13 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
         </div>
       </div>
 
-      {/* Right column: Academic & Account */}
-      <div className="space-y-8">
-        {/* Academic Info */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
-          <SectionLabel title="Academic standing" />
+      {/* right column */}
+      <div className="space-y-10">
+        {/* academic info */}
+        <div>
+          <SectionLabel title="Academic" />
           <ProfileCard>
-            <DetailRow label="Identification" value={studentId} />
+            <DetailRow label="Student ID" value={studentId} />
             <DetailRow
               label="Year level"
               value={`Level ${formData.yearLevel}`}
@@ -186,42 +218,50 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
           </ProfileCard>
         </div>
 
-        {/* Account Meta */}
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-          <SectionLabel title="Account overview" />
+        {/* account overview */}
+        <div>
+          <SectionLabel title="Account Overview" />
           <ProfileCard>
             <DetailRow
               label="Full name"
               value={`${formData.firstName} ${formData.lastName}`}
             />
-            <DetailRow label="Is member" value="Active member" isLast />
+            <DetailRow
+              label="Membership"
+              value={
+                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
+                  Active Member
+                </span>
+              }
+              isLast
+            />
           </ProfileCard>
         </div>
 
-        {/* Save Action Bar — only shown while editing */}
+        {/* save bar */}
         {isEditing && (
-          <div className="flex items-center justify-between gap-6 p-6 bg-white/5 border border-white/10 rounded-2xl animate-in zoom-in-95 duration-300 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-6 p-6 bg-white/[0.03] border border-white/10 rounded-[24px] shadow-2xl backdrop-blur-md animate-in zoom-in-95 duration-200">
             <div>
-              <p className="text-sm font-bold text-white tracking-tight">
+              <p className="text-sm font-bold text-white uppercase tracking-tight">
                 Unsaved changes
               </p>
-              <p className="text-[10px] text-white/30 mt-1 font-bold uppercase tracking-widest">
-                Review your updates
+              <p className="text-xs text-white/40 mt-0.5 font-medium">
+                Please review your changes before saving.
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <button
                 onClick={onDiscard}
-                className="text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white px-4 py-2 transition-all"
+                className="text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white px-4 py-2 transition-colors"
               >
                 Discard
               </button>
               <button
                 onClick={onSave}
-                className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-purple-900/20"
+                className="flex items-center gap-2 bg-[#FDE006] hover:brightness-110 text-black px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-yellow-500/10 active:scale-95"
               >
-                <IconCheck className="w-3 h-3" />
-                Save data
+                <MdCheck className="w-4 h-4" />
+                Save
               </button>
             </div>
           </div>

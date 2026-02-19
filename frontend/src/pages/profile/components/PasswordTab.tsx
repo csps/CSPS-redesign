@@ -1,5 +1,6 @@
 import React from "react";
-import { ProfileCard, inputStyles } from "./ProfileUIElements";
+import { ProfileCard, inputStyles, SectionLabel } from "./ProfileUIElements";
+import { MdLock, MdArrowForward } from "react-icons/md";
 
 interface PasswordTabProps {
   passwordForm: {
@@ -16,12 +17,6 @@ interface PasswordTabProps {
 
 /**
  * Password management tab.
- *
- * Provides a secure interface for updating account credentials.
- * Adheres to the new deep purple theme with white/40 text and white/10 borders.
- *
- * @param {PasswordTabProps} props - Component properties
- * @returns {JSX.Element} The rendered password tab
  */
 const PasswordTab: React.FC<PasswordTabProps> = ({
   passwordForm,
@@ -32,97 +27,105 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
   error,
 }) => {
   return (
-    <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="mb-10 text-center">
-        <h2 className="text-xl font-bold text-white ">Security settings</h2>
-        <p className="text-sm text-white/40 mt-2 max-w-sm mx-auto">
-          Ensure your account remains secure by using a strong, unique password.
+    <div className="max-w-2xl mx-auto">
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold text-white tracking-tight">
+          Security Settings
+        </h2>
+        <p className="text-sm text-white/40 mt-1.5 font-medium">
+          Manage your account password and security preferences.
         </p>
       </div>
 
+      <SectionLabel title="Change Password" />
       <ProfileCard>
         <div className="p-8 space-y-8">
-          {/* Current password */}
-          <div>
-            <label className="text-[10px] font-bold text-purple-300/60 uppercase block mb-3">
-              Current authentication
+          {/* current password */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+              Current Password
             </label>
             <input
               type="password"
               name="currentPassword"
               value={passwordForm.currentPassword}
               onChange={onPasswordChange}
-              placeholder="••••••••••••"
+              placeholder="Enter current password"
               className={inputStyles.password}
             />
           </div>
 
-          <div className="h-px bg-white/10" />
+          <div className="h-px bg-white/5 mx-[-2rem]" />
 
-          {/* New password */}
+          {/* new password fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <label className="text-[10px] font-bold text-purple-300/60 uppercase block mb-3">
-                New credentials
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+                New Password
               </label>
               <input
                 type="password"
                 name="newPassword"
                 value={passwordForm.newPassword}
                 onChange={onPasswordChange}
-                placeholder="••••••••••••"
+                placeholder="New password"
                 className={inputStyles.password}
               />
-              <p className="text-[10px] text-white/30 mt-3 font-medium leading-relaxed">
-                Requirements: 8+ characters, including uppercase, lowercase,
-                numbers, and symbols.
+              <p className="text-[10px] text-white/20 mt-2 ml-1 leading-relaxed font-medium">
+                Min. 8 characters • Uppercase • Lowercase • Numbers
               </p>
             </div>
 
-            <div>
-              <label className="text-[10px] font-bold text-purple-300/60 tracking-[0.2em] uppercase block mb-3">
-                Verify credentials
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+                Confirm New Password
               </label>
               <input
                 type="password"
                 name="confirmPassword"
                 value={passwordForm.confirmPassword}
                 onChange={onPasswordChange}
-                placeholder="••••••••••••"
+                placeholder="Confirm password"
                 className={inputStyles.password}
               />
             </div>
           </div>
 
-          {/* Error Message */}
+          {/* error */}
           {error && (
-            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl animate-in shake-in duration-300">
-              <p className="text-red-400 text-sm font-medium text-center">
+            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+              <p className="text-red-400 text-xs font-bold uppercase tracking-wide">
+                Error
+              </p>
+              <p className="text-red-400/80 text-sm mt-0.5 font-medium">
                 {error}
               </p>
             </div>
           )}
 
-          {/* Actions */}
+          {/* actions */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <button
               onClick={onSubmit}
               disabled={isLoading}
-              className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:bg-purple-600/50 disabled:cursor-not-allowed text-white px-8 py-3.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg shadow-purple-900/20 flex items-center justify-center gap-3"
+              className="flex-1 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3.5 rounded-2xl text-sm font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg shadow-purple-500/20 active:scale-[0.98]"
             >
               {isLoading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Processing...
+                  Processing
                 </>
               ) : (
-                "Update security key"
+                <>
+                  <MdLock size={18} />
+                  Update Password
+                </>
               )}
             </button>
             <button
               onClick={onCancel}
               disabled={isLoading}
-              className="px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white transition-all bg-white/5 hover:bg-white/10 rounded-xl border border-white/10"
+              className="px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all"
             >
               Cancel
             </button>

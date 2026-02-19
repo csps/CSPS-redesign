@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { IconUser, IconLock, IconChevronLeft } from "./Icons";
 
 /**
@@ -13,13 +14,7 @@ interface ProfileSidebarProps {
 }
 
 /**
- * Sidebar component for the Profile page.
- *
- * Provides navigation between different profile sections and a back button.
- * Adheres to the modern UI layout without emojis.
- *
- * @param {ProfileSidebarProps} props - Component properties
- * @returns {JSX.Element} The rendered sidebar
+ * Sidebar navigation for the profile page.
  */
 const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
   activeTab,
@@ -32,42 +27,46 @@ const ProfileSidebar: React.FC<ProfileSidebarProps> = ({
   ] as const;
 
   return (
-    <aside className="w-full md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-white/10 bg-[#242050]">
-      {/* Back button */}
-      <div className="p-8 pb-4">
+    <aside className="w-full md:w-64 flex-shrink-0">
+      {/* back button */}
+      <div className="px-6 pt-10 pb-6">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-white/40 hover:text-white transition-all group"
+          className="flex items-center gap-3 text-white/40 hover:text-white transition-all group"
         >
-          <IconChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-          <span className="text-[10px] font-bold uppercase">Return</span>
+          <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+            <IconChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest">
+            Back
+          </span>
         </button>
       </div>
 
-      {/* Nav links */}
-      <nav className="p-4 flex flex-row md:flex-col gap-2">
+      {/* navigation */}
+      <nav className="px-4 pb-4 flex flex-row md:flex-col gap-2">
         {navItems.map((item) => {
           const active = activeTab === item.id;
           return (
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`flex items-center gap-4 w-full px-5 py-4 rounded-2xl text-[11px] font-bold uppercase transition-all duration-300 ${
+              className={`relative flex items-center gap-4 w-full px-6 py-4 rounded-2xl text-sm font-bold transition-all overflow-hidden ${
                 active
-                  ? "bg-purple-600/10 text-purple-400 border border-purple-500/20 shadow-[0_0_20px_rgba(147,51,234,0.05)]"
-                  : "text-white/30 hover:text-white hover:bg-white/5"
+                  ? "bg-purple-600/10 text-purple-400 border border-purple-500/20"
+                  : "text-white/40 hover:text-white hover:bg-white/5 border border-transparent"
               }`}
             >
-              <item.icon
-                className={`w-4 h-4 transition-colors duration-300 ${
-                  active ? "text-purple-400" : "text-white/20"
-                }`}
-              />
-              <span>{item.label}</span>
-              {/* Active pill indicator */}
               {active && (
-                <div className="ml-auto w-1 h-4 rounded-full bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.6)]" />
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute left-0 w-1 h-6 bg-purple-500 rounded-r-full"
+                />
               )}
+              <item.icon
+                className={`w-5 h-5 ${active ? "text-purple-400" : "text-white/20"}`}
+              />
+              <span className="tracking-wide">{item.label}</span>
             </button>
           );
         })}
