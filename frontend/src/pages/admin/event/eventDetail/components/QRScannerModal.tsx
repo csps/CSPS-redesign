@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
-import { checkInToSession } from "../../../../api/eventParticipation";
-import type { AttendanceRecordResponse } from "../../../../interfaces/event/AttendanceRecordResponse";
+import { checkInToSession } from "../../../../../api/eventParticipation";
+import type { AttendanceRecordResponse } from "../../../../../interfaces/event/AttendanceRecordResponse";
 
 interface QRScannerModalProps {
   sessionId: number;

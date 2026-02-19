@@ -8,9 +8,9 @@ import {
   MdPlayArrow,
   MdDoneAll,
 } from "react-icons/md";
-import type { EventSessionResponse } from "../../../../interfaces/event/EventSessionResponse";
-import type { AttendanceRecordResponse } from "../../../../interfaces/event/AttendanceRecordResponse";
-import { formatTimeRange } from "../../../../helper/dateUtils";
+import type { EventSessionResponse } from "../../../../../interfaces/event/EventSessionResponse";
+import type { AttendanceRecordResponse } from "../../../../../interfaces/event/AttendanceRecordResponse";
+import { formatTimeRange } from "../../../../../helper/dateUtils";
 
 interface ViewAttendanceModalProps {
   isOpen: boolean;
@@ -264,7 +264,10 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                                 },
                               )}
                             </div>
-                            <MdCheckCircle className="text-green-500/50" size={14} />
+                            <MdCheckCircle
+                              className="text-green-500/50"
+                              size={14}
+                            />
                           </div>
                         </div>
                       ))}
