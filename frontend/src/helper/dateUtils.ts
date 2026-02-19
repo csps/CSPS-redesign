@@ -9,6 +9,7 @@ export const formatDate = (dateString: string) => {
 };
 
 export const formatTimeRange = (startTime: string, endTime: string): string => {
+  if (!startTime || !endTime) return "";
   const to12Hour = (time: string): string => {
     let [hours, minutes] = time.split(":").map(Number);
     const period = hours >= 12 ? "PM" : "AM";
