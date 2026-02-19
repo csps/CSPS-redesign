@@ -76,10 +76,10 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative w-full max-w-lg bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden flex flex-col"
+            className="relative w-full max-w-lg bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-gray-800/30">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-gray-800/30 rounded-t-[32px]">
               <h2 className="text-xl font-bold text-white">Add Session</h2>
               <button
                 onClick={onClose}
@@ -92,7 +92,7 @@ const AddSessionModal: React.FC<AddSessionModalProps> = ({
             {/* Content */}
             <form
               onSubmit={handleSubmit}
-              className="p-6 space-y-5 bg-gray-900/50"
+              className="p-6 space-y-5 bg-gray-900/50 rounded-b-[32px]"
             >
               <div>
                 <label className="block text-xs font-bold uppercase tracking-widest mb-2 px-1 text-white/50">
