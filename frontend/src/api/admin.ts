@@ -19,6 +19,7 @@ export interface UserResponseDTO {
  * Admin response structure
  */
 export interface AdminResponseDTO {
+  adminId: number;
   position: AdminPosition;
   user: UserResponseDTO;
 }
@@ -68,11 +69,21 @@ export const grantAdminAccess = async (
  * @param adminId - The admin ID to revoke access from
  * @returns Promise<AdminResponseDTO> - The deleted admin record
  * @throws AdminNotFoundException - If admin doesn't exist
- * @security Requires DEVELOPER role
+ * @security Requires ADMIN_EXECUTIVE role
  */
 export const revokeAdminAccess = async (adminId: number): Promise<AdminResponseDTO> => {
   const response = await api.delete<{ data: AdminResponseDTO }>(
     `/admin/revoke-access/${adminId}`
   );
+  return response.data.data;
+};
+
+/**
+ * Get all admins.
+ * Endpoint: GET /api/admin/all
+ * @security Requires ADMIN_EXECUTIVE role
+ */
+export const getAllAdmins = async (): Promise<AdminResponseDTO[]> => {
+  const response = await api.get<{ data: AdminResponseDTO[] }>("/admin/all");
   return response.data.data;
 };

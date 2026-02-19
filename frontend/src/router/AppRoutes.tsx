@@ -22,6 +22,7 @@ import BulletinPage from "../pages/bulletin";
 // Admin
 import AdminDashboardPage from "../pages/admin/dashboard";
 import AdminEventPage from "../pages/admin/event/page";
+import AdminEventDetailPage from "../pages/admin/event/eventDetail";
 import AdminProductsPage from "../pages/admin/products";
 
 import AdminMerchPage from "../pages/admin/student";
@@ -37,6 +38,7 @@ import { PublicRoute } from "./PublicRoute";
 import AdminMerchProductView from "../pages/admin/merch/productView";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LandingPage from "../pages/landing";
+import StaffPage from "../pages/admin/staff";
 
 // Home route component - redirects authenticated users to appropriate dashboard
 const HomeRoute = () => {
@@ -96,6 +98,7 @@ const routers = [
       { path: "/admin/dashboard", element: <AdminDashboardPage /> },
       { path: "/admin/profile", element: <ProfilePage /> },
       { path: "/admin/event", element: <AdminEventPage /> },
+      { path: "/admin/event/:id", element: <AdminEventDetailPage /> },
       { path: "/admin/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
       { path: "/admin/sales", element: <AdminSalesPage /> },
@@ -103,6 +106,7 @@ const routers = [
       { path: "/admin/students", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
       { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
+      { path: "/admin/staff", element: <StaffPage /> },
     ],
   },
 
