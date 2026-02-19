@@ -3,6 +3,7 @@ import type {
   EventUpdateRequest,
 } from "../interfaces/event/EventRequest";
 import type { EventResponse } from "../interfaces/event/EventResponse";
+import type { PaginatedResponse } from "../interfaces/paginated";
 import api from "./api";
 
 const EVENTS = "event";
@@ -30,8 +31,10 @@ export const getAllEvents = async (): Promise<EventResponse[]> => {
  */
 export const getEventById = async (id: number): Promise<EventResponse> => {
   try {
-    const response = await api.get<EventResponse>(`${EVENTS}/${id}`);
-    return response.data;
+    const response = await api.get<{ data: EventResponse }>(`${EVENTS}/${id}`);
+    // handle both wrapped and unwrapped responses
+    const raw = response.data as any;
+    return raw.data ? raw.data : raw;
   } catch (err) {
     console.error(`Error fetching event ${id}:`, err);
     throw err;
@@ -92,14 +95,18 @@ export const createEvent = async (
       formData.append("eventImage", image);
     }
 
-    const response = await api.post<EventResponse>(`${EVENTS}/add`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await api.post<{ data: EventResponse }>(
+      `${EVENTS}/add`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
 
     console.log(`RESPONSE: ${response}`);
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error("Error creating event:", err);
 
@@ -123,12 +130,16 @@ export const updateEvent = async (
       formData.append("eventImage", image);
     }
 
-    const response = await api.put<EventResponse>(`${EVENTS}/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const response = await api.put<{ data: EventResponse }>(
+      `${EVENTS}/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
-    return response.data;
+    );
+    return response.data.data;
   } catch (err) {
     console.error(`Error updating event ${id}:`, err);
     throw err;
@@ -151,7 +162,7 @@ export const patchEvent = async (
       formData.append("eventImage", image);
     }
 
-    const response = await api.patch<EventResponse>(
+    const response = await api.patch<{ data: EventResponse }>(
       `${EVENTS}/${id}`,
       formData,
       {
@@ -160,7 +171,7 @@ export const patchEvent = async (
         },
       },
     );
-    return response.data;
+    return response.data.data;
   } catch (err) {
     console.error(`Error patching event ${id}:`, err);
     throw err;
@@ -227,6 +238,42 @@ export const getPastEvents = async (): Promise<EventResponse[]> => {
   }
 };
 
+/**
+ * Get student's event history (attended/registered events)
+ * Endpoint: GET /api/event/my-history
+ */
+export const getMyEventHistory = async (
+  page: number = 0,
+  size: number = 5,
+  sort?: string,
+): Promise<PaginatedResponse<EventResponse>> => {
+  try {
+    const params: Record<string, string | number> = { page, size };
+    if (sort) params.sort = sort;
+    const response = await api.get<{ data: PaginatedResponse<EventResponse> }>(
+      `${EVENTS}/my-history`,
+      { params },
+    );
+    return response.data.data;
+  } catch (err: any) {
+    if (err.response?.status === 404) {
+      return {
+        totalPages: 0,
+        totalElements: 0,
+        number: 0,
+        size,
+        numberOfElements: 0,
+        last: true,
+        first: true,
+        empty: true,
+        content: [],
+      };
+    }
+    console.error("Error fetching event history:", err);
+    throw err;
+  }
+};
+
 export default {
   getAllEvents,
   getEventById,
@@ -238,4 +285,6 @@ export default {
   deleteEvent,
   getUpcomingEvents,
   getEventByMonth,
+  getPastEvents,
+  getMyEventHistory,
 };
