@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "../../../../components/Layout";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
@@ -6,11 +6,13 @@ import { getEventById } from "../../../../api/event";
 import {
   getEventSessions,
   getSessionAttendance,
+  searchAttendanceRecords,
   updateSessionStatus,
 } from "../../../../api/eventParticipation";
 import type { EventResponse } from "../../../../interfaces/event/EventResponse";
 import type { EventSessionResponse } from "../../../../interfaces/event/EventSessionResponse";
 import type { AttendanceRecordResponse } from "../../../../interfaces/event/AttendanceRecordResponse";
+import type { AttendanceRecordSearchDTO } from "../../../../interfaces/event/AttendanceRecordSearchDTO";
 import QRScannerModal from "./components/QRScannerModal";
 import ViewAttendanceModal from "./components/ViewAttendanceModal";
 import EventHeader from "./components/EventHeader";
@@ -72,10 +74,27 @@ const AdminEventDetailPage = () => {
     await fetchSessionAttendance(sessionId);
   };
 
-  const handleViewAttendanceClick = async (session: EventSessionResponse) => {
+  const handleSearch = useCallback(
+    async (params: AttendanceRecordSearchDTO) => {
+      try {
+        const results = await searchAttendanceRecords(params);
+        if (params.sessionId) {
+          setSessionAttendance((prev) => ({
+            ...prev,
+            [params.sessionId!]: results,
+          }));
+        }
+      } catch (err) {
+        console.error("Search failed", err);
+      }
+    },
+    [],
+  );
+
+  const handleViewAttendanceClick = (session: EventSessionResponse) => {
     setSelectedSession(session);
     setViewAttendanceOpen(true);
-    await fetchSessionAttendance(session.sessionId);
+    // Modal will trigger initial search on mount
   };
 
   const handleScanClick = async (session: EventSessionResponse) => {
@@ -84,25 +103,28 @@ const AdminEventDetailPage = () => {
     await fetchSessionAttendance(session.sessionId);
   };
 
-  const handleStatusChange = async (
-    sessionId: number,
-    status: "PENDING" | "ACTIVE" | "COMPLETED",
-  ) => {
-    try {
-      const updatedSession = await updateSessionStatus(sessionId, status);
-      setSessions((prev) =>
-        prev.map((s) => (s.sessionId === sessionId ? updatedSession : s)),
-      );
+  const handleStatusChange = useCallback(
+    async (
+      sessionId: number,
+      status: "PENDING" | "ACTIVE" | "COMPLETED",
+    ) => {
+      try {
+        const updatedSession = await updateSessionStatus(sessionId, status);
+        setSessions((prev) =>
+          prev.map((s) => (s.sessionId === sessionId ? updatedSession : s)),
+        );
 
-      // update selected session if it's the one being modified
-      if (selectedSession?.sessionId === sessionId) {
-        setSelectedSession(updatedSession);
+        // update selected session if it's the one being modified
+        if (selectedSession?.sessionId === sessionId) {
+          setSelectedSession(updatedSession);
+        }
+      } catch (error) {
+        console.error("Failed to update status:", error);
+        // You might want to show a toast here
       }
-    } catch (error) {
-      console.error("Failed to update status:", error);
-      // You might want to show a toast here
-    }
-  };
+    },
+    [selectedSession?.sessionId],
+  );
 
   if (loading) {
     return (
@@ -185,6 +207,7 @@ const AdminEventDetailPage = () => {
           session={selectedSession}
           attendance={sessionAttendance[selectedSession.sessionId] || []}
           onStatusChange={handleStatusChange}
+          onSearch={handleSearch}
         />
       )}
     </Layout>

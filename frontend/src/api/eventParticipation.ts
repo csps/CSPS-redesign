@@ -2,6 +2,8 @@ import type { EventParticipantResponse } from "../interfaces/event/EventParticip
 import type { EventSessionResponse } from "../interfaces/event/EventSessionResponse";
 import type { AttendanceRecordResponse } from "../interfaces/event/AttendanceRecordResponse";
 import type { EventSessionRequest } from "../interfaces/event/EventSessionRequest";
+import type { AttendanceRecordSearchDTO } from "../interfaces/event/AttendanceRecordSearchDTO";
+import type { PaginatedResponse } from "../interfaces/paginated";
 import api from "./api";
 
 const EVENTS = "event";
@@ -169,15 +171,36 @@ export const updateSessionStatus = async (
 // get attendance list for a session (admin)
 export const getSessionAttendance = async (
   sessionId: number,
+  page: number = 0,
+  size: number = 1000,
 ): Promise<AttendanceRecordResponse[]> => {
   try {
-    const response = await api.get<{ data: AttendanceRecordResponse[] }>(
+    const response = await api.get<{ data: PaginatedResponse<AttendanceRecordResponse> }>(
       `${EVENTS}/session/${sessionId}/attendance`,
+      { params: { page, size } },
     );
-    return response.data.data;
+    return response.data.data.content || [];
   } catch (err: any) {
     if (err.response?.status === 404) return [];
     console.error(`Error fetching attendance for session ${sessionId}:`, err);
+    throw err;
+  }
+};
+
+// search attendance records (admin)
+export const searchAttendanceRecords = async (
+  searchDto: AttendanceRecordSearchDTO,
+  page: number = 0,
+  size: number = 1000,
+): Promise<AttendanceRecordResponse[]> => {
+  try {
+    const response = await api.get<{ data: PaginatedResponse<AttendanceRecordResponse> }>(
+      `${EVENTS}/attendance/search`,
+      { params: { ...searchDto, page, size } },
+    );
+    return response.data.data.content || [];
+  } catch (err) {
+    console.error("Error searching attendance:", err);
     throw err;
   }
 };
@@ -224,6 +247,7 @@ export default {
   createEventSession,
   updateSessionStatus,
   getSessionAttendance,
+  searchAttendanceRecords,
   getSessionAttendanceCount,
   removeParticipant,
 };

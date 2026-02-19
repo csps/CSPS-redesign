@@ -8,7 +8,9 @@ import {
 } from "react-icons/md";
 import type { EventSessionResponse } from "../../../../../interfaces/event/EventSessionResponse";
 import type { AttendanceRecordResponse } from "../../../../../interfaces/event/AttendanceRecordResponse";
+import type { AttendanceRecordSearchDTO } from "../../../../../interfaces/event/AttendanceRecordSearchDTO";
 import { formatTimeRange } from "../../../../../helper/dateUtils";
+import { DatePicker } from "../../../../../components/DatePicker";
 
 interface ViewAttendanceModalProps {
   isOpen: boolean;
@@ -19,6 +21,7 @@ interface ViewAttendanceModalProps {
     sessionId: number,
     status: "PENDING" | "ACTIVE" | "COMPLETED",
   ) => Promise<void>;
+  onSearch: (params: AttendanceRecordSearchDTO) => void;
 }
 
 const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
@@ -27,24 +30,27 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
   session,
   attendance,
   onStatusChange,
+  onSearch,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [filteredAttendance, setFilteredAttendance] = useState<
-    AttendanceRecordResponse[]
-  >([]);
 
-  // Ensure attendance is always an array to prevent "filter is not a function" error
-  const safeAttendance = Array.isArray(attendance) ? attendance : [];
+  // Ensure attendance is always an array
+  const displayAttendance = Array.isArray(attendance) ? attendance : [];
 
   useEffect(() => {
-    const filtered = safeAttendance.filter(
-      (record) =>
-        record.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        record.studentId.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-    setFilteredAttendance(filtered);
-  }, [attendance, searchTerm]);
+    const timer = setTimeout(() => {
+      onSearch({
+        sessionId: session?.sessionId,
+        studentName: searchTerm,
+        startDate: startDate ? `${startDate}T00:00:00` : undefined,
+        endDate: endDate ? `${endDate}T23:59:59` : undefined,
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm, startDate, endDate, onSearch, session?.sessionId]);
 
   if (!isOpen || !session) return null;
 
@@ -52,7 +58,6 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
     e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     const newStatus = e.target.value as "PENDING" | "ACTIVE" | "COMPLETED";
-    // Prevent change if already completed or currently updating
     if (isUpdatingStatus || session.sessionStatus === "COMPLETED") return;
 
     setIsUpdatingStatus(true);
@@ -91,10 +96,10 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative w-full max-w-2xl bg-[#170657] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            className="relative w-full max-w-2xl bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
           >
             {/* Header */}
-            <div className="flex flex-col gap-4 px-6 py-5 border-b border-white/5 bg-white/[0.02]">
+            <div className="flex flex-col gap-4 px-6 py-5 border-b border-white/5 bg-gray-800/30">
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-white">
@@ -115,7 +120,6 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
 
               {/* Controls Bar */}
               <div className="flex items-center justify-between gap-4">
-                {/* Status Dropdown */}
                 <div className="relative">
                   <select
                     value={session.sessionStatus}
@@ -133,19 +137,19 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                   >
                     <option
                       value="PENDING"
-                      className="bg-[#170657] text-yellow-400"
+                      className="bg-[#111827] text-yellow-400"
                     >
                       PENDING
                     </option>
                     <option
                       value="ACTIVE"
-                      className="bg-[#170657] text-green-400"
+                      className="bg-[#111827] text-green-400"
                     >
                       ACTIVE
                     </option>
                     <option
                       value="COMPLETED"
-                      className="bg-[#170657] text-blue-400"
+                      className="bg-[#111827] text-blue-400"
                     >
                       COMPLETED
                     </option>
@@ -161,10 +165,9 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                   />
                 </div>
 
-                {/* Stats */}
                 <div className="text-xs text-white/50">
                   <strong className="text-white">
-                    {safeAttendance.length}
+                    {displayAttendance.length}
                   </strong>{" "}
                   Checked In
                 </div>
@@ -172,9 +175,9 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 flex flex-col min-h-0 bg-white/[0.01]">
-              {/* Search */}
-              <div className="p-4 border-b border-white/5">
+            <div className="flex-1 flex flex-col min-h-0 bg-gray-900/50">
+              {/* Search & Filters */}
+              <div className="p-4 border-b border-white/5 space-y-4">
                 <div className="relative">
                   <MdSearch
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30"
@@ -182,17 +185,32 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                   />
                   <input
                     type="text"
-                    placeholder="Search student name or ID..."
+                    placeholder="Search student..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full bg-white/5 border border-white/5 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-white/20 focus:outline-none focus:border-white/20 transition-colors"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <DatePicker
+                    label="From"
+                    value={startDate}
+                    onChange={setStartDate}
+                    placeholder="Start Date"
+                  />
+                  <DatePicker
+                    label="To"
+                    value={endDate}
+                    onChange={setEndDate}
+                    placeholder="End Date"
                   />
                 </div>
               </div>
 
               {/* List */}
               <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
-                {filteredAttendance.length === 0 ? (
+                {displayAttendance.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-white/30 py-10">
                     <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3">
                       <MdSearch size={24} />
@@ -201,7 +219,7 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    {filteredAttendance.map((record) => (
+                    {displayAttendance.map((record) => (
                       <div
                         key={record.attendanceId}
                         className="group flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors border border-transparent hover:border-white/5"
