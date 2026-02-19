@@ -39,6 +39,7 @@ import AdminMerchProductView from "../pages/admin/merch/productView";
 import ProfilePage from "../pages/profile/ProfilePage";
 import LandingPage from "../pages/landing";
 import StaffPage from "../pages/admin/staff";
+import AuditPage from "../pages/admin/audit";
 
 // Home route component - redirects authenticated users to appropriate dashboard
 const HomeRoute = () => {
@@ -107,6 +108,7 @@ const routers = [
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
       { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
       { path: "/admin/staff", element: <StaffPage /> },
+      { path: "/admin/audit", element: <AuditPage /> },
     ],
   },
 
