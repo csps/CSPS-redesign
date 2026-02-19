@@ -11,8 +11,8 @@ import {
 import type { EventResponse } from "../../../../interfaces/event/EventResponse";
 import type { EventSessionResponse } from "../../../../interfaces/event/EventSessionResponse";
 import type { AttendanceRecordResponse } from "../../../../interfaces/event/AttendanceRecordResponse";
-import QRScannerModal from "./QRScannerModal";
-import ViewAttendanceModal from "./ViewAttendanceModal";
+import QRScannerModal from "./components/QRScannerModal";
+import ViewAttendanceModal from "./components/ViewAttendanceModal";
 import EventHeader from "./components/EventHeader";
 import SessionList from "./components/SessionList";
 
@@ -46,19 +46,6 @@ const AdminEventDetailPage = () => {
 
         const sessionsData = await getEventSessions(eventId);
         setSessions(sessionsData);
-
-        // Load attendance for each session
-        const attendanceData: Record<number, AttendanceRecordResponse[]> = {};
-        for (const session of sessionsData) {
-          try {
-            attendanceData[session.sessionId] = await getSessionAttendance(
-              session.sessionId,
-            );
-          } catch {
-            attendanceData[session.sessionId] = [];
-          }
-        }
-        setSessionAttendance(attendanceData);
       } catch {
         navigate("/admin/event");
       } finally {
@@ -69,16 +56,32 @@ const AdminEventDetailPage = () => {
     loadData();
   }, [eventId, navigate]);
 
-  const handleQRScanned = async (sessionId: number) => {
+  const fetchSessionAttendance = async (sessionId: number) => {
     try {
       const attendance = await getSessionAttendance(sessionId);
       setSessionAttendance((prev) => ({
         ...prev,
         [sessionId]: attendance,
       }));
-    } catch {
-      // Silently fail
+    } catch (err) {
+      console.error(`Failed to fetch attendance for session ${sessionId}`, err);
     }
+  };
+
+  const handleQRScanned = async (sessionId: number) => {
+    await fetchSessionAttendance(sessionId);
+  };
+
+  const handleViewAttendanceClick = async (session: EventSessionResponse) => {
+    setSelectedSession(session);
+    setViewAttendanceOpen(true);
+    await fetchSessionAttendance(session.sessionId);
+  };
+
+  const handleScanClick = async (session: EventSessionResponse) => {
+    setSelectedSession(session);
+    setScannerOpen(true);
+    await fetchSessionAttendance(session.sessionId);
   };
 
   const handleStatusChange = async (
@@ -139,10 +142,8 @@ const AdminEventDetailPage = () => {
         Back
       </button>
 
-      {/* Event Header */}
       <EventHeader event={event} />
 
-      {/* Description */}
       {event.eventDescription && (
         <div className="border border-white/5 rounded-xl bg-white/[0.02] p-5 mb-8">
           <h2 className="text-xs font-semibold text-white/40 tracking-widest uppercase mb-3">
@@ -154,21 +155,12 @@ const AdminEventDetailPage = () => {
         </div>
       )}
 
-      {/* Sessions List */}
       <SessionList
         sessions={sessions}
-        sessionAttendance={sessionAttendance}
-        onScan={(session) => {
-          setSelectedSession(session);
-          setScannerOpen(true);
-        }}
-        onViewAttendance={(session) => {
-          setSelectedSession(session);
-          setViewAttendanceOpen(true);
-        }}
+        onScan={handleScanClick}
+        onViewAttendance={handleViewAttendanceClick}
       />
 
-      {/* QR Scanner Modal */}
       {scannerOpen && selectedSession && (
         <QRScannerModal
           sessionId={selectedSession.sessionId}
@@ -183,7 +175,6 @@ const AdminEventDetailPage = () => {
         />
       )}
 
-      {/* View Attendance Modal */}
       {viewAttendanceOpen && selectedSession && (
         <ViewAttendanceModal
           isOpen={viewAttendanceOpen}

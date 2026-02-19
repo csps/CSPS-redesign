@@ -1,18 +1,15 @@
 import React from "react";
 import type { EventSessionResponse } from "../../../../../interfaces/event/EventSessionResponse";
-import type { AttendanceRecordResponse } from "../../../../../interfaces/event/AttendanceRecordResponse";
 import { formatTimeRange } from "../../../../../helper/dateUtils";
 
 interface SessionListProps {
   sessions: EventSessionResponse[];
-  sessionAttendance: Record<number, AttendanceRecordResponse[]>;
   onScan: (session: EventSessionResponse) => void;
   onViewAttendance: (session: EventSessionResponse) => void;
 }
 
 const SessionList: React.FC<SessionListProps> = ({
   sessions,
-  sessionAttendance,
   onScan,
   onViewAttendance,
 }) => {
@@ -31,7 +28,6 @@ const SessionList: React.FC<SessionListProps> = ({
       ) : (
         <div className="space-y-3">
           {sessions.map((session) => {
-            const attendance = sessionAttendance[session.sessionId] || [];
             return (
               <div
                 key={session.sessionId}
@@ -60,7 +56,6 @@ const SessionList: React.FC<SessionListProps> = ({
                       <span>
                         {formatTimeRange(session.startTime, session.endTime)}
                       </span>
-                      <span>{attendance.length} checked in</span>
                     </div>
                   </div>
 
@@ -79,32 +74,6 @@ const SessionList: React.FC<SessionListProps> = ({
                     </button>
                   </div>
                 </div>
-
-                {/* Attendance Preview (Optional - removed to simplify as we have View Attendance) */}
-                {/* But keeping recent check-ins if wanted, but maybe redundant with View Attendance Modal */}
-                {/* Let's keep a small preview for quick glance */}
-                {attendance.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-white/5">
-                    <p className="text-xs font-semibold text-white/40 mb-2">
-                      Recent Check-ins
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {attendance.slice(0, 5).map((record) => (
-                        <div
-                          key={record.attendanceId}
-                          className="flex items-center gap-2 text-xs text-white/50 px-2 py-1 bg-white/5 rounded-lg border border-white/5"
-                        >
-                          <span>{record.studentName}</span>
-                        </div>
-                      ))}
-                      {attendance.length > 5 && (
-                        <span className="text-xs text-white/30 px-2 py-1">
-                          +{attendance.length - 5} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
