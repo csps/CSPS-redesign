@@ -1,4 +1,5 @@
 import React from "react";
+import { MdAdd } from "react-icons/md";
 import type { EventSessionResponse } from "../../../../../interfaces/event/EventSessionResponse";
 import { formatTimeRange } from "../../../../../helper/dateUtils";
 
@@ -6,12 +7,14 @@ interface SessionListProps {
   sessions: EventSessionResponse[];
   onScan: (session: EventSessionResponse) => void;
   onViewAttendance: (session: EventSessionResponse) => void;
+  onAddSession: () => void;
 }
 
 const SessionList: React.FC<SessionListProps> = ({
   sessions,
   onScan,
   onViewAttendance,
+  onAddSession,
 }) => {
   return (
     <div className="mb-8">
@@ -19,11 +22,24 @@ const SessionList: React.FC<SessionListProps> = ({
         <h2 className="text-xs font-semibold text-white/40 tracking-widest uppercase">
           Sessions ({sessions.length})
         </h2>
+        <button
+          onClick={onAddSession}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FDE006] hover:brightness-110 text-black text-xs font-bold transition-all shadow-lg shadow-yellow-500/10"
+        >
+          <MdAdd size={14} />
+          Add Session
+        </button>
       </div>
 
       {sessions.length === 0 ? (
         <div className="border border-white/5 rounded-xl bg-white/[0.02] p-8 text-center">
-          <p className="text-white/50 text-sm">No sessions created yet</p>
+          <p className="text-white/50 text-sm mb-4">No sessions created yet</p>
+          <button
+            onClick={onAddSession}
+            className="text-purple-400 hover:text-purple-300 text-sm font-semibold transition-colors"
+          >
+            Create your first session
+          </button>
         </div>
       ) : (
         <div className="space-y-3">

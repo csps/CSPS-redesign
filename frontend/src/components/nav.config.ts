@@ -78,12 +78,17 @@ export const getAuthenticatedNavbar = (
   if (isExecutive) {
     // Executives get full access to everything (including Finance as a separate nav item)
     const financeItem: NavItem = { name: "Finance", icon: HOME, to: "/admin/finance" };
+    const staffItem: NavItem = { name: "Staff", icon: STUDENT, to: "/admin/staff" };
+    const auditItem: NavItem = { name: "Audit Logs", icon: BULLETIN, to: "/admin/audit" };
+
     return [
       ...baseItems,
       eventsItem,
       studentsItem,
+      staffItem,
       financeItem,
       salesItem,
+      auditItem,
     ];
   }
 

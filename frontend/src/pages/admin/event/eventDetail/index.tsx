@@ -15,6 +15,7 @@ import type { AttendanceRecordResponse } from "../../../../interfaces/event/Atte
 import type { AttendanceRecordSearchDTO } from "../../../../interfaces/event/AttendanceRecordSearchDTO";
 import QRScannerModal from "./components/QRScannerModal";
 import ViewAttendanceModal from "./components/ViewAttendanceModal";
+import AddSessionModal from "./components/AddSessionModal";
 import EventHeader from "./components/EventHeader";
 import SessionList from "./components/SessionList";
 
@@ -33,6 +34,7 @@ const AdminEventDetailPage = () => {
     useState<EventSessionResponse | null>(null);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [viewAttendanceOpen, setViewAttendanceOpen] = useState(false);
+  const [addSessionOpen, setAddSessionOpen] = useState(false);
 
   useEffect(() => {
     if (!eventId || isNaN(eventId)) {
@@ -101,6 +103,15 @@ const AdminEventDetailPage = () => {
     setSelectedSession(session);
     setScannerOpen(true);
     await fetchSessionAttendance(session.sessionId);
+  };
+
+  const handleSessionAdded = async () => {
+    try {
+      const sessionsData = await getEventSessions(eventId);
+      setSessions(sessionsData);
+    } catch (err) {
+      console.error("Failed to refresh sessions", err);
+    }
   };
 
   const handleStatusChange = useCallback(
@@ -181,6 +192,7 @@ const AdminEventDetailPage = () => {
         sessions={sessions}
         onScan={handleScanClick}
         onViewAttendance={handleViewAttendanceClick}
+        onAddSession={() => setAddSessionOpen(true)}
       />
 
       {scannerOpen && selectedSession && (
@@ -208,6 +220,15 @@ const AdminEventDetailPage = () => {
           attendance={sessionAttendance[selectedSession.sessionId] || []}
           onStatusChange={handleStatusChange}
           onSearch={handleSearch}
+        />
+      )}
+
+      {addSessionOpen && (
+        <AddSessionModal
+          isOpen={addSessionOpen}
+          onClose={() => setAddSessionOpen(false)}
+          eventId={eventId}
+          onSessionAdded={handleSessionAdded}
         />
       )}
     </Layout>
