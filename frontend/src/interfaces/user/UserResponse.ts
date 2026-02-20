@@ -13,4 +13,5 @@ export interface UserResponse {
   role: UserRole;
   position?: AdminPosition; // Admin position for role-based access
   isVerified?: boolean;
+  isProfileComplete?: boolean; // Profile completion status
 }
