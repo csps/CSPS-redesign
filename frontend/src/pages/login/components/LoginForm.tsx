@@ -196,16 +196,6 @@ const LoginForm = () => {
         >
           Forgot Password?
         </Link>
-        <div className="flex items-center gap-2">
-          <input
-            id="CheckBox"
-            type="checkbox"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            className="w-5 h-5 accent-purple-500"
-          />
-        </div>
       </div>
       <div className="w-full px-2 sm:px-10">
         <button
