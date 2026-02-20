@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import Footer from "../../../components/Footer";
 import { PurchaseCard } from "./components/PurchaseCard";
 import { PurchaseFilter } from "./components/PurchaseFilter";
 import Pagination from "./components/Pagination";
@@ -192,7 +191,6 @@ const Index = () => {
             </div>
           )}
       </div>
-      <Footer />
     </Layout>
   );
 };

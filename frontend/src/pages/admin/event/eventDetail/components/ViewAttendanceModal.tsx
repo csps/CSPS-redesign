@@ -35,7 +35,6 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [studentId, setStudentId] = useState("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -63,15 +62,13 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
 
   if (!isOpen || !session) return null;
 
-  const handleStatusChangeClick = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
+  const handleStatusChangeClick = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value as "PENDING" | "ACTIVE" | "COMPLETED";
     if (session.sessionStatus === "COMPLETED") return;
 
     // Reset select to current status
     e.currentTarget.value = session.sessionStatus;
-    
+
     // Open confirmation modal
     setConfirmModal({ isOpen: true, newStatus });
   };
@@ -114,94 +111,94 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
-                    <motion.div
-                      initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                      animate={{ scale: 1, opacity: 1, y: 0 }}
-                      exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="relative w-full max-w-2xl bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl flex flex-col max-h-[85vh]"
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="relative w-full max-w-2xl bg-[#111827] border border-white/10 rounded-[32px] shadow-2xl flex flex-col max-h-[85vh]"
+          >
+            {/* Header */}
+            <div className="flex flex-col gap-4 px-6 py-5 border-b border-white/5 bg-gray-800/30 rounded-t-[32px]">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-white">
+                    {session.sessionName}
+                  </h2>
+                  <p className="text-white/50 text-xs font-medium mt-1">
+                    {session.sessionDate} •{" "}
+                    {formatTimeRange(session.startTime, session.endTime)}
+                  </p>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+                >
+                  <MdOutlineClose size={20} />
+                </button>
+              </div>
+
+              {/* Controls Bar */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="relative">
+                  <select
+                    value={session.sessionStatus}
+                    onChange={handleStatusChangeClick}
+                    disabled={
+                      session.sessionStatus === "COMPLETED" || isUpdatingStatus
+                    }
+                    className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-xs font-bold border outline-none cursor-pointer transition-all ${getStatusColor(
+                      session.sessionStatus,
+                    )} ${
+                      session.sessionStatus === "COMPLETED"
+                        ? "opacity-70 cursor-not-allowed"
+                        : "hover:bg-white/5"
+                    }`}
+                  >
+                    <option
+                      value="PENDING"
+                      className="bg-[#111827] text-yellow-400"
                     >
-                      {/* Header */}
-                      <div className="flex flex-col gap-4 px-6 py-5 border-b border-white/5 bg-gray-800/30 rounded-t-[32px]">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h2 className="text-xl font-bold text-white">
-                              {session.sessionName}
-                            </h2>
-                            <p className="text-white/50 text-xs font-medium mt-1">
-                              {session.sessionDate} •{" "}
-                              {formatTimeRange(session.startTime, session.endTime)}
-                            </p>
-                          </div>
-                          <button
-                            onClick={onClose}
-                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
-                          >
-                            <MdOutlineClose size={20} />
-                          </button>
-                        </div>
-          
-                        {/* Controls Bar */}
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="relative">
-                            <select
-                              value={session.sessionStatus}
-                              onChange={handleStatusChangeClick}
-                              disabled={
-                                session.sessionStatus === "COMPLETED" || isUpdatingStatus
-                              }
-                              className={`appearance-none pl-3 pr-8 py-1.5 rounded-lg text-xs font-bold border outline-none cursor-pointer transition-all ${getStatusColor(
-                                session.sessionStatus,
-                              )} ${
-                                session.sessionStatus === "COMPLETED"
-                                  ? "opacity-70 cursor-not-allowed"
-                                  : "hover:bg-white/5"
-                              }`}
-                            >
-                              <option
-                                value="PENDING"
-                                className="bg-[#111827] text-yellow-400"
-                              >
-                                PENDING
-                              </option>
-                              <option
-                                value="ACTIVE"
-                                className="bg-[#111827] text-green-400"
-                              >
-                                ACTIVE
-                              </option>
-                              <option
-                                value="COMPLETED"
-                                className="bg-[#111827] text-blue-400"
-                              >
-                                COMPLETED
-                              </option>
-                            </select>
-                            <MdKeyboardArrowDown
-                              className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${
-                                session.sessionStatus === "ACTIVE"
-                                  ? "text-green-400"
-                                  : session.sessionStatus === "COMPLETED"
-                                    ? "text-blue-400"
-                                    : "text-yellow-400"
-                              }`}
-                            />
-                          </div>
-          
-                          <div className="text-xs text-white/50">
-                            <strong className="text-white">
-                              {displayAttendance.length}
-                            </strong>{" "}
-                            Checked In
-                          </div>
-                        </div>
-                      </div>
-          
-                      {/* Content Area */}
-                      <div className="flex-1 flex flex-col min-h-0 bg-gray-900/50 rounded-b-[32px]">
-                        {/* Search & Filters */}
-                        <div className="p-4 border-b border-white/5 space-y-4">
-                          <div className="relative">
+                      PENDING
+                    </option>
+                    <option
+                      value="ACTIVE"
+                      className="bg-[#111827] text-green-400"
+                    >
+                      ACTIVE
+                    </option>
+                    <option
+                      value="COMPLETED"
+                      className="bg-[#111827] text-blue-400"
+                    >
+                      COMPLETED
+                    </option>
+                  </select>
+                  <MdKeyboardArrowDown
+                    className={`absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${
+                      session.sessionStatus === "ACTIVE"
+                        ? "text-green-400"
+                        : session.sessionStatus === "COMPLETED"
+                          ? "text-blue-400"
+                          : "text-yellow-400"
+                    }`}
+                  />
+                </div>
+
+                <div className="text-xs text-white/50">
+                  <strong className="text-white">
+                    {displayAttendance.length}
+                  </strong>{" "}
+                  Checked In
+                </div>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 flex flex-col min-h-0 bg-gray-900/50 rounded-b-[32px]">
+              {/* Search & Filters */}
+              <div className="p-4 border-b border-white/5 space-y-4">
+                <div className="relative">
                   <MdSearch
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30"
                     size={18}
@@ -217,7 +214,9 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-white/50 mb-1.5">From</label>
+                    <label className="block text-xs text-white/50 mb-1.5">
+                      From
+                    </label>
                     <input
                       type="date"
                       value={startDate}
@@ -226,7 +225,9 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-white/50 mb-1.5">To</label>
+                    <label className="block text-xs text-white/50 mb-1.5">
+                      To
+                    </label>
                     <input
                       type="date"
                       value={endDate}
@@ -297,7 +298,9 @@ const ViewAttendanceModal: React.FC<ViewAttendanceModalProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                onClick={() => setConfirmModal({ isOpen: false, newStatus: null })}
+                onClick={() =>
+                  setConfirmModal({ isOpen: false, newStatus: null })
+                }
               >
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0 }}

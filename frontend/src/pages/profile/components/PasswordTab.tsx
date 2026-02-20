@@ -1,6 +1,6 @@
 import React from "react";
 import { ProfileCard, inputStyles, SectionLabel } from "./ProfileUIElements";
-import { MdLock, MdArrowForward } from "react-icons/md";
+import { MdLock } from "react-icons/md";
 
 interface PasswordTabProps {
   passwordForm: {

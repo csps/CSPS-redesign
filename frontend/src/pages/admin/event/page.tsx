@@ -174,7 +174,6 @@ const RecentEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null,
   );
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {

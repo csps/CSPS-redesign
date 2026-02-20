@@ -5,7 +5,6 @@ import {
   SectionLabel,
   inputStyles,
 } from "./ProfileUIElements";
-import { IconPencil, IconX } from "./Icons";
 import { FiAlertTriangle } from "react-icons/fi";
 import { MdCheck } from "react-icons/md";
 
@@ -40,7 +39,6 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
   studentId,
   isEditing,
   isVerified = true,
-  setIsEditing,
   onFieldChange,
   onSave,
   onDiscard,
@@ -60,31 +58,7 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
       <div className="space-y-10">
         {/* personal info */}
         <div>
-          <SectionLabel
-            title="Personal"
-            action={
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-xl border transition-all ${
-                  isEditing
-                    ? "border-red-500/30 text-red-400 hover:bg-red-500/10"
-                    : "border-white/10 text-white/40 hover:text-white hover:bg-white/5 hover:border-white/20"
-                }`}
-              >
-                {isEditing ? (
-                  <>
-                    <IconX className="w-3.5 h-3.5" />
-                    Cancel
-                  </>
-                ) : (
-                  <>
-                    <IconPencil className="w-3.5 h-3.5" />
-                    Edit
-                  </>
-                )}
-              </button>
-            }
-          />
+          <SectionLabel title="Personal" />
 
           <ProfileCard>
             <DetailRow
@@ -225,15 +199,6 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
             <DetailRow
               label="Full name"
               value={`${formData.firstName} ${formData.lastName}`}
-            />
-            <DetailRow
-              label="Membership"
-              value={
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
-                  Active Member
-                </span>
-              }
-              isLast
             />
           </ProfileCard>
         </div>
