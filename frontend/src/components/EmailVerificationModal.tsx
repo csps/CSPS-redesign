@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { FiX, FiMail } from "react-icons/fi";
 import {
   sendVerificationCode,
   verifyEmailCode,
@@ -16,13 +15,12 @@ interface EmailVerificationModalProps {
 /**
  * Email Verification Modal — 6-digit OTP input.
  *
- * Inspired by modern verification UIs, styled to match
- * the project's deep-purple color scheme.
+ * Minimalist design matching ProfileCompletionModal.
  */
 const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   isOpen,
   email,
-  onClose,
+  // onClose,
   onVerified,
 }) => {
   const CODE_LENGTH = 6;
@@ -188,104 +186,76 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
       <div className="bg-[#1a1a3e] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-8 max-w-md w-full animate-in zoom-in-95 duration-300 relative">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 flex items-center justify-center rounded-lg text-white/30 hover:text-white hover:bg-white/10 transition-all duration-150"
-        >
-          <FiX size={18} />
-        </button>
-
-        <div className="flex flex-col items-center text-center">
-          {/* Icon */}
-          <div className="w-16 h-16 bg-purple-500/15 rounded-full flex items-center justify-center mb-6 border border-purple-500/20">
-            <FiMail className="w-7 h-7 text-purple-400" />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-xl font-bold text-white mb-2 tracking-tight">
+        {/* Minimalist Header */}
+        <div className="flex flex-col items-center text-center mb-8">
+          <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
             Check your email
-          </h3>
-          <p className="text-white/40 text-sm font-medium leading-relaxed mb-1">
+          </h2>
+          <p className="text-white/60 text-sm font-medium leading-relaxed">
             Enter the verification code sent to
+            <br />
+            <span className="text-white font-semibold">{email}</span>
           </p>
-          <p className="text-white font-semibold text-sm mb-8">{email}</p>
+        </div>
 
-          {/* Divider */}
-          <div className="w-16 h-px bg-white/10 mb-8" />
+        {/* Code inputs */}
+        {codeSent ? (
+          <>
+            <div
+              className="flex justify-center gap-3 mb-8"
+              onPaste={handlePaste}
+            >
+              {code.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  disabled={isLoading}
+                  className={`w-12 h-14 text-center text-xl font-bold rounded-xl border transition-all duration-200 focus:outline-none bg-white/5 text-white caret-purple-400
+                    ${
+                      error
+                        ? "border-red-500/50 focus:border-red-400 bg-red-500/5"
+                        : digit
+                          ? "border-purple-500/50 focus:border-purple-400 shadow-sm shadow-purple-500/10"
+                          : "border-white/10 focus:border-purple-500/50 focus:bg-white/10"
+                    }
+                    ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+                />
+              ))}
+            </div>
 
-          {/* Code inputs */}
-          {codeSent ? (
-            <>
-              <div className="flex gap-3 mb-6" onPaste={handlePaste}>
-                {code.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => {
-                      inputRefs.current[index] = el;
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    disabled={isLoading}
-                    className={`w-12 h-14 text-center text-xl font-bold rounded-xl border transition-all duration-200 focus:outline-none bg-white/5 text-white caret-purple-400
-                      ${
-                        error
-                          ? "border-red-500/50 focus:border-red-400"
-                          : digit
-                            ? "border-purple-500/50 focus:border-purple-400 shadow-sm shadow-purple-500/10"
-                            : "border-white/10 focus:border-purple-500/50"
-                      }
-                      ${isLoading ? "opacity-50 cursor-not-allowed" : ""}
-                    `}
-                  />
-                ))}
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div className="mb-5 w-full">
-                  <p className="text-red-400 text-xs font-medium">{error}</p>
-                  {remainingAttempts !== null && (
-                    <p className="text-yellow-400/80 text-[10px] font-bold uppercase tracking-widest mt-1">
-                      {remainingAttempts} attempt
-                      {remainingAttempts !== 1 ? "s" : ""} remaining
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Resend code */}
-              <p className="text-white/30 text-sm mb-6">
-                Didn't get your code?{" "}
-                {resendCooldown > 0 ? (
-                  <span className="text-white/20 font-medium">
-                    Resend in {resendCooldown}s
-                  </span>
-                ) : (
-                  <button
-                    onClick={handleResend}
-                    disabled={isSending}
-                    className="text-purple-400 font-semibold hover:text-purple-300 transition-colors disabled:opacity-50"
-                  >
-                    {isSending ? "Sending..." : "Send a new code"}
-                  </button>
+            {/* Error message */}
+            {error && (
+              <div className="mb-6 text-center">
+                <p className="text-red-400 text-sm font-medium">{error}</p>
+                {remainingAttempts !== null && (
+                  <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-1">
+                    {remainingAttempts} attempt
+                    {remainingAttempts !== 1 ? "s" : ""} remaining
+                  </p>
                 )}
-              </p>
+              </div>
+            )}
 
-              {/* Verify button */}
+            {/* Actions */}
+            <div className="space-y-4">
               <button
                 onClick={() => {
                   const fullCode = code.join("");
                   if (fullCode.length === CODE_LENGTH) submitCode(fullCode);
                 }}
                 disabled={isLoading || code.join("").length !== CODE_LENGTH}
-                className="w-full bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed text-white py-3 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-purple-900/30"
+                className="w-full bg-purple-600 hover:bg-purple-500 disabled:bg-purple-800 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-purple-900/30 hover:shadow-purple-900/50 hover:-translate-y-0.5 active:translate-y-0"
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -293,36 +263,55 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
                     Verifying...
                   </span>
                 ) : (
-                  "Verify email"
+                  "Verify Email"
                 )}
               </button>
-            </>
-          ) : (
-            // Sending state
-            <div className="flex flex-col items-center py-4">
-              {isSending ? (
-                <>
-                  <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin mb-4" />
-                  <p className="text-white/40 text-sm font-medium">
-                    Sending verification code...
-                  </p>
-                </>
-              ) : error ? (
-                <>
-                  <p className="text-red-400 text-sm font-medium mb-4">
-                    {error}
-                  </p>
-                  <button
-                    onClick={handleSendCode}
-                    className="text-purple-400 font-semibold text-sm hover:text-purple-300 transition-colors"
-                  >
-                    Try again
-                  </button>
-                </>
-              ) : null}
+
+              <div className="text-center">
+                <p className="text-white/30 text-xs font-medium">
+                  Didn't receive the code?{" "}
+                  {resendCooldown > 0 ? (
+                    <span className="text-white/20">
+                      Resend in {resendCooldown}s
+                    </span>
+                  ) : (
+                    <button
+                      onClick={handleResend}
+                      disabled={isSending}
+                      className="text-purple-400 hover:text-purple-300 font-semibold transition-colors disabled:opacity-50"
+                    >
+                      {isSending ? "Sending..." : "Resend Code"}
+                    </button>
+                  )}
+                </p>
+              </div>
             </div>
-          )}
-        </div>
+          </>
+        ) : (
+          // Sending state
+          <div className="flex flex-col items-center py-8">
+            {isSending ? (
+              <>
+                <div className="w-12 h-12 border-4 border-white/10 border-t-purple-500 rounded-full animate-spin mb-4" />
+                <p className="text-white/40 text-sm font-medium">
+                  Sending verification code...
+                </p>
+              </>
+            ) : error ? (
+              <>
+                <p className="text-red-400 text-sm font-medium mb-4 text-center">
+                  {error}
+                </p>
+                <button
+                  onClick={handleSendCode}
+                  className="text-purple-400 font-semibold text-sm hover:text-purple-300 transition-colors"
+                >
+                  Try again
+                </button>
+              </>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import Footer from "../../components/Footer";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./components/AboutSection";
-import OfficersSection from "./components/OfficersSection";
-import VolunteersSection from "./components/VolunteersSection";
-import DevsSection from "./components/DevsSection";
+// import OfficersSection from "./components/OfficersSection";
+// import VolunteersSection from "./components/VolunteersSection";
+// import DevsSection from "./components/DevsSection";
 import CcsVisionMission from "./components/CcsVisionMission";
 import Navbar from "../../components/Navbar";
 import Layout from "../../components/Layout";
@@ -119,11 +119,11 @@ const Index = () => {
       <div className="min-h-screen w-full bg-black flex justify-center py-56">
         <div className="w-full max-w-[90rem] px-6 text-white">
           <AboutSection refer={aboutRef as React.RefObject<HTMLDivElement>} />
-          <OfficersSection
+          {/* <OfficersSection
             refer={peopleRef as React.RefObject<HTMLDivElement>}
-          />
-          <VolunteersSection />
-          <DevsSection />
+          /> */}
+          {/* <VolunteersSection />
+          <DevsSection /> */}
           <CcsVisionMission />
         </div>
       </div>
