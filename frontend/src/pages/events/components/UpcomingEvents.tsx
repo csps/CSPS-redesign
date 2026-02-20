@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getUpcomingEvents } from "../../../api/event";
+import { joinEvent, getMyJoinedEvents } from "../../../api/eventParticipation";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "./EventDetailModal";
@@ -9,19 +11,27 @@ import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 import { FaCalendarAlt, FaClock, FaArrowRight } from "react-icons/fa";
 
 const UpcomingEvents = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null,
   );
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [joining, setJoining] = useState(false);
+  const [joinedEventIds, setJoinedEventIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const data = await getUpcomingEvents();
+        const [data, myEvents] = await Promise.all([
+          getUpcomingEvents(),
+          getMyJoinedEvents().catch(() => []),
+        ]);
         setEvents(data);
+        const ids = new Set(myEvents.map((e) => e.eventId));
+        setJoinedEventIds(ids);
       } catch (err) {
         setEvents([]);
       } finally {
@@ -38,6 +48,27 @@ const UpcomingEvents = () => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         event={selectedEvent}
+        onJoin={async (eventId) => {
+          setJoining(true);
+          try {
+            await joinEvent(eventId);
+            setJoinedEventIds((prev) => new Set(prev).add(eventId));
+            setIsOpen(false);
+            navigate(`/events/view/${eventId}`);
+          } catch (err: any) {
+            if (err.response?.status === 409) {
+              setJoinedEventIds((prev) => new Set(prev).add(eventId));
+              setIsOpen(false);
+              navigate(`/events/view/${eventId}`);
+            }
+          } finally {
+            setJoining(false);
+          }
+        }}
+        isParticipant={
+          selectedEvent ? joinedEventIds.has(selectedEvent.eventId) : false
+        }
+        isJoining={joining}
       />
 
       {/* Section Header */}
@@ -68,14 +99,17 @@ const UpcomingEvents = () => {
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          
+
           <div className="relative z-10">
             <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center">
               <FaCalendarAlt className="text-white/30" size={32} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">No Upcoming Events</h3>
+            <h3 className="text-xl font-bold text-white mb-2">
+              No Upcoming Events
+            </h3>
             <p className="text-white/50 max-w-md mx-auto">
-              There are no upcoming events scheduled at the moment. Check back later for new announcements!
+              There are no upcoming events scheduled at the moment. Check back
+              later for new announcements!
             </p>
           </div>
         </div>
@@ -94,8 +128,12 @@ const UpcomingEvents = () => {
             >
               <div
                 onClick={() => {
-                  setSelectedEvent(event);
-                  setIsOpen(true);
+                  if (joinedEventIds.has(event.eventId)) {
+                    navigate(`/events/view/${event.eventId}`);
+                  } else {
+                    setSelectedEvent(event);
+                    setIsOpen(true);
+                  }
                 }}
                 className="group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300"
               >
@@ -107,24 +145,46 @@ const UpcomingEvents = () => {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
-                
+
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                
+
                 {/* Content */}
                 <div className="absolute inset-0 p-5 flex flex-col justify-end">
                   {/* Badge */}
-                  <div className="absolute top-4 left-4">
+                  <div className="absolute top-4 left-4 flex items-center gap-2">
                     <span className="px-3 py-1.5 bg-[#FDE006] text-black text-xs font-bold rounded-lg">
                       UPCOMING
                     </span>
                   </div>
-                  
+
+                  {/* Joined indicator */}
+                  {joinedEventIds.has(event.eventId) && (
+                    <div className="absolute top-4 right-4">
+                      <span className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold rounded-lg bg-green-500/15 text-green-400 border border-green-500/20">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        Joined
+                      </span>
+                    </div>
+                  )}
+
                   {/* Event Info */}
                   <h3 className="text-white font-bold text-lg mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
                     {event.eventName}
                   </h3>
-                  
+
                   <div className="flex flex-wrap items-center gap-3 text-white/70 text-sm">
                     <div className="flex items-center gap-1.5">
                       <FaCalendarAlt size={12} className="text-purple-400" />
@@ -132,7 +192,9 @@ const UpcomingEvents = () => {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <FaClock size={12} className="text-purple-400" />
-                      <span>{formatTimeRange(event.startTime, event.endTime)}</span>
+                      <span>
+                        {formatTimeRange(event.startTime, event.endTime)}
+                      </span>
                     </div>
                   </div>
                 </div>
