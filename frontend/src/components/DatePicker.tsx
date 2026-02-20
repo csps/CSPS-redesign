@@ -73,6 +73,7 @@ function Calendar({
   const [viewYear, setViewYear] = useState(initial.getFullYear());
   const [viewMonth, setViewMonth] = useState(initial.getMonth());
   const [hovered, setHovered] = useState<number | null>(null);
+  const [showYearPicker, setShowYearPicker] = useState(false);
 
   const selected = parseDate(value);
   const minD = parseDate(minDate ?? "");
@@ -149,104 +150,140 @@ function Calendar({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <button
-          onClick={prevMonth}
+          onClick={() => {
+            if (showYearPicker) setViewYear((y) => y - 20);
+            else prevMonth();
+          }}
           className="w-8 h-8 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
         >
           <FiChevronLeft size={16} />
         </button>
 
-        <div className="text-center">
+        <div
+          className="text-center cursor-pointer hover:bg-white/5 px-2 py-1 rounded-lg transition-colors"
+          onClick={() => setShowYearPicker(!showYearPicker)}
+        >
+          {!showYearPicker && (
+            <span
+              className="text-white font-semibold tracking-wide"
+              style={{ fontSize: "15px", letterSpacing: "0.02em" }}
+            >
+              {MONTHS[viewMonth]}
+            </span>
+          )}
           <span
-            className="text-white font-semibold tracking-wide"
-            style={{ fontSize: "15px", letterSpacing: "0.02em" }}
-          >
-            {MONTHS[viewMonth]}
-          </span>
-          <span
-            className="ml-2 font-light"
+            className={`${!showYearPicker ? "ml-2" : ""} font-light`}
             style={{ color: "rgba(167,139,250,0.8)", fontSize: "14px" }}
           >
-            {viewYear}
+            {showYearPicker ? `Select Year` : viewYear}
           </span>
         </div>
 
         <button
-          onClick={nextMonth}
+          onClick={() => {
+            if (showYearPicker) setViewYear((y) => y + 20);
+            else nextMonth();
+          }}
           className="w-8 h-8 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
         >
           <FiChevronRight size={16} />
         </button>
       </div>
 
-      {/* Day labels */}
-      <div className="grid grid-cols-7 px-3 pt-4 pb-1">
-        {DAYS.map((d) => (
-          <div
-            key={d}
-            className="text-center text-[10px] font-bold uppercase tracking-widest pb-2"
-            style={{ color: "rgba(139,92,246,0.6)" }}
-          >
-            {d}
+      {showYearPicker ? (
+        <div className="grid grid-cols-3 gap-2 p-4 h-[250px] overflow-y-auto custom-scrollbar">
+          {Array.from({ length: 100 }, (_, i) => today.getFullYear() - i).map(
+            (year) => (
+              <button
+                key={year}
+                onClick={() => {
+                  setViewYear(year);
+                  setShowYearPicker(false);
+                }}
+                className={`py-2 rounded-lg text-sm transition-all ${
+                  viewYear === year
+                    ? "bg-purple-600 text-white"
+                    : "text-white/60 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                {year}
+              </button>
+            ),
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Day labels */}
+          <div className="grid grid-cols-7 px-3 pt-4 pb-1">
+            {DAYS.map((d) => (
+              <div
+                key={d}
+                className="text-center text-[10px] font-bold uppercase tracking-widest pb-2"
+                style={{ color: "rgba(139,92,246,0.6)" }}
+              >
+                {d}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Day grid */}
-      <div className="grid grid-cols-7 px-3 pb-4 gap-y-1">
-        {cells.map((day, idx) => {
-          if (day === null) return <div key={idx} />;
+          {/* Day grid */}
+          <div className="grid grid-cols-7 px-3 pb-4 gap-y-1">
+            {cells.map((day, idx) => {
+              if (day === null) return <div key={idx} />;
 
-          const disabled = isDisabled(day);
-          const selected_ = isSelected(day);
-          const today_ = isToday(day);
-          const hovering = hovered === day && !disabled;
+              const disabled = isDisabled(day);
+              const selected_ = isSelected(day);
+              const today_ = isToday(day);
+              const hovering = hovered === day && !disabled;
 
-          return (
-            <button
-              key={idx}
-              onClick={() => selectDay(day)}
-              onMouseEnter={() => setHovered(day)}
-              onMouseLeave={() => setHovered(null)}
-              disabled={disabled}
-              className="relative flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-150"
-              style={{
-                height: "36px",
-                fontSize: "13px",
-                color: disabled
-                  ? "rgba(255,255,255,0.2)"
-                  : selected_
-                    ? "#fff"
-                    : today_
-                      ? "rgba(167,139,250,1)"
-                      : hovering
-                        ? "rgba(255,255,255,0.95)"
-                        : "rgba(255,255,255,0.7)",
-                background: selected_
-                  ? "linear-gradient(135deg, #7c3aed, #a855f7)"
-                  : hovering
-                    ? "rgba(139,92,246,0.2)"
-                    : "transparent",
-                boxShadow: selected_
-                  ? "0 4px 15px rgba(124,58,237,0.4)"
-                  : "none",
-                cursor: disabled ? "not-allowed" : "pointer",
-              }}
-            >
-              {day}
-              {today_ && !selected_ && (
-                <span
-                  className="absolute bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+              return (
+                <button
+                  key={idx}
+                  onClick={() => selectDay(day)}
+                  onMouseEnter={() => setHovered(day)}
+                  onMouseLeave={() => setHovered(null)}
+                  disabled={disabled}
+                  className="relative flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-150"
                   style={{
-                    width: "4px",
-                    height: "4px",
-                    background: "rgba(167,139,250,0.8)",
+                    height: "36px",
+                    fontSize: "13px",
+                    color: disabled
+                      ? "rgba(255,255,255,0.2)"
+                      : selected_
+                        ? "#fff"
+                        : today_
+                          ? "rgba(167,139,250,1)"
+                          : hovering
+                            ? "rgba(255,255,255,0.95)"
+                            : "rgba(255,255,255,0.7)",
+                    background: selected_
+                      ? "linear-gradient(135deg, #7c3aed, #a855f7)"
+                      : hovering
+                        ? "rgba(139,92,246,0.2)"
+                        : "transparent",
+                    boxShadow: selected_
+                      ? "0 4px 15px rgba(124,58,237,0.4)"
+                      : "none",
+                    cursor: disabled ? "not-allowed" : "pointer",
                   }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
+                >
+                  {day}
+                  {today_ && !selected_ && (
+                    <span
+                      className="absolute bottom-1 left-1/2 -translate-x-1/2 rounded-full"
+                      style={{
+                        width: "4px",
+                        height: "4px",
+                        background: "rgba(167,139,250,0.8)",
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {/* Quick shortcuts */}
       <div
@@ -327,10 +364,10 @@ export const DatePicker = ({
         style={{
           background: open
             ? "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.08))"
-            : "rgba(30,30,63,1)",
+            : "rgba(255,255,255,0.05)",
           border: open
             ? "1px solid rgba(139,92,246,0.5)"
-            : "1px solid rgba(255,255,255,0.08)",
+            : "1px solid rgba(255,255,255,0.1)",
           boxShadow: open
             ? "0 0 0 3px rgba(124,58,237,0.12), inset 0 1px 0 rgba(255,255,255,0.05)"
             : "none",
