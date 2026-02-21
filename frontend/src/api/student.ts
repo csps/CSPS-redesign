@@ -5,7 +5,10 @@ import type {
 } from "../interfaces/student/StudentResponse";
 import api from "./api";
 
-export const getStudents = async (paginationParams?: PaginationParams) => {
+export const getStudents = async (
+  paginationParams?: PaginationParams,
+  filters?: { search?: string; yearLevel?: string },
+) => {
   try {
     const params = new URLSearchParams();
 
@@ -15,6 +18,18 @@ export const getStudents = async (paginationParams?: PaginationParams) => {
       }
       if (paginationParams.size !== undefined) {
         params.append("size", paginationParams.size.toString());
+      }
+    }
+
+    if (filters?.search) {
+      params.append("search", filters.search);
+    }
+
+    if (filters?.yearLevel && filters.yearLevel !== "All") {
+      // Extract number from "1st Year" -> 1
+      const year = parseInt(filters.yearLevel);
+      if (!isNaN(year)) {
+        params.append("yearLevel", year.toString());
       }
     }
 
