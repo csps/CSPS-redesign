@@ -2,34 +2,43 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { getUpcomingEvents } from "../../../api/event";
-import { joinEvent, getMyJoinedEvents } from "../../../api/eventParticipation";
+import { getUpcomingEventsPaginated } from "../../../api/event";
+import { joinEvent, getMyJoinedEvents, isStudentJoinedEvent, leaveEvent } from "../../../api/eventParticipation";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "./EventDetailModal";
+import ViewAllEventsModal from "./ViewAllEventsModal";
 import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 import { FaCalendarAlt, FaClock, FaArrowRight } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const UpcomingEvents = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isViewAllOpen, setIsViewAllOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
     null,
   );
   const [events, setEvents] = useState<EventResponse[]>([]);
+  const [totalEvents, setTotalEvents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
   const [joinedEventIds, setJoinedEventIds] = useState<Set<number>>(new Set());
+  const [checkingJoin, setCheckingJoin] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const [data, myEvents] = await Promise.all([
-          getUpcomingEvents(),
+        // Fetch only first 5 events for the carousel
+        const [paginatedData, myEvents] = await Promise.all([
+          getUpcomingEventsPaginated(0, 5),
           getMyJoinedEvents().catch(() => []),
         ]);
-        setEvents(data);
+        
+        setEvents(paginatedData.content || []);
+        setTotalEvents(paginatedData.totalElements);
+        
         const ids = new Set(myEvents.map((e) => e.eventId));
         setJoinedEventIds(ids);
       } catch (err) {
@@ -42,6 +51,58 @@ const UpcomingEvents = () => {
     fetchEvents();
   }, []);
 
+  const handleJoinSuccess = (eventId: number) => {
+    setJoinedEventIds((prev) => new Set(prev).add(eventId));
+  };
+
+  const handleLeave = async (eventId: number) => {
+    try {
+      await leaveEvent(eventId);
+      setJoinedEventIds((prev) => {
+        const next = new Set(prev);
+        next.delete(eventId);
+        return next;
+      });
+      toast.success("Successfully left the event");
+      // Optional: close modal if open, but 'Leave' keeps user in context usually
+      // setIsOpen(false); 
+    } catch (error) {
+      console.error("Failed to leave event", error);
+      toast.error("Failed to leave event");
+    }
+  };
+
+  const handleEventClick = async (event: EventResponse) => {
+    if (joinedEventIds.has(event.eventId)) {
+      navigate(`/events/view/${event.eventId}`);
+      return;
+    }
+
+    setCheckingJoin((prev) => new Set(prev).add(event.eventId));
+    try {
+      const isJoined = await isStudentJoinedEvent(event.eventId);
+      
+      if (isJoined) {
+        setJoinedEventIds((prev) => new Set(prev).add(event.eventId));
+        navigate(`/events/view/${event.eventId}`);
+      } else {
+        setSelectedEvent(event);
+        setIsOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to check join status", error);
+      // Fallback: open modal if check fails
+      setSelectedEvent(event);
+      setIsOpen(true);
+    } finally {
+      setCheckingJoin((prev) => {
+        const next = new Set(prev);
+        next.delete(event.eventId);
+        return next;
+      });
+    }
+  };
+
   return (
     <div className="py-8">
       <EventDetailModal
@@ -52,12 +113,12 @@ const UpcomingEvents = () => {
           setJoining(true);
           try {
             await joinEvent(eventId);
-            setJoinedEventIds((prev) => new Set(prev).add(eventId));
+            handleJoinSuccess(eventId);
             setIsOpen(false);
             navigate(`/events/view/${eventId}`);
           } catch (err: any) {
             if (err.response?.status === 409) {
-              setJoinedEventIds((prev) => new Set(prev).add(eventId));
+              handleJoinSuccess(eventId);
               setIsOpen(false);
               navigate(`/events/view/${eventId}`);
             }
@@ -65,10 +126,18 @@ const UpcomingEvents = () => {
             setJoining(false);
           }
         }}
+        onLeave={handleLeave}
         isParticipant={
           selectedEvent ? joinedEventIds.has(selectedEvent.eventId) : false
         }
         isJoining={joining}
+      />
+
+      <ViewAllEventsModal
+        isOpen={isViewAllOpen}
+        onClose={() => setIsViewAllOpen(false)}
+        joinedEventIds={joinedEventIds}
+        onJoinSuccess={handleJoinSuccess}
       />
 
       {/* Section Header */}
@@ -81,8 +150,12 @@ const UpcomingEvents = () => {
             <p className="text-white/50 text-sm">Don't miss out on these!</p>
           </div>
         </div>
-        {events.length > 0 && (
-          <button className="hidden sm:flex items-center gap-2 text-purple-400 hover:text-purple-300 transition text-sm font-medium">
+        {/* Only show View All if total events >= 5 (or logic as requested) */}
+        {totalEvents >= 5 && (
+          <button 
+            onClick={() => setIsViewAllOpen(true)}
+            className="hidden sm:flex items-center gap-2 text-purple-400 hover:text-purple-300 transition text-sm font-medium"
+          >
             View All <FaArrowRight size={12} />
           </button>
         )}
@@ -127,15 +200,8 @@ const UpcomingEvents = () => {
               className="!w-[280px] sm:!w-[320px] md:!w-[360px] lg:!w-[400px]"
             >
               <div
-                onClick={() => {
-                  if (joinedEventIds.has(event.eventId)) {
-                    navigate(`/events/view/${event.eventId}`);
-                  } else {
-                    setSelectedEvent(event);
-                    setIsOpen(true);
-                  }
-                }}
-                className="group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300"
+                onClick={() => !checkingJoin.has(event.eventId) && handleEventClick(event)}
+                className={`group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300 ${checkingJoin.has(event.eventId) ? 'cursor-wait' : ''}`}
               >
                 {/* Image */}
                 {event.s3ImageKey && (
@@ -148,6 +214,13 @@ const UpcomingEvents = () => {
 
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+
+                {/* Checking Overlay */}
+                {checkingJoin.has(event.eventId) && (
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-20">
+                    <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  </div>
+                )}
 
                 {/* Content */}
                 <div className="absolute inset-0 p-5 flex flex-col justify-end">
