@@ -8,6 +8,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import type { MerchDetailedResponse } from "../../../interfaces/merch/MerchResponse";
 import { getMerchById } from "../../../api/merch";
 import { ClothingSizing } from "../../../enums/ClothingSizing";
+import { MerchType } from "../../../enums/MerchType";
 import type { CartItemRequest } from "../../../interfaces/cart/CartItemRequest";
 import type { CartItemResponse } from "../../../interfaces/cart/CartItemResponse";
 import { addCartItem } from "../../../api/cart";
@@ -353,32 +354,34 @@ const Index = () => {
                     </div>
                   )}
 
-                  {/* Quantity Selector */}
-                  <div className="space-y-4">
-                    <p className="text-[10px] font-bold text-white/40 uppercase">
-                      Quantity
-                    </p>
-                    <div className="flex items-center gap-6 bg-white/5 border border-white/10 w-fit rounded-2xl p-1.5">
-                      <button
-                        onClick={handleDecrement}
-                        className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
-                      >
-                        -
-                      </button>
-                      <input
-                        type="text"
-                        value={quantity}
-                        onChange={handleQuantityChange}
-                        className="w-8 text-center bg-transparent border-none outline-none font-bold text-lg"
-                      />
-                      <button
-                        onClick={handleIncrement}
-                        className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
-                      >
-                        +
-                      </button>
+                  {/* Quantity Selector - Only for MEMBERSHIP */}
+                  {merch?.merchType !== MerchType.MEMBERSHIP && (
+                    <div className="space-y-4">
+                      <p className="text-[10px] font-bold text-white/40 uppercase">
+                        Quantity
+                      </p>
+                      <div className="flex items-center gap-6 bg-white/5 border border-white/10 w-fit rounded-2xl p-1.5">
+                        <button
+                          onClick={handleDecrement}
+                          className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                        >
+                          -
+                        </button>
+                        <input
+                          type="text"
+                          value={quantity}
+                          onChange={handleQuantityChange}
+                          className="w-8 text-center bg-transparent border-none outline-none font-bold text-lg"
+                        />
+                        <button
+                          onClick={handleIncrement}
+                          className="w-10 h-10 flex items-center justify-center text-xl text-white/40 hover:text-white transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* CTA Group */}

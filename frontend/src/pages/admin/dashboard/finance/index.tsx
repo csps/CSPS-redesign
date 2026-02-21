@@ -204,7 +204,7 @@ const Index = () => {
           </div>
 
           {/* Charts Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
               <Chart
                 data={baseChartData.weeklyOrders}
@@ -219,16 +219,6 @@ const Index = () => {
                 labels={revenueData.labels}
                 title="Weekly Revenue"
                 value={revenueData.value}
-              />
-            </div>
-            <div className="bg-gradient-to-br from-[#0F033C] to-[#0a0226] border border-purple-500/20 rounded-xl p-5 shadow-lg shadow-purple-900/10 hover:border-purple-500/40 transition-all duration-300">
-              <Chart
-                data={baseChartData.weeklyOrders.map((v) =>
-                  Math.round(v * 0.85),
-                )}
-                labels={baseChartData.days}
-                title="Conversion Rate"
-                value={ordersCount > 0 ? "85%" : "0%"}
               />
             </div>
           </div>
