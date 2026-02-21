@@ -98,15 +98,10 @@ export const createEvent = async (
     const response = await api.post<{ data: EventResponse }>(
       `${EVENTS}/add`,
       formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
     );
 
-    console.log(`RESPONSE: ${response}`);
-    return response.data.data;
+    const raw = response.data as any;
+    return raw.data ? raw.data : raw;
   } catch (err) {
     console.error("Error creating event:", err);
 
@@ -133,13 +128,9 @@ export const updateEvent = async (
     const response = await api.put<{ data: EventResponse }>(
       `${EVENTS}/${id}`,
       formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
     );
-    return response.data.data;
+    const raw = response.data as any;
+    return raw.data ? raw.data : raw;
   } catch (err) {
     console.error(`Error updating event ${id}:`, err);
     throw err;
@@ -165,13 +156,9 @@ export const patchEvent = async (
     const response = await api.patch<{ data: EventResponse }>(
       `${EVENTS}/${id}`,
       formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
     );
-    return response.data.data;
+    const raw = response.data as any;
+    return raw.data ? raw.data : raw;
   } catch (err) {
     console.error(`Error patching event ${id}:`, err);
     throw err;
@@ -187,6 +174,89 @@ export const deleteEvent = async (id: number): Promise<void> => {
     await api.delete(`${EVENTS}/${id}`);
   } catch (err) {
     console.error(`Error deleting event ${id}:`, err);
+    throw err;
+  }
+};
+
+/**
+ * Get upcoming events with pagination.
+ * Endpoint: GET /api/event/upcoming?page={page}&size={size}&sort={sort}
+ */
+export const getUpcomingEventsPaginated = async (
+  page: number = 0,
+  size: number = 5,
+  sort?: string
+): Promise<PaginatedResponse<EventResponse>> => {
+  try {
+    const params: Record<string, string | number> = { page, size };
+    if (sort) params.sort = sort;
+    
+    const response = await api.get<{ data: PaginatedResponse<EventResponse> }>(
+      `${EVENTS}/upcoming`,
+      { params }
+    );
+    return response.data.data;
+  } catch (err: any) {
+    if (err.response?.status === 404) {
+      return {
+        totalPages: 0,
+        totalElements: 0,
+        number: 0,
+        size,
+        numberOfElements: 0,
+        last: true,
+        first: true,
+        empty: true,
+        content: [],
+      };
+    }
+    console.error("Error fetching paginated upcoming events:", err);
+    throw err;
+  }
+};
+
+/**
+ * Search events with pagination.
+ * Endpoint: GET /api/event/search?query={query}&startDate={startDate}&endDate={endDate}&page={page}&size={size}&sort={sort}
+ */
+export const searchEvent = async (
+  query: string,
+  startDate?: string,
+  endDate?: string,
+  page: number = 0,
+  size: number = 5,
+  sort?: string
+): Promise<PaginatedResponse<EventResponse>> => {
+  try {
+    const params: Record<string, string | number | undefined> = { 
+      query, 
+      startDate, 
+      endDate,
+      page, 
+      size 
+    };
+    if (sort) params.sort = sort;
+    
+    const response = await api.get<{ data: PaginatedResponse<EventResponse> }>(
+      `${EVENTS}/search`,
+      { params }
+    );
+    return response.data.data;
+  } catch (err: any) {
+    if (err.response?.status === 404) {
+      return {
+        totalPages: 0,
+        totalElements: 0,
+        number: 0,
+        size,
+        numberOfElements: 0,
+        last: true,
+        first: true,
+        empty: true,
+        content: [],
+      };
+    }
+    console.error("Error searching events:", err);
     throw err;
   }
 };

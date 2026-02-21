@@ -131,6 +131,19 @@ export const getMyJoinedEvents = async (): Promise<
   }
 };
 
+// check if student has joined a specific event
+export const isStudentJoinedEvent = async (eventId: number): Promise<boolean> => {
+  try {
+    const response = await api.get<{ data: boolean }>(
+      `${EVENTS}/${eventId}/is-joined`
+    );
+    return response.data.data;
+  } catch (err) {
+    console.error(`Error checking if joined event ${eventId}:`, err);
+    throw err;
+  }
+};
+
 // --- admin session management endpoints ---
 
 // create a new session for an event
