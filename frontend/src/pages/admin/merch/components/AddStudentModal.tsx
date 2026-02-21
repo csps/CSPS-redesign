@@ -153,28 +153,16 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ onClose }) => {
               </div>
             </div>
 
-            {/* Row 3: Email & Password */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="space-y-2">
-                <label className="text-white/80 text-sm pl-1">Email</label>
-                <input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  type="email"
-                  className="w-full bg-[#211a45] text-white px-4 py-3 rounded-xl border border-transparent focus:border-purple-500 outline-none transition"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-white/80 text-sm pl-1">Password</label>
-                <input
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  type="password"
-                  className="w-full bg-[#211a45] text-white px-4 py-3 rounded-xl border border-transparent focus:border-purple-500 outline-none transition"
-                />
-              </div>
+            {/* Row 3: Email */}
+            <div className="space-y-2">
+              <label className="text-white/80 text-sm pl-1">Email</label>
+              <input
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                type="email"
+                className="w-full bg-[#211a45] text-white px-4 py-3 rounded-xl border border-transparent focus:border-purple-500 outline-none transition"
+              />
             </div>
 
             {/* Row 4: Year Level & Contact */}
