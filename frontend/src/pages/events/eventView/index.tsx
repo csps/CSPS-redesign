@@ -4,10 +4,10 @@ import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { getEventById } from "../../../api/event";
 import {
-  joinEvent,
   leaveEvent,
   getEventSessions,
   getMyAttendance,
+  isStudentJoinedEvent,
 } from "../../../api/eventParticipation";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import type { EventSessionResponse } from "../../../interfaces/event/EventSessionResponse";
@@ -17,6 +17,7 @@ import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 import SessionList from "./components/SessionList";
 import AttendanceHistory from "./components/AttendanceHistory";
 import QRCodeModal from "./components/QRCodeModal";
+import LeaveEventModal from "../components/LeaveEventModal";
 
 const EventViewPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,9 +29,10 @@ const EventViewPage = () => {
   const [attendance, setAttendance] = useState<AttendanceRecordResponse[]>([]);
   const [isParticipant, setIsParticipant] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(false);
   const [leaving, setLeaving] = useState(false);
-  const [joinError, setJoinError] = useState<string | null>(null);
+
+  const [leaveModalOpen, setLeaveModalOpen] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   // QR modal state
   const [qrSession, setQrSession] = useState<EventSessionResponse | null>(null);
@@ -45,22 +47,33 @@ const EventViewPage = () => {
     const loadData = async () => {
       try {
         setLoading(true);
+
+        // 1. Check if joined
+        try {
+          const isJoined = await isStudentJoinedEvent(eventId);
+          if (!isJoined) {
+            setAccessDenied(true);
+            setLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.error("Failed to check join status", error);
+          setAccessDenied(true); // Assume not joined on error
+          setLoading(false);
+          return;
+        }
+
+        // 2. Load details (only if joined)
         const eventData = await getEventById(eventId);
         setEvent(eventData);
 
-        // try loading sessions and attendance to determine participation
-        try {
-          const [sessionsData, attendanceData] = await Promise.all([
-            getEventSessions(eventId),
-            getMyAttendance(eventId),
-          ]);
-          setSessions(sessionsData);
-          setAttendance(attendanceData);
-          setIsParticipant(true);
-        } catch {
-          // if sessions/attendance fail, student may not be a participant yet
-          setIsParticipant(false);
-        }
+        const [sessionsData, attendanceData] = await Promise.all([
+          getEventSessions(eventId),
+          getMyAttendance(eventId),
+        ]);
+        setSessions(sessionsData);
+        setAttendance(attendanceData);
+        setIsParticipant(true);
       } catch {
         navigate("/events");
       } finally {
@@ -71,37 +84,6 @@ const EventViewPage = () => {
     loadData();
   }, [eventId, navigate]);
 
-  // join event handler
-  const handleJoinEvent = async () => {
-    setJoining(true);
-    setJoinError(null);
-    try {
-      await joinEvent(eventId);
-      setIsParticipant(true);
-      const [sessionsData, attendanceData] = await Promise.all([
-        getEventSessions(eventId),
-        getMyAttendance(eventId),
-      ]);
-      setSessions(sessionsData);
-      setAttendance(attendanceData);
-    } catch (err: any) {
-      if (err.response?.status === 409) {
-        // already joined
-        setIsParticipant(true);
-        const [sessionsData, attendanceData] = await Promise.all([
-          getEventSessions(eventId),
-          getMyAttendance(eventId),
-        ]);
-        setSessions(sessionsData);
-        setAttendance(attendanceData);
-      } else {
-        setJoinError(err.response?.data?.message || "Failed to join event");
-      }
-    } finally {
-      setJoining(false);
-    }
-  };
-
   // leave event handler
   const handleLeaveEvent = async () => {
     setLeaving(true);
@@ -110,12 +92,52 @@ const EventViewPage = () => {
       setIsParticipant(false);
       setSessions([]);
       setAttendance([]);
+
+      navigate("/events");
     } catch {
       // silent fail
     } finally {
       setLeaving(false);
     }
   };
+
+  if (accessDenied) {
+    return (
+      <Layout>
+        <AuthenticatedNav />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+          <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+            <svg
+              className="w-10 h-10 text-white/30"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-3">
+            You aren't registered
+          </h2>
+          <p className="text-white/50 max-w-md mb-8 text-sm">
+            This event page is exclusive to registered participants. Join the
+            event from the events list to access details.
+          </p>
+          <button
+            onClick={() => navigate("/events")}
+            className="px-8 py-3 bg-[#FDE006] hover:brightness-110 text-black font-bold rounded-xl transition-all shadow-lg shadow-yellow-500/10"
+          >
+            Browse Events
+          </button>
+        </div>
+      </Layout>
+    );
+  }
 
   if (loading) {
     return (
@@ -133,6 +155,13 @@ const EventViewPage = () => {
   return (
     <Layout>
       <AuthenticatedNav />
+
+      <LeaveEventModal
+        isOpen={leaveModalOpen}
+        onClose={() => setLeaveModalOpen(false)}
+        onConfirm={handleLeaveEvent}
+        eventName={event.eventName}
+      />
 
       {/* back button */}
       <button
@@ -248,37 +277,13 @@ const EventViewPage = () => {
         </div>
       )}
 
-      {/* join section */}
-      {!isParticipant && (
-        <div className="border border-white/10 rounded-lg xs:rounded-xl bg-white/[0.03] p-3 xs:p-4 sm:p-6 md:p-8 text-center mb-4 xs:mb-5 sm:mb-6 md:mb-8">
-          <h3 className="text-base xs:text-lg sm:text-lg font-bold text-white mb-1 xs:mb-2">
-            Join this event
-          </h3>
-          <p className="text-white/50 text-xs xs:text-sm mb-3 xs:mb-4 sm:mb-6 max-w-md mx-auto px-2">
-            Register to access sessions and your QR code
-          </p>
-          {joinError && (
-            <p className="text-red-400 text-xs sm:text-sm mb-3 xs:mb-4">
-              {joinError}
-            </p>
-          )}
-          <button
-            onClick={handleJoinEvent}
-            disabled={joining}
-            className="bg-purple-600 hover:bg-purple-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-2.5 sm:py-3 rounded-lg xs:rounded-xl text-xs sm:text-sm font-bold transition-colors w-full xs:w-auto"
-          >
-            {joining ? "Joining..." : "Join Event"}
-          </button>
-        </div>
-      )}
-
       {/* sessions and attendance (participants only) */}
       {isParticipant && (
         <>
           {/* leave event */}
           <div className="flex justify-end mb-3 xs:mb-4">
             <button
-              onClick={handleLeaveEvent}
+              onClick={() => setLeaveModalOpen(true)}
               disabled={leaving}
               className="text-red-400/70 hover:text-red-400 disabled:opacity-50 text-xs xs:text-sm font-medium transition-colors"
             >
