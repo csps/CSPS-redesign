@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import SearchFilter from "../../merch/components/SearchFilter"; // <--- Import the new component
 import type { StudentResponse } from "../../../../interfaces/student/StudentResponse";
@@ -30,6 +29,8 @@ const StudentTable = ({
   totalElements,
   onPageChange,
   onStudentClick,
+  onSearch,
+  onFilterYear,
 }: {
   students: StudentResponse[];
   currentPage: number;
@@ -37,13 +38,11 @@ const StudentTable = ({
   totalElements: number;
   onPageChange: (page: number) => void;
   onStudentClick?: (student: StudentResponse) => void;
+  onSearch: (query: string) => void;
+  onFilterYear: (year: string) => void;
 }) => {
-  // --- STATE ---
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedYear, setSelectedYear] = useState("All");
-
   // --- TRANSFORM DATA ---
-  const allStudents = students.map((student) => ({
+  const currentStudents = students.map((student) => ({
     id: student.studentId,
     last: student.user.lastName,
     first: student.user.firstName,
@@ -51,25 +50,8 @@ const StudentTable = ({
     email: student.user.email,
     year: `${student.yearLevel}${student.yearLevel === 1 ? "st" : student.yearLevel === 2 ? "nd" : student.yearLevel === 3 ? "rd" : "th"}`,
     adminPosition: student.adminPosition,
+    original: student,
   }));
-
-  // --- FILTERING LOGIC ---
-  const filteredStudents = useMemo(() => {
-    return allStudents.filter((student) => {
-      const matchesSearch =
-        student.last.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.first.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.id.includes(searchQuery);
-
-      const matchesYear =
-        selectedYear === "All" || student.year === selectedYear;
-
-      return matchesSearch && matchesYear;
-    });
-  }, [searchQuery, selectedYear, allStudents]);
-
-  // Since data is server-paginated, currentStudents is filteredStudents
-  const currentStudents = filteredStudents;
 
   // Pagination Helper (Dots Logic)
   const getPaginationGroup = () => {
@@ -92,8 +74,8 @@ const StudentTable = ({
     <div className="bg-[#110e31] border border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full min-h-[600px]">
       {/* --- NEW SEARCH FILTER COMPONENT --- */}
       <SearchFilter
-        onSearch={(query) => setSearchQuery(query)}
-        onFilterYear={(year) => setSelectedYear(year)}
+        onSearch={onSearch}
+        onFilterYear={onFilterYear}
       />
 
       {/* Table */}
@@ -122,7 +104,7 @@ const StudentTable = ({
               currentStudents.map((student, index) => (
                 <tr
                   key={index}
-                  onClick={() => onStudentClick?.(students[index])}
+                  onClick={() => onStudentClick?.(student.original)}
                   className={`hover:bg-white/5 transition-colors group cursor-pointer ${student.adminPosition ? "bg-purple-500/5" : ""}`}
                 >
                   <td className="px-6 py-4">
@@ -168,7 +150,7 @@ const StudentTable = ({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onStudentClick?.(students[index]);
+                          onStudentClick?.(student.original);
                         }}
                         className="bg-[#FDE006] hover:bg-[#8f6ad0] text-black h-8 px-4 rounded-lg flex items-center justify-center transition text-xs font-medium"
                       >

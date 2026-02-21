@@ -17,10 +17,21 @@ const StudentsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
 
-  const fetchStudents = async (page: number) => {
+  // Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [yearFilter, setYearFilter] = useState("All");
+
+  const fetchStudents = async (
+    page: number,
+    search: string = searchQuery,
+    year: string = yearFilter,
+  ) => {
     setLoading(true);
     try {
-      const response = await getStudents({ page: page - 1, size: 7 });
+      const response = await getStudents(
+        { page: page - 1, size: 7 },
+        { search, yearLevel: year },
+      );
 
       setStudents(response.content);
       setTotalPages(response.totalPages);
@@ -41,8 +52,59 @@ const StudentsPage = () => {
     fetchStudents(page);
   };
 
-  const handleExportCSV = () => {
-    // Export logic here
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+    fetchStudents(1, query, yearFilter);
+  };
+
+  const handleFilterYear = (year: string) => {
+    setYearFilter(year);
+    setCurrentPage(1);
+    fetchStudents(1, searchQuery, year);
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      // Fetch all students (large size)
+      const response = await getStudents(
+        { page: 0, size: 10000 },
+        { search: searchQuery, yearLevel: yearFilter },
+      );
+      const data = response.content;
+
+      // Convert to CSV
+      const headers = [
+        "Student ID",
+        "Last Name",
+        "First Name",
+        "Email",
+        "Year Level",
+        "Position",
+      ];
+      const rows = data.map((s) => [
+        s.studentId,
+        s.user.lastName,
+        s.user.firstName,
+        s.user.email,
+        s.yearLevel,
+        s.adminPosition || "N/A",
+      ]);
+
+      const csvContent =
+        "data:text/csv;charset=utf-8," +
+        [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "students.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Export failed", error);
+    }
   };
 
   const handleStudentClick = (student: StudentResponse) => {
@@ -91,6 +153,8 @@ const StudentsPage = () => {
               totalElements={totalElements}
               onPageChange={handlePageChange}
               onStudentClick={handleStudentClick}
+              onSearch={handleSearch}
+              onFilterYear={handleFilterYear}
             />
           )}
         </div>
