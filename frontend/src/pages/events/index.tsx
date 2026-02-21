@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Layout from "../../components/Layout";
-import MyEvents from "./components/MyEvents";
 import EventHistoryModal from "./components/EventHistory";
 import RecentEvents from "./components/RecentEvents";
 import UpcomingEvents from "./components/UpcomingEvents";
@@ -21,11 +20,11 @@ const Index = () => {
               Explore Events
             </h1>
             <p className="text-white/40 text-sm md:text-base font-medium max-w-xl">
-              Stay connected with the community through our latest workshops, 
+              Stay connected with the community through our latest workshops,
               seminars, and social gatherings.
             </p>
           </div>
-          
+
           <button
             onClick={() => setHistoryOpen(true)}
             className="flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-white px-6 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all border border-white/10 backdrop-blur-sm shrink-0 active:scale-95 self-start md:self-center shadow-xl"
@@ -46,7 +45,6 @@ const Index = () => {
 
         {/* Sections */}
         <div className="space-y-12 pb-24">
-          <MyEvents />
           <UpcomingEvents />
           <RecentEvents />
         </div>
