@@ -14,6 +14,7 @@ interface CardStackProps {
   cardOffsetX?: number;
   cardOffsetY?: number;
   scaleFactor?: number;
+  onCardClick?: (card: Card) => void;
 }
 
 export const CardStack: React.FC<CardStackProps> = ({
@@ -23,6 +24,7 @@ export const CardStack: React.FC<CardStackProps> = ({
   cardOffsetX = 100,
   cardOffsetY = 0,
   scaleFactor = 0.05,
+  onCardClick,
 }) => {
   const [cards, setCards] = useState<Card[]>(initialCards);
   const [windowSize, setWindowSize] = useState({ width: 800, height: 600 });
@@ -98,7 +100,9 @@ export const CardStack: React.FC<CardStackProps> = ({
   const handleDragEnd = () => {
     const swipeThreshold = windowSize.width < 768 ? -60 : -100;
 
-    if (dragOffset.x < swipeThreshold) {
+    if (dragOffset.x === 0 && onCardClick) {
+      onCardClick(cards[0]);
+    } else if (dragOffset.x < swipeThreshold) {
       // swipe out left
       setCards((prev) => moveArray([...prev], 0, prev.length - 1));
     }
