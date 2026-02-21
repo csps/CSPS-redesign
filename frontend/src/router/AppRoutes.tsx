@@ -103,6 +103,7 @@ const routers = [
       { path: "/admin/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
       { path: "/admin/sales", element: <AdminSalesPage /> },
+      // { path: "/admin/bulletin", element: <AdminBulletinPage /> },
       // { path: "/admin/forum", element: <AdminForumPage /> },
       { path: "/admin/students", element: <AdminMerchPage /> },
       { path: "/admin/merch/orders", element: <AdminMercheOrdersPage /> },
