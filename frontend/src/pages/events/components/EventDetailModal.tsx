@@ -5,12 +5,14 @@ import { MdOutlineClose } from "react-icons/md";
 import CSPS_IMAGE from "../../../assets/logos/csps_logo 1.png";
 import { formatTimeRange, parseEventDate } from "../../../helper/dateUtils";
 import { motion } from "framer-motion";
+import LeaveEventModal from "./LeaveEventModal";
 
 interface EventDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   event: EventResponse | null;
   onJoin?: (eventId: number) => void;
+  onLeave?: (eventId: number) => void;
   isParticipant?: boolean;
   isJoining?: boolean;
 }
@@ -20,9 +22,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({
   onClose,
   event,
   onJoin,
+  onLeave,
   isParticipant = false,
   isJoining = false,
 }) => {
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = React.useState(false);
+
   if (!isOpen || !event) return null;
 
   const eventDate = parseEventDate(event.eventDate);
@@ -34,6 +39,12 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4">
+      <LeaveEventModal
+        isOpen={isLeaveModalOpen}
+        onClose={() => setIsLeaveModalOpen(false)}
+        onConfirm={() => onLeave?.(event.eventId)}
+        eventName={event.eventName}
+      />
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -141,21 +152,31 @@ const EventDetailModal: React.FC<EventDetailModalProps> = ({
                   )}
                 </button>
               ) : isParticipant ? (
-                <div className="w-full py-4 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center gap-3 text-green-400 font-bold uppercase tracking-widest text-xs">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={3}
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  Already Registered
+                <div className="flex flex-col gap-3 w-full">
+                  <div className="w-full py-4 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center gap-3 text-green-400 font-bold uppercase tracking-widest text-xs">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Already Registered
+                  </div>
+                  {onLeave && (
+                    <button
+                      onClick={() => setIsLeaveModalOpen(true)}
+                      className="w-full py-3 text-red-400 hover:text-red-300 font-bold uppercase tracking-widest text-xs transition-colors"
+                    >
+                      Leave Event
+                    </button>
+                  )}
                 </div>
               ) : null}
             </div>
