@@ -8,6 +8,7 @@ import CcsVisionMission from "./components/CcsVisionMission";
 import Navbar from "../../components/Navbar";
 import Layout from "../../components/Layout";
 import { useEffect, useRef, useState } from "react";
+import OfficersSection from "./components/OfficersSection";
 
 const Index = () => {
   const homeRef = useRef<HTMLDivElement>(null);
@@ -111,7 +112,7 @@ const Index = () => {
 
         {/* Padding added to separate Hero from Nav */}
         <div className="pt-24">
-          <HeroSection />
+          <HeroSection scrollToDiv={scrollToDiv} />
         </div>
       </Layout>
 
@@ -119,9 +120,9 @@ const Index = () => {
       <div className="min-h-screen w-full bg-black flex justify-center py-56">
         <div className="w-full max-w-[90rem] px-6 text-white">
           <AboutSection refer={aboutRef as React.RefObject<HTMLDivElement>} />
-          {/* <OfficersSection
+          <OfficersSection
             refer={peopleRef as React.RefObject<HTMLDivElement>}
-          /> */}
+          />
           {/* <VolunteersSection />
           <DevsSection /> */}
           <CcsVisionMission />

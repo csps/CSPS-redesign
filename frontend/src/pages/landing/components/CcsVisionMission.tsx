@@ -5,7 +5,7 @@ import TARGETLOGO from "../../../assets/icons/Vector(2).svg";
 
 const CcsVisionMission = () => {
   return (
-    <div className="w-full py-16 mt-56">
+    <div className="w-full py-16 mt-32">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 text-white gap-5">
         {/* CCS Goals */}
         <div className="w-full md:max-w-[490px]">
