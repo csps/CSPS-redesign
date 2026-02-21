@@ -320,11 +320,12 @@ function Calendar({
 // ─── Date Picker Field ────────────────────────────────────────────────────────
 
 export interface DatePickerProps {
-  label: string;
+  label?: string;
   value: string;
   minDate?: string;
   maxDate?: string;
   placeholder?: string;
+  className?: string;
   onChange: (date: string) => void;
 }
 
@@ -334,6 +335,7 @@ export const DatePicker = ({
   minDate,
   maxDate,
   placeholder = "Select date",
+  className = "",
   onChange,
 }: DatePickerProps) => {
   const [open, setOpen] = useState(false);
@@ -351,16 +353,18 @@ export const DatePicker = ({
 
   return (
     <div ref={ref} className="relative">
-      <label
-        className="block text-[10px] font-bold uppercase tracking-widest mb-2 px-1"
-        style={{ color: "rgba(156,163,175,0.8)" }}
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          className="block text-[10px] font-bold uppercase tracking-widest mb-2 px-1"
+          style={{ color: "rgba(156,163,175,0.8)" }}
+        >
+          {label}
+        </label>
+      )}
 
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all duration-200 group"
+        className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all duration-200 group ${className}`}
         style={{
           background: open
             ? "linear-gradient(135deg, rgba(124,58,237,0.15), rgba(168,85,247,0.08))"
