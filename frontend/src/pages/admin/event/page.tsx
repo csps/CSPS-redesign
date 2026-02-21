@@ -15,9 +15,13 @@ import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "../../events/components/EventDetailModal";
 import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
-import AddEventModal from "./addEventModal";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { usePermissions } from "../../../hooks/usePermissions";
+
+// Components
+import AddEventModal from "./components/AddEventModal";
+import AddSessionsModal from "./components/AddSessionsModal";
+import SuccessModal from "./components/SuccessModal";
 
 interface EventSectionProps {
   refreshTrigger?: number;
@@ -309,12 +313,29 @@ const RecentEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
 };
 
 const Page = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [showAddSessions, setShowAddSessions] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState<EventResponse | null>(null);
+  
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { canManageEvents } = usePermissions();
 
-  const handleEventAdded = () => {
+  const handleEventCreated = (event: EventResponse) => {
+    setCurrentEvent(event);
+    setShowAddEvent(false);
+    setShowAddSessions(true);
     setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleSessionsFinished = () => {
+    setShowAddSessions(false);
+    setShowSuccess(true);
+  };
+
+  const handleSuccessClose = () => {
+    setShowSuccess(false);
+    setCurrentEvent(null);
   };
 
   return (
@@ -337,7 +358,10 @@ const Page = () => {
             </div>
             {canManageEvents && (
               <button
-                onClick={() => setIsOpen(true)}
+                onClick={() => {
+                  setCurrentEvent(null);
+                  setShowAddEvent(true);
+                }}
                 className="flex items-center gap-2 bg-[#FDE006] text-black px-6 py-3 rounded-xl font-bold hover:brightness-110 transition"
               >
                 <IoMdAdd className="text-xl" />
@@ -353,10 +377,26 @@ const Page = () => {
       </div>
       <Footer />
 
+      {/* Flow Modals */}
       <AddEventModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        onEventAdded={handleEventAdded}
+        isOpen={showAddEvent}
+        onClose={() => setShowAddEvent(false)}
+        onEventCreated={handleEventCreated}
+      />
+      
+      <AddSessionsModal
+        isOpen={showAddSessions}
+        onClose={() => setShowAddSessions(false)}
+        eventId={currentEvent?.eventId || null}
+        eventDate={currentEvent?.eventDate || ""}
+        onFinish={handleSessionsFinished}
+      />
+
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={handleSuccessClose}
+        title="Event Setup Complete!"
+        message={`"${currentEvent?.eventName}" and its sessions have been successfully configured.`}
       />
     </>
   );
