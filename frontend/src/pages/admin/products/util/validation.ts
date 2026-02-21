@@ -19,13 +19,16 @@ export const validateMerchInfo = (
     errors.merchType = "Merchandise type is required";
   }
 
-  if (!formState.basePrice) {
-    errors.basePrice = "Price is required";
-  } else if (
-    isNaN(Number(formState.basePrice)) ||
-    Number(formState.basePrice) <= 0
-  ) {
-    errors.basePrice = "Price must be a positive number";
+  // Only validate base price for non-clothing items
+  if (formState.merchType !== "CLOTHING") {
+    if (!formState.basePrice) {
+      errors.basePrice = "Price is required";
+    } else if (
+      isNaN(Number(formState.basePrice)) ||
+      Number(formState.basePrice) <= 0
+    ) {
+      errors.basePrice = "Price must be a positive number";
+    }
   }
 
   if (!formState.merchImageFile) {

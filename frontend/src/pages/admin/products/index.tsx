@@ -251,6 +251,7 @@ const Index = () => {
       <ProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSuccess={() => fetchMerch(activeTag)}
       />
 
       {/* Delete Confirmation Modal */}
