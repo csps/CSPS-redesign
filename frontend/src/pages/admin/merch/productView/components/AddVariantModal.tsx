@@ -150,10 +150,6 @@ const AddVariantModal: React.FC<AddVariantModalProps> = ({
         toast.error("Please upload an image");
         return;
       }
-      if (clothingVariant.price === "" || clothingVariant.price <= 0) {
-        toast.error("Please enter a valid price");
-        return;
-      }
 
       const checkedSizes = clothingVariant.sizeStock.filter((s) => s.checked);
       if (checkedSizes.length === 0) {

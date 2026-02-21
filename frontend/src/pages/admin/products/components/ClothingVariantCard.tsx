@@ -88,24 +88,6 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
         <label className="block text-sm font-medium text-white/60 mb-2">
           Price
         </label>
-        <input
-          type="number"
-          value={variant.price === "" ? "" : variant.price}
-          onChange={(e) => onPriceChange(e.target.value)}
-          placeholder="0.00"
-          min="0"
-          step="0.01"
-          className={`w-full bg-[#1a163d] rounded-lg px-4 py-3 outline-none placeholder-white/30 text-base text-white border transition ${
-            errors[`variant_${variantIndex}_price`]
-              ? "border-red-500"
-              : "border-transparent focus:border-white/20"
-          }`}
-        />
-        {errors[`variant_${variantIndex}_price`] && (
-          <span className="text-sm text-red-400 mt-2 block">
-            {errors[`variant_${variantIndex}_price`]}
-          </span>
-        )}
       </div>
 
       {/* Image Upload */}
@@ -171,7 +153,12 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
               <input
                 type="checkbox"
                 checked={item.checked}
-                onChange={(e) => onSizeCheckChange(sizeIndex, e.target.checked)}
+                onChange={(e) => {
+                  onSizeCheckChange(sizeIndex, e.target.checked);
+                  if (!e.target.checked) {
+                    onPriceChangeForSize?.(sizeIndex, "");
+                  }
+                }}
                 className="accent-purple-500 w-5 h-5 cursor-pointer"
               />
               <span className="text-lg font-bold text-white w-15 min-w-15">
@@ -184,9 +171,10 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
                 onChange={(e) =>
                   onStockQuantityChange(sizeIndex, e.target.value)
                 }
+                onWheel={(e) => e.currentTarget.blur()}
                 placeholder="Stock"
                 min="0"
-                className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <input
                 type="number"
@@ -195,10 +183,11 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
                 onChange={(e) =>
                   onPriceChangeForSize?.(sizeIndex, e.target.value)
                 }
+                onWheel={(e) => e.currentTarget.blur()}
                 placeholder="Price"
                 min="0"
                 step="0.01"
-                className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex-1 bg-transparent border-none outline-none text-lg font-medium text-white placeholder-white/30 disabled:opacity-30 disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
           ))}

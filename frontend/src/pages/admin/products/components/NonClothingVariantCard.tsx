@@ -80,10 +80,11 @@ const NonClothingVariantCard: React.FC<NonClothingVariantCardProps> = ({
           type="number"
           value={variant.price === "" ? "" : variant.price}
           onChange={(e) => onPriceChange(e.target.value)}
+          onWheel={(e) => e.currentTarget.blur()}
           placeholder="0.00"
           min="0"
           step="0.01"
-          className={`w-full bg-[#1a163d] rounded-lg px-4 py-5 outline-none placeholder-white/30 text-lg text-white border transition ${
+          className={`w-full bg-[#1a163d] rounded-lg px-4 py-5 outline-none placeholder-white/30 text-lg text-white border transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
             errors[`variant_${variantIndex}_price`]
               ? "border-red-500"
               : "border-transparent focus:border-white/20"
@@ -145,9 +146,10 @@ const NonClothingVariantCard: React.FC<NonClothingVariantCardProps> = ({
           type="number"
           value={variant.stock}
           onChange={(e) => onStockChange(e.target.value)}
+          onWheel={(e) => e.currentTarget.blur()}
           placeholder="0"
           min="0"
-          className={`w-full bg-[#1a163d] rounded-lg px-4 py-4 outline-none placeholder-white/30 text-lg text-white border transition ${
+          className={`w-full bg-[#1a163d] rounded-lg px-4 py-4 outline-none placeholder-white/30 text-lg text-white border transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
             errors[`variant_${variantIndex}_stock`]
               ? "border-red-500"
               : "border-transparent focus:border-white/20"

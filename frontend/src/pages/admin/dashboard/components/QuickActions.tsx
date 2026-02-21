@@ -1,21 +1,8 @@
 import React from "react";
-import { 
-  Megaphone, 
-  UserPlus, 
-  CalendarPlus,
-  FileText
-} from "lucide-react";
+import { Megaphone, UserPlus, CalendarPlus, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const actions = [
-  {
-    title: "New Announcement",
-    description: "Blast to all students",
-    icon: Megaphone,
-    color: "text-blue-400",
-    bg: "bg-blue-500/10",
-    path: "/admin/bulletin",
-  },
   {
     title: "Schedule Event",
     description: "Create organization event",
@@ -53,12 +40,18 @@ const QuickActions: React.FC = () => {
           onClick={() => navigate(action.path)}
           className="flex items-start gap-4 p-4 rounded-2xl bg-[#0F033C]/40 border border-white/5 hover:border-white/10 hover:bg-[#0F033C]/60 transition-all text-left group"
         >
-          <span className={`w-10 h-10 rounded-xl ${action.bg} ${action.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+          <span
+            className={`w-10 h-10 rounded-xl ${action.bg} ${action.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+          >
             <action.icon size={20} />
           </span>
           <section>
-            <h4 className="text-sm font-bold text-white mb-0.5">{action.title}</h4>
-            <p className="text-xs text-gray-500 leading-tight">{action.description}</p>
+            <h4 className="text-sm font-bold text-white mb-0.5">
+              {action.title}
+            </h4>
+            <p className="text-xs text-gray-500 leading-tight">
+              {action.description}
+            </p>
           </section>
         </button>
       ))}

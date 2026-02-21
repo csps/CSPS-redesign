@@ -112,7 +112,7 @@ const Index = () => {
           </header>
 
           {/* Stats Row */}
-          <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <StatCard
               title="Total Organization Students"
               value={dashboardData?.membershipRatio.totalStudents ?? 0}
@@ -127,20 +127,10 @@ const Index = () => {
               isLoading={isLoading}
               description={`${dashboardData?.membershipRatio.memberPercentage.toFixed(1)}% of total students`}
             />
-            <StatCard
-              title="Pending Orders"
-              value={
-                dashboardData?.recentOrders.filter(
-                  (o) => o.status === "PENDING",
-                ).length ?? 0
-              }
-              icon={ShoppingCart}
-              isLoading={isLoading}
-              description="Requires verification"
-            />
+
             <StatCard
               title="Upcoming events"
-              value={upcomingEvents.length}
+              value={upcomingEvents.length ?? 0}
               icon={Calendar}
               isLoading={isLoading}
               description="Scheduled this month"

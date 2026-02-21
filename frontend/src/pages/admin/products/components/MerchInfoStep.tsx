@@ -209,10 +209,11 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                       const value = e.target.value;
                       onBasePriceChange(value === "" ? "0" : value);
                     }}
+                    onWheel={(e) => e.currentTarget.blur()}
                     placeholder="0.00"
                     min="0"
                     step="0.01"
-                    className="w-full bg-transparent text-white text-lg font-bold placeholder-white/20 focus:outline-none"
+                    className="w-full bg-transparent text-white text-lg font-bold placeholder-white/20 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </InputBlock>
