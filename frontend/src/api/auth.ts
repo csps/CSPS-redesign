@@ -12,6 +12,97 @@ import type {
 } from "../interfaces/auth/EmailUpdateRequest";
 import type { EmailUpdateApiResponse } from "../interfaces/auth/EmailVerificationResponse";
 
+/**
+ * Decodes the payload section of a JWT token without verifying its signature.
+ * Used client-side to extract claims (role, sub, position) for immediate
+ * routing decisions after login, eliminating the need to wait for a
+ * separate profile API call.
+ *
+ * @param token - The raw JWT string in format "header.payload.signature"
+ * @returns The decoded payload object containing JWT claims, or null if decoding fails
+ */
+const decodeJwtPayload = (token: string): Record<string, any> | null => {
+  try {
+    const base64Payload = token.split(".")[1];
+    const decodedPayload = atob(base64Payload);
+    return JSON.parse(decodedPayload);
+  } catch {
+    console.warn("Failed to decode JWT payload");
+    return null;
+  }
+};
+
+/**
+ * Builds a minimal AuthUser object from JWT claims. This provides just enough
+ * user data for ProtectedRoute guards, navigation decisions, and initial UI
+ * rendering (e.g., displaying the user's name in the Hero) without waiting
+ * for the full profile API response.
+ *
+ * Expected JWT payload shape:
+ *   { studentId: string, role: "STUDENT"|"ADMIN", fullName: string, sub: string, iat, exp }
+ *
+ * The fullName claim is split into firstName/lastName so downstream components
+ * that construct the display name from those fields (e.g., Hero.tsx) work
+ * seamlessly during the optimistic login window.
+ *
+ * @param claims - Decoded JWT payload containing role, studentId, fullName, and sub
+ * @returns A minimal AuthUser object sufficient for routing and initial display, or null if claims are invalid
+ */
+const buildMinimalUserFromClaims = (
+  claims: Record<string, any>,
+): AuthUser | null => {
+  const role = claims.role;
+  if (!role) return null;
+
+  // Split "ROGINAND VILLEGAS" → firstName="ROGINAND", lastName="VILLEGAS"
+  const nameParts = (claims.fullName || "").trim().split(/\s+/);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
+
+  const isAdmin =
+    role === "ADMIN" ||
+    role === "ROLE_ADMIN" ||
+    role.startsWith("ROLE_ADMIN_");
+
+  if (isAdmin) {
+    // Build a minimal UserResponse-shaped object for admin routing
+    return {
+      userId: Number(claims.sub) || 0,
+      username: claims.sub || "",
+      firstName,
+      lastName,
+      birthDate: "",
+      email: "",
+      role: "ADMIN",
+      position: claims.position,
+    } as AuthUser;
+  }
+
+  // Build a minimal StudentResponse-shaped object for student routing + Hero display
+  return {
+    studentId: claims.studentId || claims.sub || "",
+    yearLevel: 0,
+    user: {
+      userId: Number(claims.sub) || 0,
+      username: claims.sub || "",
+      firstName,
+      lastName,
+      birthDate: "",
+      email: "",
+      role: "STUDENT",
+      isProfileComplete: undefined, // Explicitly undefined — evaluated only after full profile load
+    },
+    role: "STUDENT",
+  } as AuthUser;
+};
+
+/**
+ * Authenticates a user with the backend and performs optimistic login.
+ *
+ * @param authRequest - Object containing studentId and password
+ * @returns The login API response data containing tokens
+ * @throws Re-throws the original error after clearing auth state on failure
+ */
 export const login = async (authRequest: AuthRequest) => {
   const response = await api.post("/auth/login", authRequest);
 
@@ -22,12 +113,51 @@ export const login = async (authRequest: AuthRequest) => {
     sessionStorage.setItem("accessToken", accessToken);
     sessionStorage.setItem("refreshToken", refreshToken);
 
-    // Get user profile and set in store
-    await profile();
+    // Decode JWT to extract role/position for immediate routing
+    const claims = decodeJwtPayload(accessToken);
+
+    if (claims) {
+      const minimalUser = buildMinimalUserFromClaims(claims);
+      if (minimalUser) {
+        // Set optimistic auth state: enough for ProtectedRoute + navigation
+        useAuthStore.getState().setUser(minimalUser);
+      }
+    }
+
+    // If JWT decode failed for any reason, fall back to blocking profile fetch
+    const { isAuthenticated } = useAuthStore.getState();
+    if (!isAuthenticated) {
+      await profile();
+    }
+
     return response.data;
   } catch (err) {
     useAuthStore.getState().clearAuth();
     throw err;
+  }
+};
+
+/**
+ * Hydrates the full user profile in the background after optimistic login.
+ * Called after navigation to replace the minimal JWT-decoded user object
+ * with the complete profile data (name, email, yearLevel, etc.).
+ *
+ * This is a fire-and-forget operation — if it fails, the user remains
+ * authenticated with minimal data. Critical UI components should handle
+ * the case where user fields may be empty strings until hydration completes.
+ *
+ * @returns The full AuthUser object from the profile API, or undefined on failure
+ */
+export const hydrateFullProfile = async (): Promise<AuthUser | undefined> => {
+  try {
+    const fullUser = await profile();
+    useAuthStore.getState().setProfileLoaded(true);
+    return fullUser;
+  } catch (err) {
+    console.warn("Background profile hydration failed:", err);
+    // Non-fatal: user stays authenticated with minimal JWT data.
+    // On next page load or manual refresh, profile will be re-fetched.
+    return undefined;
   }
 };
 
@@ -82,6 +212,14 @@ export const logout = async () => {
   }
 };
 
+/**
+ * Fetches the authenticated user's full profile from the backend.
+ * Tries the student profile endpoint first, falling back to the admin
+ * profile endpoint if the student call fails (role-agnostic discovery).
+ *
+ * @returns The fully populated AuthUser object with role discrimination
+ * @throws Propagates API errors after clearing auth state on failure
+ */
 export const profile = async (): Promise<AuthUser> => {
   try {
     // Try to get student profile first

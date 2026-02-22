@@ -11,18 +11,33 @@ import { useAuthStore } from "../../store/auth_store";
 import LoadingPage from "../loading";
 import ProfileCompletionModal from "../../components/ProfileCompletionModal";
 import type { StudentResponse } from "../../interfaces/student/StudentResponse";
+import { hydrateFullProfile } from "../../api/auth";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 const Index = () => {
   const user = useAuthStore((state) => state.user);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
-  // Check if profile is incomplete on mount and when user changes
+  // Lock scroll when profile modal is open
+  useScrollLock(showProfileModal);
+
+  // Fetch the full user profile on mount. During optimistic login the store
+  // only contains JWT-decoded minimal data (name + role). This background
+  // call replaces it with the complete profile from the API, which includes
+  // fields like isProfileComplete, email, yearLevel, etc.
+  useEffect(() => {
+    hydrateFullProfile();
+  }, []);
+
+  // Show profile completion modal only when isProfileComplete is explicitly false.
+  // During optimistic login, isProfileComplete is undefined (from JWT decode) — modal stays hidden.
+  // After background profile() resolves, isProfileComplete becomes a boolean:
+  //   false → show modal | true → keep hidden
   useEffect(() => {
     if (user && user.role === "STUDENT") {
       const studentUser = user as StudentResponse & { role: "STUDENT" };
-      const isProfileIncomplete = !studentUser.user?.isProfileComplete;
 
-      if (isProfileIncomplete) {
+      if (studentUser.user?.isProfileComplete === false) {
         setShowProfileModal(true);
       }
     }
@@ -58,7 +73,7 @@ const Index = () => {
       : "";
 
   return (
-    <div className="">
+    <div className="animate-[fadeIn_500ms_ease-in-out]">
       {/* Profile Completion Modal */}
       <ProfileCompletionModal
         isOpen={showProfileModal}

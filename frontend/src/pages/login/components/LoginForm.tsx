@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { FaHashtag, FaLock } from "react-icons/fa";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,11 +9,24 @@ import { useAuthStore } from "../../../store/auth_store";
 import type { UserResponse } from "../../../interfaces/user/UserResponse";
 import { getAdminHomeRoute } from "../../../router/routePermissions";
 
+/**
+ * LoginForm - Handles user authentication with an optimistic login pattern.
+ *
+ * On successful login:
+ * 1. JWT is decoded inline for instant auth state (no extra API call)
+ * 2. A smooth fade-to-dark overlay animates in (~400ms)
+ * 3. Navigation fires after the fade completes, masking the route transition
+ * 4. Full user profile is hydrated in the background (fire-and-forget)
+ *
+ * This eliminates the black flash between login and dashboard pages,
+ * creating a polished, app-like transition experience.
+ */
 const LoginForm = () => {
   const [studentId, setStudentId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [errors, setErrors] = useState<{
     studentId?: string;
     password?: string;
@@ -39,6 +52,23 @@ const LoginForm = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  /**
+   * Navigates to the destination after the crossfade overlay animation finishes.
+   * Called from the overlay's onTransitionEnd event so the route switch happens
+   * behind the fully opaque overlay — no black flash visible to the user.
+   *
+   * @param destination - The route path to navigate to after the fade
+   */
+  const handleTransitionEnd = useCallback(
+    (destination: string) => {
+      navigate(destination);
+    },
+    [navigate],
+  );
+
+  // Store the destination so the overlay's onTransitionEnd can access it
+  const [pendingDestination, setPendingDestination] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +104,10 @@ const LoginForm = () => {
       }
 
       toast.success("Login successful! Welcome back!");
-      navigate(destination);
+
+      // Trigger the crossfade overlay, then navigate after animation completes
+      setPendingDestination(destination);
+      setIsTransitioning(true);
     } catch (error: any) {
       // Handle different error scenarios with specific messages
       if (
@@ -139,87 +172,104 @@ const LoginForm = () => {
   };
 
   return (
-    <form
-      action=""
-      method="post"
-      className="space-y-5 w-full py-6 sm:py-10 z-10"
-      onSubmit={handleSubmit}
-    >
-      <div className="w-full relative">
-        <label htmlFor="idNumber" className="absolute top-5 left-3">
-          <FaHashtag className="text-lg sm:text-xl text-purple-300/80" />
-        </label>
-        <input
-          type="text"
-          id="idNumber"
-          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
-            errors.studentId ? "border-red-500 bg-red-700/40" : "border-black"
-          }`}
-          placeholder="ID Number"
-          value={studentId}
-          onChange={(e) => {
-            setStudentId(e.target.value);
-            if (errors.studentId) {
-              setErrors((prev) => ({ ...prev, studentId: undefined }));
-            }
-          }}
-        />
-        {errors.studentId && (
-          <p className="text-red-400 text-sm mt-1 ml-3">{errors.studentId}</p>
-        )}
-      </div>
-      <div className="w-full relative">
-        <label htmlFor="password" className="absolute top-5 left-3">
-          <FaLock className="text-lg sm:text-xl text-purple-300/80" />
-        </label>
-        <input
-          type={showPassword ? "text" : "password"}
-          id="password"
-          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 pr-14 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
-            errors.password ? "border-red-500 bg-red-700/40" : "border-black"
-          }`}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            if (errors.password) {
-              setErrors((prev) => ({ ...prev, password: undefined }));
-            }
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-300/80 hover:text-purple-300 transition-colors"
-          aria-label={showPassword ? "Hide password" : "Show password"}
-        >
-          {showPassword ? (
-            <AiOutlineEyeInvisible className="text-lg sm:text-xl" />
-          ) : (
-            <AiOutlineEye className="text-lg sm:text-xl" />
+    <>
+      {/* Crossfade overlay: fades to dark on successful login to mask the route transition */}
+      <div
+        className="fixed inset-0 bg-black pointer-events-none"
+        style={{
+          zIndex: 9999,
+          opacity: isTransitioning ? 1 : 0,
+          transition: "opacity 400ms ease-in-out",
+        }}
+        onTransitionEnd={() => {
+          if (isTransitioning && pendingDestination) {
+            handleTransitionEnd(pendingDestination);
+          }
+        }}
+      />
+
+      <form
+        action=""
+        method="post"
+        className="space-y-5 w-full py-6 sm:py-10 z-10"
+        onSubmit={handleSubmit}
+      >
+        <div className="w-full relative">
+          <label htmlFor="idNumber" className="absolute top-5 left-3">
+            <FaHashtag className="text-lg sm:text-xl text-purple-300/80" />
+          </label>
+          <input
+            type="text"
+            id="idNumber"
+            className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
+              errors.studentId ? "border-red-500 bg-red-700/40" : "border-black"
+            }`}
+            placeholder="ID Number"
+            value={studentId}
+            onChange={(e) => {
+              setStudentId(e.target.value);
+              if (errors.studentId) {
+                setErrors((prev) => ({ ...prev, studentId: undefined }));
+              }
+            }}
+          />
+          {errors.studentId && (
+            <p className="text-red-400 text-sm mt-1 ml-3">{errors.studentId}</p>
           )}
-        </button>
-        {errors.password && (
-          <p className="text-red-400 text-sm mt-1 ml-3">{errors.password}</p>
-        )}
-      </div>
-      <div className="flex justify-between items-center px-2 sm:px-5 m5-6 sm:mt-10 mb-6 sm:mb-10">
-        <Link
-          to="/forgot-password"
-          className="text-xs sm:text-lg lg:text-xl font-semibold hover:underline transition-all"
-        >
-          Forgot Password?
-        </Link>
-      </div>
-      <div className="w-full px-2 sm:px-10">
-        <button
-          disabled={isLoading}
-          className="bg-purple-700/40 font-semibold text-lg sm:text-xl lg:text-2xl w-full py-3 sm:py-4 rounded-lg shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] hover:bg-purple-600/50 disabled:opacity-50"
-        >
-          {isLoading ? "Logging in..." : "Log In"}
-        </button>
-      </div>
-    </form>
+        </div>
+        <div className="w-full relative">
+          <label htmlFor="password" className="absolute top-5 left-3">
+            <FaLock className="text-lg sm:text-xl text-purple-300/80" />
+          </label>
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 pr-14 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
+              errors.password ? "border-red-500 bg-red-700/40" : "border-black"
+            }`}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (errors.password) {
+                setErrors((prev) => ({ ...prev, password: undefined }));
+              }
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-300/80 hover:text-purple-300 transition-colors"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? (
+              <AiOutlineEyeInvisible className="text-lg sm:text-xl" />
+            ) : (
+              <AiOutlineEye className="text-lg sm:text-xl" />
+            )}
+          </button>
+          {errors.password && (
+            <p className="text-red-400 text-sm mt-1 ml-3">{errors.password}</p>
+          )}
+        </div>
+        <div className="flex justify-between items-center px-2 sm:px-5 m5-6 sm:mt-10 mb-6 sm:mb-10">
+          <Link
+            to="/forgot-password"
+            className="text-xs sm:text-lg lg:text-xl font-semibold hover:underline transition-all"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+        <div className="w-full px-2 sm:px-10">
+          <button
+            disabled={isLoading || isTransitioning}
+            className="bg-purple-700/40 font-semibold text-lg sm:text-xl lg:text-2xl w-full py-3 sm:py-4 rounded-lg shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] hover:bg-purple-600/50 disabled:opacity-50"
+          >
+            {isLoading ? "Logging in..." : isTransitioning ? "Welcome!" : "Log In"}
+          </button>
+        </div>
+      </form>
+    </>
   );
 };
 
