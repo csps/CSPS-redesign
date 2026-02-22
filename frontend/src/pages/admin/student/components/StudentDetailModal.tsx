@@ -9,8 +9,6 @@ import {
   getStudentMembershipsByStudentId,
   createStudentMembership,
 } from "../../../../api/studentMembership";
-import { usePermissions } from "../../../../hooks/usePermissions";
-import GrantAdminAccessModal from "./GrantAdminAccessModal";
 import { AdminPosition } from "../../../../enums/AdminPosition";
 import CustomDropdown from "../../../../components/CustomDropdown";
 
@@ -54,8 +52,6 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showGrantAdminModal, setShowGrantAdminModal] = useState(false);
-  const { isExecutive } = usePermissions();
 
   const [newMembership, setNewMembership] = useState<{
     academicYear: number;
@@ -307,19 +303,7 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="px-10 py-8 border-t border-zinc-800 flex justify-between items-center">
-            {isExecutive ? (
-              <button
-                onClick={() => setShowGrantAdminModal(true)}
-                className="text-purple-400 text-sm font-medium hover:text-purple-300 transition-colors"
-              >
-                {student.adminPosition
-                  ? "Change administrative role"
-                  : "Promote to administrator"}
-              </button>
-            ) : (
-              <div />
-            )}
+          <div className="px-10 py-8 border-t border-zinc-800 flex justify-end items-center">
             <button
               onClick={onClose}
               className="px-8 py-2.5 rounded-lg bg-[#FDE006] text-black text-sm font-medium hover:bg-zinc-700 transition-all"
@@ -329,13 +313,6 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
           </div>
         </div>
       </div>
-
-      <GrantAdminAccessModal
-        student={student}
-        isOpen={showGrantAdminModal}
-        onClose={() => setShowGrantAdminModal(false)}
-        onSuccess={() => {}}
-      />
     </>
   );
 };

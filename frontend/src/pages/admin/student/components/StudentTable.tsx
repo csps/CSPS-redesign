@@ -1,26 +1,10 @@
+import { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import SearchFilter from "../../merch/components/SearchFilter"; // <--- Import the new component
+import SearchFilter from "../../merch/components/SearchFilter"; 
 import type { StudentResponse } from "../../../../interfaces/student/StudentResponse";
-import { AdminPosition } from "../../../../enums/AdminPosition";
-
-/**
- * Formats a position enum value into a human-readable string.
- * Special cases for acronyms like VP, PIO, and PRO are handled specifically.
- *
- * @param {AdminPosition} position - The raw position enum value from the API.
- * @returns {string} A human-readable representation of the position.
- */
-const formatPosition = (position: AdminPosition): string => {
-  if (position === "VP_INTERNAL") return "VP Internal";
-  if (position === "VP_EXTERNAL") return "VP External";
-  if (position === "PIO") return "PIO";
-  if (position === "PRO") return "PRO";
-
-  return position
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (char) => char.toUpperCase());
-};
+import { getAllStudents } from "../../../../api/student";
+import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 
 const StudentTable = ({
   students,
@@ -41,6 +25,8 @@ const StudentTable = ({
   onSearch: (query: string) => void;
   onFilterYear: (year: string) => void;
 }) => {
+  const [isExporting, setIsExporting] = useState(false);
+
   // --- TRANSFORM DATA ---
   const currentStudents = students.map((student) => ({
     id: student.studentId,
@@ -70,13 +56,77 @@ const StudentTable = ({
     return [...new Set(pageNumbers)];
   };
 
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      const data = await getAllStudents();
+      
+      if (!data || data.length === 0) {
+        toast.error("No data to export");
+        return;
+      }
+
+      const csvHeader = "Student ID,Last Name,First Name,Middle Name,Email,Year Level\n";
+      const csvRows = data.map(student => {
+        const { studentId, yearLevel, user } = student;
+        // Escape quotes in strings
+        const escape = (str: string) => `"${(str || "").replace(/"/g, '""')}"`;
+        
+        return [
+          escape(studentId),
+          escape(user.lastName),
+          escape(user.firstName),
+          escape(user.middleName || ""),
+          escape(user.email),
+          yearLevel
+        ].join(",");
+      }).join("\n");
+      
+      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Export successful!");
+    } catch (error) {
+      console.error("Export failed", error);
+      toast.error("Failed to export students");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <div className="bg-[#110e31] border border-white/10 rounded-2xl shadow-xl overflow-hidden flex flex-col h-full min-h-[600px]">
       {/* --- NEW SEARCH FILTER COMPONENT --- */}
       <SearchFilter
         onSearch={onSearch}
         onFilterYear={onFilterYear}
+        onExport={handleExportCSV}
       />
+
+      {/* Exporting Modal */}
+      <AnimatePresence>
+        {isExporting && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-[#1a1635] border border-white/10 rounded-xl p-8 flex flex-col items-center gap-4 shadow-2xl"
+            >
+              <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-white mb-1">Exporting Data</h3>
+                <p className="text-white/50 text-sm">Please wait while we generate your CSV...</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Table */}
       <div className="overflow-x-auto flex-1">
@@ -95,7 +145,6 @@ const StudentTable = ({
               <th className="px-6 py-4">Middle Name</th>
               <th className="px-6 py-4">Email</th>
               <th className="px-6 py-4">Year</th>
-              <th className="px-6 py-4">Position</th>
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -137,15 +186,6 @@ const StudentTable = ({
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {student.adminPosition ? (
-                      <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                        {formatPosition(student.adminPosition)}
-                      </span>
-                    ) : (
-                      <span className="text-white/30 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
                     <div className="flex justify-center items-center gap-2">
                       <button
                         onClick={(e) => {
@@ -163,7 +203,7 @@ const StudentTable = ({
             ) : (
               <tr>
                 <td
-                  colSpan={9}
+                  colSpan={8}
                   className="text-center py-10 text-white/30 italic"
                 >
                   No students found matching your criteria.

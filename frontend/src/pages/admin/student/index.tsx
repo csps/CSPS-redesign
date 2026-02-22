@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import StudentTable from "./components/StudentTable";
-import AddStudentModal from "../merch/components/AddStudentModal";
+import AddStudentModal from "./components/AddStudentModal";
 import StudentDetailModal from "./components/StudentDetailModal";
 import { getStudents } from "../../../api/student";
 import type { StudentResponse } from "../../../interfaces/student/StudentResponse";
@@ -64,49 +64,6 @@ const StudentsPage = () => {
     fetchStudents(1, searchQuery, year);
   };
 
-  const handleExportCSV = async () => {
-    try {
-      // Fetch all students (large size)
-      const response = await getStudents(
-        { page: 0, size: 10000 },
-        { search: searchQuery, yearLevel: yearFilter },
-      );
-      const data = response.content;
-
-      // Convert to CSV
-      const headers = [
-        "Student ID",
-        "Last Name",
-        "First Name",
-        "Email",
-        "Year Level",
-        "Position",
-      ];
-      const rows = data.map((s) => [
-        s.studentId,
-        s.user.lastName,
-        s.user.firstName,
-        s.user.email,
-        s.yearLevel,
-        s.adminPosition || "N/A",
-      ]);
-
-      const csvContent =
-        "data:text/csv;charset=utf-8," +
-        [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", "students.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Export failed", error);
-    }
-  };
-
   const handleStudentClick = (student: StudentResponse) => {
     setSelectedStudent(student);
   };
@@ -123,13 +80,6 @@ const StudentsPage = () => {
           </h1>
 
           <div className="flex gap-4">
-            <button
-              onClick={handleExportCSV}
-              className="px-5 py-2.5 rounded-xl border border-white/20 bg-white/5 text-white text-sm font-semibold hover:bg-white/10 transition backdrop-blur-sm"
-            >
-              Export CSV
-            </button>
-
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-5 py-2.5 rounded-xl bg-[#FDE006] hover:brightness-110 text-black text-sm font-semibold transition"
@@ -161,7 +111,10 @@ const StudentsPage = () => {
       </div>
 
       {isAddModalOpen && (
-        <AddStudentModal onClose={() => setIsAddModalOpen(false)} />
+        <AddStudentModal
+          onClose={() => setIsAddModalOpen(false)}
+          onSuccess={() => fetchStudents(currentPage)}
+        />
       )}
 
       {selectedStudent && (

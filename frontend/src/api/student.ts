@@ -46,6 +46,57 @@ export const getStudents = async (
   }
 };
 
+export const getAllStudents = async (filters?: { search?: string; yearLevel?: string }) => {
+  try {
+    const params = new URLSearchParams();
+    params.append("page", "0");
+    params.append("size", "10000"); // Fetch all (large limit)
+
+    if (filters?.search) {
+      params.append("search", filters.search);
+    }
+
+    if (filters?.yearLevel && filters.yearLevel !== "All") {
+      const year = parseInt(filters.yearLevel);
+      if (!isNaN(year)) {
+        params.append("yearLevel", year.toString());
+      }
+    }
+
+    const response = await api.get<PaginatedStudentsResponse>(
+      `/students?${params.toString()}`,
+    );
+
+    return response.data.content;
+  } catch (err) {
+    console.error("Error fetching all students:", err);
+    throw err;
+  }
+};
+
+export interface UserRequest {
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  email: string;
+}
+
+export interface StudentRequest {
+  studentId: string;
+  yearLevel: number;
+  userRequestDTO: UserRequest;
+}
+
+export const createStudent = async (student: StudentRequest) => {
+  try {
+    const response = await api.post("/students", student);
+    return response.data;
+  } catch (err) {
+    console.error("Error creating student:", err);
+    throw err;
+  }
+};
+
 interface ProfileCompletionData {
   firstName?: string;
   lastName?: string;
