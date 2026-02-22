@@ -263,3 +263,35 @@ export const deleteMerchVariant = async (
     throw err;
   }
 };
+
+/**
+ * Get archived merchandise with pagination.
+ * Endpoint: GET /api/merch/archive
+ */
+export const getArchivedMerch = async (
+  page: number = 0,
+  size: number = 10,
+): Promise<any> => {
+  try {
+    const response = await api.get("/merch/archive", {
+      params: { page, size },
+    });
+    return response.data.data;
+  } catch (err) {
+    console.error("Error fetching archived merch:", err);
+    throw err;
+  }
+};
+
+/**
+ * Revert archived merchandise back to active.
+ * Endpoint: PUT /api/merch/{merchId}/revert
+ */
+export const revertMerch = async (merchId: number): Promise<void> => {
+  try {
+    await api.put(`/merch/${merchId}/revert`);
+  } catch (err) {
+    console.error(`Error reverting merch ${merchId}:`, err);
+    throw err;
+  }
+};

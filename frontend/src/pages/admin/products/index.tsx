@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import SAMPLE from "../../../assets/image 8.png";
 import { IoMdAdd } from "react-icons/io";
-import { FiEdit3, FiTrash2, FiEye } from "react-icons/fi";
+import { FiEdit3, FiTrash2, FiEye, FiArchive } from "react-icons/fi";
 import ProductModal from "./components/ProductModal";
 import { MerchType } from "../../../enums/MerchType";
 import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchResponse";
@@ -11,7 +11,7 @@ import {
   getMerchByType,
   deleteMerch,
 } from "../../../api/merch";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
 import DeleteConfirmationModal from "../merch/productView/components/DeleteConfirmationModal";
@@ -108,13 +108,22 @@ const Index = () => {
             Products Inventory
           </h1>
           {canManageMerch && (
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="cursor-pointer flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
-            >
-              <IoMdAdd className="text-lg sm:text-xl" />
-              <span>Add Product</span>
-            </button>
+            <div className="flex gap-3 w-full sm:w-auto">
+              <Link
+                to="/admin/merch/archive"
+                className="flex items-center gap-2 bg-[#1E293B] border border-white/10 text-white px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:bg-[#334155] active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
+              >
+                <FiArchive className="text-lg sm:text-xl" />
+                <span>Archive</span>
+              </Link>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="cursor-pointer flex items-center gap-2 bg-[#FFB800] text-black px-4 sm:px-5 py-2.5 rounded-xl font-bold transition-all hover:brightness-110 active:scale-95 text-sm sm:text-base w-full sm:w-auto justify-center"
+              >
+                <IoMdAdd className="text-lg sm:text-xl" />
+                <span>Add Product</span>
+              </button>
+            </div>
           )}
         </div>
 
