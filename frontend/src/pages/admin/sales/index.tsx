@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import LineChart from "./components/LineChart";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import { FaClockRotateLeft, FaDownload, FaPrint } from "react-icons/fa6";
@@ -16,12 +16,14 @@ import {
   approveTransaction,
   rejectTransaction,
   getFullHistory,
+  searchTransactions,
   exportTransactionsCSV,
   printTransactionsSummary,
   printOrderSummary,
   type SalesStats,
   type Transaction,
   type TransactionStatus,
+  type TransactionSearchParams,
 } from "../../../api/sales";
 import HistoryModal from "./components/HistoryModal";
 import ConfirmationModal from "./components/ConfirmationModal";
@@ -30,6 +32,7 @@ import { usePermissions } from "../../../hooks/usePermissions";
 import Pagination from "../../merch/transactions/components/Pagination";
 import type { TransactionParams } from "../../../api/sales";
 import order from "../../../api/order";
+import { toast } from "sonner";
 
 // Status display mapping
 const getStatusDisplay = (status: TransactionStatus) => {
@@ -62,6 +65,71 @@ const periodLabels = {
   ALL_TIME: "All-time revenue analysis",
 };
 
+// Helper function to format date as LocalDateTime (yyyy-MM-ddTHH:mm:ss)
+const formatDateForLocalDateTime = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
+// Helper function to get date range based on period
+const getDateRangeByPeriod = (
+  period: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY" | "ALL_TIME",
+): { startDate: string; endDate: string } | null => {
+  const now = new Date();
+  let startDate: Date;
+  let endDate: Date;
+
+  switch (period) {
+    case "DAILY":
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      endDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        23,
+        59,
+        59,
+      );
+      break;
+
+    case "WEEKLY":
+      const dayOfWeek = now.getDay();
+      const diffToMonday =
+        now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+      startDate = new Date(now.getFullYear(), now.getMonth(), diffToMonday);
+      endDate = new Date(startDate);
+      endDate.setDate(endDate.getDate() + 6);
+      endDate.setHours(23, 59, 59);
+      break;
+
+    case "MONTHLY":
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      break;
+
+    case "YEARLY":
+      startDate = new Date(now.getFullYear(), 0, 1);
+      endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59);
+      break;
+
+    case "ALL_TIME":
+      return null;
+
+    default:
+      return null;
+  }
+
+  return {
+    startDate: formatDateForLocalDateTime(startDate),
+    endDate: formatDateForLocalDateTime(endDate),
+  };
+};
+
 const Index = () => {
   // Stats State
   const [stats, setStats] = useState<SalesStats>({
@@ -78,7 +146,6 @@ const Index = () => {
 
   // Transactions State
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
   const [printingId, setPrintingId] = useState<number | null>(null);
@@ -113,40 +180,32 @@ const Index = () => {
   // Export State
   const [exporting, setExporting] = useState(false);
 
+  // Approval Loading State
+  const [isApproving, setIsApproving] = useState(false);
+
   // Permissions - check if user can approve/reject transactions
   const { canApproveTransactions, canManageOrder } = usePermissions();
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  // Track if initial load has been done
+  const isInitialLoadDone = useRef(false);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, [period]);
-
-  useEffect(() => {
-    // Debounced search / filter update
-    const timer = setTimeout(() => {
-      setCurrentPage(0); // Reset to first page when filters change
-      fetchTransactions();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [search, statusFilter, yearFilter]);
-
-  useEffect(() => {
-    // Fetch transactions when page changes
-    fetchTransactions();
-  }, [currentPage]);
+  // Helper function to determine if search is studentId or studentName
+  const parseSearchInput = (
+    searchValue: string,
+  ): { studentId?: string; studentName?: string } => {
+    if (!searchValue) return {};
+    // If starts with number, treat as studentId, otherwise studentName
+    if (/^\d/.test(searchValue)) {
+      return { studentId: searchValue };
+    }
+    return { studentName: searchValue };
+  };
 
   const fetchDashboardData = async () => {
     setStatsLoading(true);
     try {
-      const [statsData, historyData] = await Promise.all([
-        getSalesStats(period),
-        getFullHistory(),
-      ]);
+      const statsData = await getSalesStats(period);
       setStats(statsData);
-      setAllTransactions(historyData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -157,14 +216,15 @@ const Index = () => {
   const fetchTransactions = async () => {
     setLoading(true);
     try {
+      const searchParams = parseSearchInput(search);
       const params: TransactionParams = {
         page: currentPage,
-        size: 5, // Changed from 10 to 5
-        search: search || undefined,
+        size: 5,
         status: statusFilter || undefined,
         year: parseInt(yearFilter),
+        ...searchParams,
       };
-      const response = await getTransactions(params);
+      const response = await getTransactions({ ...params });
       setTransactions(response.content);
       setPaginationInfo({
         totalElements: response.totalElements,
@@ -180,6 +240,53 @@ const Index = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDashboardData();
+    // Clear all filter states when period changes
+    setSearch("");
+    setStatusFilter("");
+    setCurrentPage(0);
+  }, [period]);
+
+  // Initial load - fetch both dashboard data and transactions
+  useEffect(() => {
+    fetchDashboardData();
+    fetchTransactions();
+    isInitialLoadDone.current = true;
+  }, []);
+
+  useEffect(() => {
+    // Debounced search / filter update
+    const timer = setTimeout(() => {
+      setCurrentPage(0); // Reset to first page when filters change
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [search, statusFilter, yearFilter]);
+
+  useEffect(() => {
+    // Fetch transactions when page changes (skip on initial mount)
+    if (!isInitialLoadDone.current) return;
+    fetchTransactions();
+  }, [currentPage]);
+
+  useEffect(() => {
+    // Debounced fetch for search/filter changes (independent from pagination)
+    if (!isInitialLoadDone.current) return;
+    if (currentPage !== 0) return; // Only run on page 0 to avoid race conditions
+
+    const timer = setTimeout(() => {
+      fetchTransactions();
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [search, statusFilter, yearFilter]);
+
+  useEffect(() => {
+    // Only refetch if history modal opens and page is > 0
+    if (showHistoryModal && currentPage > 0) {
+      fetchTransactions();
+    }
+  }, [showHistoryModal, currentPage]);
 
   const handleActionClick = (
     id: number,
@@ -204,6 +311,7 @@ const Index = () => {
 
   const handleConfirmAction = async () => {
     if (!confirmModal.id) return;
+    setIsApproving(true);
     try {
       if (confirmModal.type === "approve" || confirmModal.type === "pending") {
         const updatedTransaction = await approveTransaction(confirmModal.id);
@@ -214,6 +322,7 @@ const Index = () => {
               : t,
           ),
         );
+        toast.success("Transaction approved successfully!");
         // Automatically print summary for the approved transaction
         if (updatedTransaction) {
           handlePrint(updatedTransaction);
@@ -227,12 +336,18 @@ const Index = () => {
               : t,
           ),
         );
+        toast.success("Transaction rejected successfully!");
       }
       setConfirmModal({ ...confirmModal, isOpen: false });
       // Refetch to ensure pagination is correct after status change
       fetchTransactions();
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "Failed to process transaction";
+      toast.error(errorMessage);
       console.error("Action failed:", error);
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -251,8 +366,26 @@ const Index = () => {
   const handleExportCSV = async () => {
     setExporting(true);
     try {
-      const data =
-        allTransactions.length > 0 ? allTransactions : await getFullHistory();
+      let data: Transaction[] = [];
+
+      if (period === "ALL_TIME") {
+        data = await getFullHistory();
+      } else {
+        const dateRange = getDateRangeByPeriod(period);
+        if (dateRange) {
+          const searchParams: TransactionSearchParams = {
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate,
+            page: 0,
+            size: 1000,
+            sort: "orderDate,desc",
+            studentId: search || undefined,
+            studentName: search || undefined,
+          };
+          data = await searchTransactions(searchParams);
+        }
+      }
+
       exportTransactionsCSV(data);
     } catch (error) {
       console.error("Export failed:", error);
@@ -262,12 +395,31 @@ const Index = () => {
   };
 
   const handlePrintSummary = async () => {
+    setExporting(true);
     try {
-      const data =
-        allTransactions.length > 0 ? allTransactions : await getFullHistory();
+      let data: Transaction[] = [];
+
+      if (period === "ALL_TIME") {
+        data = await getFullHistory();
+      } else {
+        const dateRange = getDateRangeByPeriod(period);
+        if (dateRange) {
+          const searchParams: TransactionSearchParams = {
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate,
+            page: 0,
+            size: 1000,
+            sort: "orderDate,desc",
+          };
+          data = await searchTransactions(searchParams);
+        }
+      }
+
       printTransactionsSummary(data, stats.totalSales);
     } catch (error) {
       console.error("Print failed:", error);
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -359,7 +511,7 @@ const Index = () => {
                     className="w-full flex items-center justify-center gap-2 text-sm bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-xl transition-all shadow-lg hover:shadow-purple-500/25"
                   >
                     <FaClockRotateLeft size={14} />
-                    View Full History
+                    View History
                   </button>
                 </div>
               </div>
@@ -641,6 +793,26 @@ const Index = () => {
           })
         }
       />
+
+      {/* Approval Loading Modal */}
+      {isApproving && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#0F033C] border border-purple-500/30 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+            <p className="text-white font-medium">Processing transaction...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Export Loading Modal */}
+      {exporting && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-[#0F033C] border border-purple-500/30 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+            <p className="text-white font-medium">Generating report...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
