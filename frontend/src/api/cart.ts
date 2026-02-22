@@ -43,3 +43,23 @@ export const getCart = async (): Promise<CartResponse> => {
     throw err;
   }
 };
+
+/**
+ * Removes a cart item by its merchVariantItemId.
+ * Called in the background after optimistic UI removal — the item
+ * disappears from the UI instantly, and this request syncs with the server.
+ *
+ * @param merchVariantItemId - The unique identifier of the cart item to remove
+ * @returns The API response data on success
+ * @throws Propagates the error so the caller can revert the optimistic removal
+ */
+export const removeCartItem = async (
+  merchVariantItemId: number,
+): Promise<void> => {
+  try {
+    await api.delete(`cart-items/${merchVariantItemId}`);
+  } catch (err) {
+    console.error("Error removing cart item:", err);
+    throw err;
+  }
+};

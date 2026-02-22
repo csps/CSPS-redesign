@@ -1,6 +1,7 @@
 import { memo } from "react";
 import SAMPLE from "../../../../assets/image 8.png";
 import { FaCheck } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import type { CartItemResponse } from "../../../../interfaces/cart/CartItemResponse";
 import { MerchType } from "../../../../enums/MerchType";
 import { S3_BASE_URL } from "../../../../constant";
@@ -9,10 +10,19 @@ export type ProductCardProps = {
   cartItem: CartItemResponse;
   isSelected: boolean;
   onToggle: () => void;
+  onRemove: (merchVariantItemId: number) => void;
 };
 
+/**
+ * ProductCard - Renders a single cart item with selection toggle and remove action.
+ *
+ * @param cartItem   - The cart item data to display
+ * @param isSelected - Whether this item is currently selected for checkout
+ * @param onToggle   - Callback to toggle the selection state
+ * @param onRemove   - Callback to optimistically remove the item from the cart
+ */
 const ProductCard = memo(
-  ({ cartItem, isSelected, onToggle }: ProductCardProps) => {
+  ({ cartItem, isSelected, onToggle, onRemove }: ProductCardProps) => {
     const isClothing = cartItem.merchType === MerchType.CLOTHING;
 
     return (
@@ -116,18 +126,29 @@ const ProductCard = memo(
               </div>
             </div>
 
-            {/* Subtotal for this line item */}
+            {/* Subtotal + Remove Button */}
             <div className="mt-4 md:mt-0 flex justify-between items-end border-t border-white/5 pt-4">
               <span className="text-[15px] font-bold text-white uppercase mb-1">
                 Item Subtotal
               </span>
-              <p className="text-xl md:text-2xl font-bold text-white">
-                ₱
-                {(cartItem.unitPrice * cartItem.quantity).toLocaleString(
-                  undefined,
-                  { minimumFractionDigits: 2 },
-                )}
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-xl md:text-2xl font-bold text-white">
+                  ₱
+                  {(cartItem.unitPrice * cartItem.quantity).toLocaleString(
+                    undefined,
+                    { minimumFractionDigits: 2 },
+                  )}
+                </p>
+                {/* Remove Button */}
+                <button
+                  onClick={() => onRemove(cartItem.merchVariantItemId)}
+                  className="p-2 rounded-xl text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+                  aria-label="Remove item from cart"
+                  title="Remove from cart"
+                >
+                  <FiTrash2 className="w-7 h-7" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

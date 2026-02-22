@@ -4,8 +4,9 @@ import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import Layout from "../../../components/Layout";
 import ProductCard from "./components/ProductCard";
 import OrderSummary from "./components/OrderSummary";
-import { getCart } from "../../../api/cart";
+import { getCart, removeCartItem } from "../../../api/cart";
 import type { CartItemResponse } from "../../../interfaces/cart/CartItemResponse";
+import { toast } from "sonner";
 
 const Index = () => {
   const [items, setItems] = useState<CartItemResponse[]>([]);
@@ -53,6 +54,43 @@ const Index = () => {
     });
   }, []);
 
+  /**
+   * Optimistically removes a cart item from the UI, then syncs with the server
+   * in the background. If the server request fails, the item is restored to its
+   * original position and a toast error is shown.
+   *
+   * Why optimistic: The user sees the item disappear instantly (<10ms), creating
+   * a snappy, native-app feel. The DELETE request fires in the background.
+   *
+   * @param merchVariantItemId - The ID of the cart item to remove
+   */
+  const handleRemoveItem = useCallback(
+    (merchVariantItemId: number) => {
+      // Snapshot current state for rollback on failure
+      const previousItems = items;
+      const previousSelectedIds = new Set(selectedIds);
+
+      // Optimistic removal: instantly remove from UI
+      setItems((prev) =>
+        prev.filter((item) => item.merchVariantItemId !== merchVariantItemId),
+      );
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(merchVariantItemId);
+        return next;
+      });
+
+      // Fire-and-forget: sync with server in the background
+      removeCartItem(merchVariantItemId).catch(() => {
+        // Revert on failure: restore the item back to its position
+        setItems(previousItems);
+        setSelectedIds(previousSelectedIds);
+        toast.error("Failed to remove item. Please try again.");
+      });
+    },
+    [items, selectedIds],
+  );
+
   const { selectedItems, totalSelectedPrice } = useMemo(() => {
     const selected = items.filter((item) =>
       selectedIds.has(item.merchVariantItemId),
@@ -97,6 +135,7 @@ const Index = () => {
                     cartItem={item}
                     isSelected={selectedIds.has(item.merchVariantItemId)}
                     onToggle={() => toggleSelect(item.merchVariantItemId)}
+                    onRemove={handleRemoveItem}
                   />
                 </div>
               ))
