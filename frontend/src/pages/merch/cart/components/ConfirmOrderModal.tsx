@@ -38,10 +38,10 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop Overlay - Blur Only */}
       <div
-        className="absolute inset-0 backdrop-blur-lg transition-opacity"
+        className="absolute inset-0 bg-black/60 backdrop-blur-lg transition-opacity"
         onClick={!isProcessing ? onClose : undefined}
         aria-hidden
       />
@@ -95,7 +95,7 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
             <button
               onClick={handleConfirm}
               disabled={isProcessing}
-              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:brightness-75 cursor-pointer shadow-xl shadow-yellow-500/5 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:cursor-not-allowed cursor-pointer shadow-xl shadow-yellow-500/5 flex items-center justify-center gap-2"
             >
               {isProcessing ? (
                 <>

@@ -20,7 +20,7 @@ const ProductCard = memo(
         {/* Premium Selection Toggle - Desktop */}
         <button
           onClick={onToggle}
-          className={`hidden md:flex w-7 h-7 rounded-full border-2 transition-all duration-300 items-center justify-center shrink-0 z-10 
+          className={`hidden md:flex w-7 h-7 rounded-full border-2 transition-all duration-300 items-center justify-center shrink-0 
         ${
           isSelected
             ? "bg-[#FDE006] border-[#FDE006] shadow-[0_0_15px_rgba(253,224,6,0.3)]"
@@ -61,7 +61,7 @@ const ProductCard = memo(
                   : SAMPLE
               }
               alt={cartItem.merchName}
-              className="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-110"
+              className="w-full h-full object-contain relative  transition-transform duration-500 group-hover:scale-110"
             />
           </div>
 
