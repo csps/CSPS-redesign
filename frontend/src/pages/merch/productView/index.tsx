@@ -426,6 +426,7 @@ const Index = () => {
         quantity={quantity}
         size={selectedSize}
         isProcessing={processingBuy}
+        s3ImageKey={selectedDesignItem?.s3ImageKey || ""}
       />
 
       {/* Loading Modal for adding to cart */}

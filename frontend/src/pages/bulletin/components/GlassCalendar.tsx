@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import { BsCameraVideo } from "react-icons/bs";
 import { CiLocationOn } from "react-icons/ci";
-import { getEventByMonth, getUpcomingEvents } from "../../../api/event";
+import {
+  getEventByMonth,
+  getUpcomingEvents,
+  getUpcomingEventsPaginated,
+} from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import AllEventsModal from "./AllEventsModal";
 
@@ -28,14 +32,12 @@ const GlassCalendar = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<EventResponse[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(true);
   const [showAllEvents, setShowAllEvents] = useState(false);
-
   const fetchEventsByMonth = async (date: Date) => {
     try {
-      const month = date.getMonth() + 1; // getMonth() returns 0-11
+      const month = date.getMonth() + 1;
       const year = date.getFullYear();
-
       const data = await getEventByMonth(month, year);
-      setEvents(data);
+      setEvents(Array.isArray(data) ? data : (data ?? []));
     } catch (err) {
       setEvents([]);
     }
@@ -44,8 +46,11 @@ const GlassCalendar = () => {
   const fetchUpcomingEvents = async () => {
     try {
       setUpcomingLoading(true);
-      const data = await getUpcomingEvents();
-      setUpcomingEvents(data);
+
+      const data = await getUpcomingEventsPaginated(0, 6);
+
+      console.log("Fetched upcoming events:", data);
+      setUpcomingEvents(data.content || []);
     } catch (err) {
       setUpcomingEvents([]);
     } finally {

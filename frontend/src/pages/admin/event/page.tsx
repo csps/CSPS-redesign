@@ -10,7 +10,11 @@ import {
   FaHistory,
   FaArrowRight,
 } from "react-icons/fa";
-import { getUpcomingEvents, getPastEvents } from "../../../api/event";
+import {
+  getUpcomingEvents,
+  getPastEvents,
+  getUpcomingEventsPaginated,
+} from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "../../events/components/EventDetailModal";
@@ -40,8 +44,8 @@ const UpcomingEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const data = await getUpcomingEvents();
-        setEvents(data);
+        const data = await getUpcomingEventsPaginated(0, 5);
+        setEvents(data.content || []);
       } catch (err) {
         console.error("Failed to fetch upcoming events:", err);
         setEvents([]);
@@ -317,7 +321,7 @@ const Page = () => {
   const [showAddSessions, setShowAddSessions] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [currentEvent, setCurrentEvent] = useState<EventResponse | null>(null);
-  
+
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { canManageEvents } = usePermissions();
 
@@ -383,7 +387,7 @@ const Page = () => {
         onClose={() => setShowAddEvent(false)}
         onEventCreated={handleEventCreated}
       />
-      
+
       <AddSessionsModal
         isOpen={showAddSessions}
         onClose={() => setShowAddSessions(false)}

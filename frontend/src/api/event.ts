@@ -185,15 +185,15 @@ export const deleteEvent = async (id: number): Promise<void> => {
 export const getUpcomingEventsPaginated = async (
   page: number = 0,
   size: number = 5,
-  sort?: string
+  sort?: string,
 ): Promise<PaginatedResponse<EventResponse>> => {
   try {
     const params: Record<string, string | number> = { page, size };
     if (sort) params.sort = sort;
-    
+
     const response = await api.get<{ data: PaginatedResponse<EventResponse> }>(
       `${EVENTS}/upcoming`,
-      { params }
+      { params },
     );
     return response.data.data;
   } catch (err: any) {
@@ -225,21 +225,21 @@ export const searchEvent = async (
   endDate?: string,
   page: number = 0,
   size: number = 5,
-  sort?: string
+  sort?: string,
 ): Promise<PaginatedResponse<EventResponse>> => {
   try {
-    const params: Record<string, string | number | undefined> = { 
-      query, 
-      startDate, 
+    const params: Record<string, string | number | undefined> = {
+      query,
+      startDate,
       endDate,
-      page, 
-      size 
+      page,
+      size,
     };
     if (sort) params.sort = sort;
-    
+
     const response = await api.get<{ data: PaginatedResponse<EventResponse> }>(
       `${EVENTS}/search`,
-      { params }
+      { params },
     );
     return response.data.data;
   } catch (err: any) {
@@ -285,6 +285,8 @@ export const getEventByMonth = async (
     const response = await api.get<{ data: EventResponse[] }>(
       `${EVENTS}/by-month?year=${year}&month=${month}`,
     );
+
+    console.log(`Fetched events for ${month}/${year}:`, response.data.data);
     return response.data.data;
   } catch (err: any) {
     if (err.response?.status === 404) {
