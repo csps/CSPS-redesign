@@ -11,7 +11,7 @@ const DeanAdviserSection = () => {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto mt-20 px-4 sm:px-6 mb-10">
-      <div className="relative w-full h-auto min-h-[500px] sm:min-h-[450px]">
+      <div className="relative w-full h-auto min-h-[350px] sm:min-h-[400px] md:min-h-[500px]">
         {/* Card 1 */}
         <motion.div
           className="absolute inset-0 cursor-pointer"
@@ -28,16 +28,16 @@ const DeanAdviserSection = () => {
           <div
             className={`flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl border-t border-b border-gray-400 ${isSwapped ? "blur-md" : ""}`}
           >
-            <div className="w-full md:w-[30%] h-40 sm:h-52 md:h-auto flex items-center justify-center">
+            <div className="w-full md:w-[30%] h-32 sm:h-40 md:h-auto flex items-center justify-center bg-gray-800">
               <img
                 src={DEAN1}
                 alt="Card 1"
-                className="object-center md:object-cover h-full w-full rounded-md"
+                className="object-contain sm:object-cover h-full w-full"
               />
             </div>
 
-            <div className="w-full md:w-[70%] flex flex-col items-start p-4 sm:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
-              <p className="mb-4 text-justify text-[12px] sm:text-sm md:text-base ">
+            <div className="w-full md:w-[70%] flex flex-col items-start p-3 sm:p-4 md:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
+              <p className="mb-3 sm:mb-4 text-justify text-[11px] sm:text-sm md:text-base line-clamp-3 sm:line-clamp-none">
                 <Typewriter
                   words={[
                     `Welcome to the University of Cebu and the world of Computer Science. We provide quality education, expert faculty, and modern facilities to prepare you for academic and career success. Engage in research, internships, hackathons, and ICT events to grow, stand out, and build valuable connections. We're here to support you every step of the way.`,
@@ -51,10 +51,10 @@ const DeanAdviserSection = () => {
                 />
               </p>
               <div className="mt-auto">
-                <p className="text-sm md:text-xl font-bold">
+                <p className="text-xs sm:text-sm md:text-xl font-bold">
                   Heubert Martinez Ferolino, MSTCS
                 </p>
-                <p className="text-xs sm:text-sm md:text-base">
+                <p className="text-[10px] sm:text-xs md:text-base">
                   Program Head, Computer Science
                 </p>
               </div>
@@ -78,16 +78,16 @@ const DeanAdviserSection = () => {
           <div
             className={`flex flex-col md:flex-row h-full p-0 overflow-hidden rounded-3xl border-t border-b border-gray-400 ${isSwapped ? "" : "blur-md"}`}
           >
-            <div className="w-full md:w-[30%] h-40 sm:h-52 md:h-auto flex items-center justify-center">
+            <div className="w-full md:w-[30%] h-32 sm:h-40 md:h-auto flex items-center justify-center bg-gray-800">
               <img
                 src={DEAN2}
                 alt="Card 2"
-                className="object-center md:object-cover h-full w-full rounded-md"
+                className="object-contain sm:object-cover h-full w-full"
               />
             </div>
 
-            <div className="w-full md:w-[70%] flex flex-col items-start p-4 sm:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
-              <p className="mb-4 text-justify text-[12px] sm:text-sm md:text-base">
+            <div className="w-full md:w-[70%] flex flex-col items-start p-3 sm:p-4 md:p-6 text-white text-xs sm:text-sm md:text-lg font-semibold leading-relaxed">
+              <p className="mb-3 sm:mb-4 text-justify text-[11px] sm:text-sm md:text-base line-clamp-3 sm:line-clamp-none">
                 <Typewriter
                   words={[
                     `On behalf of the faculty and staff, welcome to the University of Cebu and the vibrant world of Computer Science!
@@ -103,10 +103,10 @@ const DeanAdviserSection = () => {
                 />
               </p>
               <div className="mt-auto">
-                <p className="text-sm md:text-xl font-bold">
+                <p className="text-xs sm:text-sm md:text-xl font-bold">
                   Neil A. Basabe, MIT
                 </p>
-                <p className="text-xs sm:text-sm md:text-base">
+                <p className="text-[10px] sm:text-xs md:text-base">
                   Dean, College of Computer Studies
                 </p>
               </div>
