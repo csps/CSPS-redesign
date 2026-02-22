@@ -46,7 +46,7 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
       <SectionLabel title="Change Password" />
       <ProfileCard>
         <div className="p-8 space-y-8">
-        <div className="space-y-2">
+          <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
               Current Password
             </label>
