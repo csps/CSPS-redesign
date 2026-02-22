@@ -27,6 +27,7 @@ import AdminProductsPage from "../pages/admin/products";
 
 import AdminMerchPage from "../pages/admin/student";
 import AdminMercheOrdersPage from "../pages/admin/merch/orders";
+import AdminMerchArchivePage from "../pages/admin/merch/archive";
 
 import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminSalesPage from "../pages/admin/sales";
@@ -102,6 +103,7 @@ const routers = [
       { path: "/admin/event/:id", element: <AdminEventDetailPage /> },
       { path: "/admin/finance", element: <AdminFinancePage /> },
       { path: "/admin/merch/products", element: <AdminProductsPage /> },
+      { path: "/admin/merch/archive", element: <AdminMerchArchivePage /> },
       { path: "/admin/sales", element: <AdminSalesPage /> },
       // { path: "/admin/bulletin", element: <AdminBulletinPage /> },
       // { path: "/admin/forum", element: <AdminForumPage /> },
