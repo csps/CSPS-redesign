@@ -42,7 +42,7 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
       {/* Glassmorphism Backdrop Overlay */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
+        onClick={!isProcessing ? onClose : undefined}
         aria-hidden
       />
 
@@ -51,9 +51,9 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
         {/* Subtle Background Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-purple-500/10 blur-[60px]" />
 
-        <div className="flex flex-col items-center text-center">
+        <div className="flex flex-col items-center text-center relative z-10">
           {/* Security Icon Badge */}
-          <h2 className="text-2xl font-bold text-whitemb-2">
+          <h2 className="text-2xl font-bold text-white mb-2">
             Confirm Purchase
           </h2>
           <p className="text-white/40 text-sm mb-8 leading-relaxed px-4">
@@ -95,33 +95,28 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
             <button
               onClick={handleConfirm}
               disabled={isProcessing}
-              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale cursor-pointer shadow-xl shadow-yellow-500/5"
+              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale cursor-pointer shadow-xl shadow-yellow-500/5 flex items-center justify-center gap-2"
             >
-              {isProcessing ? "Processing..." : "Complete Order"}
+              {isProcessing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Complete Order"
+              )}
             </button>
 
             <button
               onClick={onClose}
               disabled={isProcessing}
-              className="w-full py-4 rounded-xl bg-transparent border border-white/10 text-white/60 text-sm font-bold hover:bg-white/5 transition-all cursor-pointer"
+              className="w-full py-4 rounded-xl bg-transparent border border-white/10 text-white/60 text-sm font-bold hover:bg-white/5 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Go Back
             </button>
           </div>
         </div>
       </div>
-
-      {/* Loading Modal */}
-      {isProcessing && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-[#242050] border border-white/10 rounded-2xl p-8 text-center shadow-2xl">
-            <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-white font-medium text-lg">
-              Confirming your order...
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
