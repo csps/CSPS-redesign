@@ -1,17 +1,18 @@
 import React from "react";
-import { FaSearch, FaChevronDown } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaDownload } from "react-icons/fa";
 
 interface SearchFilterProps {
   onSearch: (query: string) => void;
   onFilterYear: (year: string) => void;
+  onExport?: () => void;
 }
 
-const SearchFilter: React.FC<SearchFilterProps> = ({ onSearch, onFilterYear }) => {
+const SearchFilter: React.FC<SearchFilterProps> = ({ onSearch, onFilterYear, onExport }) => {
   return (
     <div className="p-6 flex flex-col sm:flex-row justify-between items-center gap-4 border-b border-white/5">
       <h2 className="text-xl font-bold text-white self-start sm:self-center">All Students</h2>
       
-      <div className="flex gap-3 w-full sm:w-auto">
+      <div className="flex gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
         
         {/* Search Input */}
         <div className="relative flex-1 sm:w-64 bg-[#242050] rounded-lg border border-white/10">
@@ -44,6 +45,17 @@ const SearchFilter: React.FC<SearchFilterProps> = ({ onSearch, onFilterYear }) =
             ))}
           </div>
         </div>
+
+        {/* Export Button */}
+        {onExport && (
+          <button
+            onClick={onExport}
+            className="bg-[#242050] hover:bg-[#2f2b60] border border-white/10 text-white px-4 py-2 rounded-lg text-sm transition flex items-center gap-2"
+          >
+            <FaDownload className="text-white/60" size={12} />
+            <span>Export</span>
+          </button>
+        )}
 
       </div>
     </div>
