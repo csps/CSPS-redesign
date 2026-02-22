@@ -3,14 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { getUpcomingEventsPaginated } from "../../../api/event";
-import { joinEvent, getMyJoinedEvents, isStudentJoinedEvent, leaveEvent } from "../../../api/eventParticipation";
+import {
+  joinEvent,
+  isStudentJoinedEvent,
+} from "../../../api/eventParticipation";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
 import EventDetailModal from "./EventDetailModal";
 import ViewAllEventsModal from "./ViewAllEventsModal";
 import { formatDate, formatTimeRange } from "../../../helper/dateUtils";
 import { FaCalendarAlt, FaClock, FaArrowRight } from "react-icons/fa";
-import toast from "react-hot-toast";
 
 const UpcomingEvents = () => {
   const navigate = useNavigate();
@@ -31,16 +33,10 @@ const UpcomingEvents = () => {
       try {
         setLoading(true);
         // Fetch only first 5 events for the carousel
-        const [paginatedData, myEvents] = await Promise.all([
-          getUpcomingEventsPaginated(0, 5),
-          getMyJoinedEvents().catch(() => []),
-        ]);
-        
+        const paginatedData = await getUpcomingEventsPaginated(0, 5);
+
         setEvents(paginatedData.content || []);
         setTotalEvents(paginatedData.totalElements);
-        
-        const ids = new Set(myEvents.map((e) => e.eventId));
-        setJoinedEventIds(ids);
       } catch (err) {
         setEvents([]);
       } finally {
@@ -55,23 +51,6 @@ const UpcomingEvents = () => {
     setJoinedEventIds((prev) => new Set(prev).add(eventId));
   };
 
-  const handleLeave = async (eventId: number) => {
-    try {
-      await leaveEvent(eventId);
-      setJoinedEventIds((prev) => {
-        const next = new Set(prev);
-        next.delete(eventId);
-        return next;
-      });
-      toast.success("Successfully left the event");
-      // Optional: close modal if open, but 'Leave' keeps user in context usually
-      // setIsOpen(false); 
-    } catch (error) {
-      console.error("Failed to leave event", error);
-      toast.error("Failed to leave event");
-    }
-  };
-
   const handleEventClick = async (event: EventResponse) => {
     if (joinedEventIds.has(event.eventId)) {
       navigate(`/events/view/${event.eventId}`);
@@ -81,7 +60,7 @@ const UpcomingEvents = () => {
     setCheckingJoin((prev) => new Set(prev).add(event.eventId));
     try {
       const isJoined = await isStudentJoinedEvent(event.eventId);
-      
+
       if (isJoined) {
         setJoinedEventIds((prev) => new Set(prev).add(event.eventId));
         navigate(`/events/view/${event.eventId}`);
@@ -126,7 +105,6 @@ const UpcomingEvents = () => {
             setJoining(false);
           }
         }}
-        onLeave={handleLeave}
         isParticipant={
           selectedEvent ? joinedEventIds.has(selectedEvent.eventId) : false
         }
@@ -152,7 +130,7 @@ const UpcomingEvents = () => {
         </div>
         {/* Only show View All if total events >= 5 (or logic as requested) */}
         {totalEvents >= 5 && (
-          <button 
+          <button
             onClick={() => setIsViewAllOpen(true)}
             className="hidden sm:flex items-center gap-2 text-purple-400 hover:text-purple-300 transition text-sm font-medium"
           >
@@ -200,8 +178,10 @@ const UpcomingEvents = () => {
               className="!w-[280px] sm:!w-[320px] md:!w-[360px] lg:!w-[400px]"
             >
               <div
-                onClick={() => !checkingJoin.has(event.eventId) && handleEventClick(event)}
-                className={`group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300 ${checkingJoin.has(event.eventId) ? 'cursor-wait' : ''}`}
+                onClick={() =>
+                  !checkingJoin.has(event.eventId) && handleEventClick(event)
+                }
+                className={`group relative h-[280px] rounded-2xl overflow-hidden bg-[#1e1a4a] border border-white/10 cursor-pointer hover:border-purple-500/30 transition-all duration-300 ${checkingJoin.has(event.eventId) ? "cursor-wait" : ""}`}
               >
                 {/* Image */}
                 {event.s3ImageKey && (

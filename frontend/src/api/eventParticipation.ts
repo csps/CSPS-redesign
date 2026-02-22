@@ -115,21 +115,21 @@ export const leaveEvent = async (eventId: number): Promise<void> => {
   }
 };
 
-// get events the current student has joined
-export const getMyJoinedEvents = async (): Promise<
-  EventParticipantResponse[]
-> => {
-  try {
-    const response = await api.get<{ data: EventParticipantResponse[] }>(
-      `${EVENTS}/my-events`,
-    );
-    return response.data.data;
-  } catch (err: any) {
-    if (err.response?.status === 404) return [];
-    console.error("Error fetching joined events:", err);
-    throw err;
-  }
-};
+// // get events the current student has joined
+// export const getMyJoinedEvents = async (): Promise<
+//   EventParticipantResponse[]
+// > => {
+//   try {
+//     const response = await api.get<{ data: EventParticipantResponse[] }>(
+//       `${EVENTS}/my-events`,
+//     );
+//     return response.data.data;
+//   } catch (err: any) {
+//     if (err.response?.status === 404) return [];
+//     console.error("Error fetching joined events:", err);
+//     throw err;
+//   }
+// };
 
 // check if student has joined a specific event
 export const isStudentJoinedEvent = async (eventId: number): Promise<boolean> => {
@@ -251,7 +251,6 @@ export const removeParticipant = async (
 export default {
   joinEvent,
   leaveEvent,
-  getMyJoinedEvents,
   getEventSessions,
   getSessionsByDate,
   getQRToken,
