@@ -1,6 +1,5 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BiSolidCartAdd } from "react-icons/bi";
 import { ClothingSizing } from "../../../../enums/ClothingSizing";
 import { S3_BASE_URL } from "../../../../constant";
 

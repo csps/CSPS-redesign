@@ -29,7 +29,6 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
   variantIndex,
   errors = {},
   onColorChange,
-  onPriceChange,
   onImageUpload,
   onSizeCheckChange,
   onStockQuantityChange,

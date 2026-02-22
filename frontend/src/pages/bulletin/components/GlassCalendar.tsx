@@ -4,7 +4,6 @@ import { BsCameraVideo } from "react-icons/bs";
 import { CiLocationOn } from "react-icons/ci";
 import {
   getEventByMonth,
-  getUpcomingEvents,
   getUpcomingEventsPaginated,
 } from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";

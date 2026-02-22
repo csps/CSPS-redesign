@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
 import {
   Users,
-  ShoppingCart,
   Calendar,
   LayoutDashboard,
   ArrowUpRight,

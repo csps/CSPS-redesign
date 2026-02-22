@@ -1,5 +1,5 @@
 import React from "react";
-import { Megaphone, UserPlus, CalendarPlus, FileText } from "lucide-react";
+import {UserPlus, CalendarPlus, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const actions = [

@@ -11,7 +11,6 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import {
-  getUpcomingEvents,
   getPastEvents,
   getUpcomingEventsPaginated,
 } from "../../../api/event";
