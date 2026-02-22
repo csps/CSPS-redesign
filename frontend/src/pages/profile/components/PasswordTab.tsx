@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { ProfileCard, inputStyles, SectionLabel } from "./ProfileUIElements";
 import { MdLock } from "react-icons/md";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 interface PasswordTabProps {
   passwordForm: {
@@ -26,6 +27,11 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
   isLoading,
   error,
 }) => {
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
   return (
     <div className="max-w-2xl mx-auto">
       <div className="mb-10">
@@ -40,19 +46,37 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
       <SectionLabel title="Change Password" />
       <ProfileCard>
         <div className="p-8 space-y-8">
-          {/* current password */}
-          <div className="space-y-2">
+        <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
               Current Password
             </label>
-            <input
-              type="password"
-              name="currentPassword"
-              value={passwordForm.currentPassword}
-              onChange={onPasswordChange}
-              placeholder="Enter current password"
-              className={inputStyles.password}
-            />
+            <div className="relative">
+              <input
+                type={showPasswords.current ? "text" : "password"}
+                name="currentPassword"
+                value={passwordForm.currentPassword}
+                onChange={onPasswordChange}
+                placeholder="Enter current password"
+                className={inputStyles.password}
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPasswords((prev) => ({
+                    ...prev,
+                    current: !prev.current,
+                  }))
+                }
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                aria-label={showPasswords.current ? "Hide" : "Show"}
+              >
+                {showPasswords.current ? (
+                  <AiOutlineEyeInvisible className="text-lg" />
+                ) : (
+                  <AiOutlineEye className="text-lg" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="h-px bg-white/5 mx-[-2rem]" />
@@ -63,14 +87,33 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
               <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
                 New Password
               </label>
-              <input
-                type="password"
-                name="newPassword"
-                value={passwordForm.newPassword}
-                onChange={onPasswordChange}
-                placeholder="New password"
-                className={inputStyles.password}
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.new ? "text" : "password"}
+                  name="newPassword"
+                  value={passwordForm.newPassword}
+                  onChange={onPasswordChange}
+                  placeholder="New password"
+                  className={inputStyles.password}
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswords((prev) => ({
+                      ...prev,
+                      new: !prev.new,
+                    }))
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                  aria-label={showPasswords.new ? "Hide" : "Show"}
+                >
+                  {showPasswords.new ? (
+                    <AiOutlineEyeInvisible className="text-lg" />
+                  ) : (
+                    <AiOutlineEye className="text-lg" />
+                  )}
+                </button>
+              </div>
               <p className="text-[10px] text-white/20 mt-2 ml-1 leading-relaxed font-medium">
                 Min. 8 characters • Uppercase • Lowercase • Numbers
               </p>
@@ -80,14 +123,33 @@ const PasswordTab: React.FC<PasswordTabProps> = ({
               <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
                 Confirm New Password
               </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={passwordForm.confirmPassword}
-                onChange={onPasswordChange}
-                placeholder="Confirm password"
-                className={inputStyles.password}
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.confirm ? "text" : "password"}
+                  name="confirmPassword"
+                  value={passwordForm.confirmPassword}
+                  onChange={onPasswordChange}
+                  placeholder="Confirm password"
+                  className={inputStyles.password}
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswords((prev) => ({
+                      ...prev,
+                      confirm: !prev.confirm,
+                    }))
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                  aria-label={showPasswords.confirm ? "Hide" : "Show"}
+                >
+                  {showPasswords.confirm ? (
+                    <AiOutlineEyeInvisible className="text-lg" />
+                  ) : (
+                    <AiOutlineEye className="text-lg" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

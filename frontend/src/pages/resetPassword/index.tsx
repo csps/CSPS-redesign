@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import {
   validateRecoveryToken,
   resetPasswordWithToken,
@@ -21,6 +22,10 @@ const ResetPasswordPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPasswords, setShowPasswords] = useState({
+    new: false,
+    confirm: false,
+  });
 
   // Validate token on mount
   useEffect(() => {
@@ -163,18 +168,38 @@ const ResetPasswordPage: React.FC = () => {
               >
                 New password
               </label>
-              <input
-                type="password"
-                id="newPassword"
-                value={newPassword}
-                onChange={(e) => {
-                  setNewPassword(e.target.value);
-                  if (formError) setFormError(null);
-                }}
-                placeholder="Enter new password"
-                disabled={isSubmitting}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-5 text-white text-sm font-medium placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all duration-200 disabled:opacity-50"
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.new ? "text" : "password"}
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (formError) setFormError(null);
+                  }}
+                  placeholder="Enter new password"
+                  disabled={isSubmitting}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-5 pr-14 text-white text-sm font-medium placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all duration-200 disabled:opacity-50"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswords((prev) => ({
+                      ...prev,
+                      new: !prev.new,
+                    }))
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors disabled:opacity-50"
+                  disabled={isSubmitting}
+                  aria-label={showPasswords.new ? "Hide" : "Show"}
+                >
+                  {showPasswords.new ? (
+                    <AiOutlineEyeInvisible className="text-lg" />
+                  ) : (
+                    <AiOutlineEye className="text-lg" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Confirm password */}
@@ -185,18 +210,38 @@ const ResetPasswordPage: React.FC = () => {
               >
                 Confirm password
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  if (formError) setFormError(null);
-                }}
-                placeholder="Confirm new password"
-                disabled={isSubmitting}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-5 text-white text-sm font-medium placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all duration-200 disabled:opacity-50"
-              />
+              <div className="relative">
+                <input
+                  type={showPasswords.confirm ? "text" : "password"}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (formError) setFormError(null);
+                  }}
+                  placeholder="Confirm new password"
+                  disabled={isSubmitting}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 px-5 pr-14 text-white text-sm font-medium placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all duration-200 disabled:opacity-50"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswords((prev) => ({
+                      ...prev,
+                      confirm: !prev.confirm,
+                    }))
+                  }
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors disabled:opacity-50"
+                  disabled={isSubmitting}
+                  aria-label={showPasswords.confirm ? "Hide" : "Show"}
+                >
+                  {showPasswords.confirm ? (
+                    <AiOutlineEyeInvisible className="text-lg" />
+                  ) : (
+                    <AiOutlineEye className="text-lg" />
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Error */}

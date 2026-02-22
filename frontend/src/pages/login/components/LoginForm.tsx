@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { FaHashtag, FaLock } from "react-icons/fa";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../../../api/auth";
 import { toast } from "sonner";
@@ -11,6 +12,7 @@ import { getAdminHomeRoute } from "../../../router/routePermissions";
 const LoginForm = () => {
   const [studentId, setStudentId] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<{
     studentId?: string;
@@ -171,9 +173,9 @@ const LoginForm = () => {
           <FaLock className="text-lg sm:text-xl text-purple-300/80" />
         </label>
         <input
-          type="password"
+          type={showPassword ? "text" : "password"}
           id="password"
-          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
+          className={`w-full bg-purple-700/40 rounded-2xl py-3 sm:py-4 px-10 pr-14 text-white placeholder-purple-300/80 focus:outline-none focus:bg-purple-700/50 transition-all shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] z-10 border font-bold text-base sm:text-lg lg:text-xl ${
             errors.password ? "border-red-500 bg-red-700/40" : "border-black"
           }`}
           placeholder="Password"
@@ -185,6 +187,18 @@ const LoginForm = () => {
             }
           }}
         />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-purple-300/80 hover:text-purple-300 transition-colors"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+        >
+          {showPassword ? (
+            <AiOutlineEyeInvisible className="text-lg sm:text-xl" />
+          ) : (
+            <AiOutlineEye className="text-lg sm:text-xl" />
+          )}
+        </button>
         {errors.password && (
           <p className="text-red-400 text-sm mt-1 ml-3">{errors.password}</p>
         )}
