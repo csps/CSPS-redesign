@@ -146,18 +146,18 @@ const OfficersSection = ({
             className="fixed inset-0 z-50 flex flex-col bg-[#0a0a0a]/95 backdrop-blur-xl overflow-y-auto"
           >
             {/* Header */}
-            <div className="flex justify-between items-center p-6 md:p-10 border-b border-white/5 bg-[#0a0a0a]">
+            <div className="flex justify-between items-start sm:items-center gap-4 p-4 sm:p-6 md:p-10 border-b border-white/5 bg-[#0a0a0a]">
               <div>
-                <h2 className="text-3xl md:text-5xl font-bold text-[#ba44df]">
+                <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-[#ba44df]">
                   Officers
                 </h2>
-                <p className="text-gray-400 mt-2 text-sm md:text-base">
+                <p className="text-gray-400 mt-2 text-xs sm:text-sm md:text-base">
                   Explore the legacy of leadership through the years.
                 </p>
               </div>
               <button
                 onClick={() => setIsGalleryOpen(false)}
-                className="text-white/60 hover:text-[#ba44df] transition-colors p-2 rounded-full hover:bg-white/5"
+                className="text-white/60 hover:text-[#ba44df] transition-colors p-2 rounded-full hover:bg-white/5 flex-shrink-0"
                 aria-label="Close Gallery"
               >
                 <svg
@@ -178,10 +178,10 @@ const OfficersSection = ({
             </div>
 
             {/* Timeline Selector */}
-            <div className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/5 py-10">
-              <div className="max-w-3xl mx-auto relative px-12">
+            <div className="sticky top-0 z-40 bg-[#0a0a0a]/90 backdrop-blur-md border-b border-white/5 py-6 sm:py-8 md:py-10">
+              <div className="max-w-3xl mx-auto relative px-4 sm:px-8 md:px-12">
                 {/* Connecting Line */}
-                <div className="absolute top-[10px] left-16 right-16 h-[2px] bg-white/10 -translate-y-1/2" />
+                <div className="absolute top-[12px] left-8 sm:left-12 right-8 sm:right-12 h-[2px] bg-white/10" />
 
                 <div className="flex justify-between items-start relative">
                   {years.map((year) => {
@@ -190,12 +190,12 @@ const OfficersSection = ({
                       <button
                         key={year}
                         onClick={() => setSelectedYear(year)}
-                        className="group flex flex-col items-center focus:outline-none cursor-pointer"
+                        className="group flex flex-col items-center focus:outline-none cursor-pointer min-w-0"
                       >
                         {/* Circle Node */}
-                        <div className="relative mb-4">
+                        <div className="relative mb-3 sm:mb-4 flex-shrink-0">
                           <div
-                            className={`w-4 h-4 rounded-full border-2 transition-all duration-300 z-10 relative
+                            className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 transition-all duration-300 z-10 relative
                               ${
                                 isSelected
                                   ? "bg-[#ba44df] border-[#ba44df] shadow-[0_0_15px_rgba(186,68,223,0.5)] scale-125"
@@ -207,7 +207,7 @@ const OfficersSection = ({
                         {/* Label */}
                         <div className="flex flex-col items-center">
                           <span
-                            className={`text-xl font-bold tracking-tight transition-colors duration-300
+                            className={`text-sm sm:text-base md:text-xl font-bold tracking-tight transition-colors duration-300 line-clamp-1
                                 ${
                                   isSelected
                                     ? "text-[#ba44df]"
@@ -217,7 +217,7 @@ const OfficersSection = ({
                             {year === "current" ? "Current" : year}
                           </span>
                           <span
-                            className={`text-[10px] uppercase tracking-widest mt-1 transition-colors duration-300 ${isSelected ? "text-white/60" : "text-white/10"}`}
+                            className={`text-[8px] sm:text-[10px] uppercase tracking-widest mt-1 transition-colors duration-300 ${isSelected ? "text-white/60" : "text-white/10"}`}
                           >
                             {year === "current" ? "Term" : "Former"}
                           </span>
