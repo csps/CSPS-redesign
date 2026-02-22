@@ -39,9 +39,9 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Glassmorphism Backdrop Overlay */}
+      {/* Backdrop Overlay - Blur Only */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 backdrop-blur-lg transition-opacity"
         onClick={!isProcessing ? onClose : undefined}
         aria-hidden
       />
@@ -65,7 +65,7 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
           </p>
 
           {/* Pricing Box: Dark Glass with High-Contrast Typography */}
-          <div className="w-full bg-black/20 border border-white/5 rounded-2xl p-6 mb-8">
+          <div className="w-full border-white/5 rounded-2xl p-6 mb-8">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-bold text-white/30 uppercase">
                 Payable Amount
@@ -99,7 +99,7 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
             >
               {isProcessing ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 rounded-full animate-spin" />
                   Processing...
                 </>
               ) : (

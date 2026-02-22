@@ -37,7 +37,7 @@ const BuyNowModal: React.FC<Props> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 backdrop-blur-lg"
             onClick={!isProcessing ? onClose : undefined}
           />
 
@@ -49,22 +49,35 @@ const BuyNowModal: React.FC<Props> = ({
             className="relative w-full max-w-xl bg-[#1a1635] border border-white/10 rounded-3xl p-8 text-white shadow-2xl z-10"
           >
             <h3 className="text-2xl font-bold mb-4">Confirm Purchase</h3>
-            <p className="text-sm text-white/50 mb-6">Review order details below:</p>
-            
+            <p className="text-sm text-white/50 mb-6">
+              Review order details below:
+            </p>
+
             <div className="space-y-4 mb-8 bg-white/5 border border-white/10 rounded-2xl p-6">
               <div className="flex items-start gap-4">
                 <div className="h-20 w-20 bg-purple-500/10 rounded-lg flex items-center justify-center shrink-0 border border-white/5">
                   <BiSolidCartAdd className="text-3xl text-purple-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-white text-base mb-2 line-clamp-2">{merchName}</p>
+                  <p className="font-semibold text-white text-base mb-2 line-clamp-2">
+                    {merchName}
+                  </p>
                   {design && (
-                    <p className="text-sm text-white/60 mb-1">Design: <span className="text-white/80">{design}</span></p>
+                    <p className="text-sm text-white/60 mb-1">
+                      Design: <span className="text-white/80">{design}</span>
+                    </p>
                   )}
                   {size && (
-                    <p className="text-sm text-white/60 mb-1">Size: <span className="text-white/80">{size}</span></p>
+                    <p className="text-sm text-white/60 mb-1">
+                      Size: <span className="text-white/80">{size}</span>
+                    </p>
                   )}
-                  <p className="text-sm text-white/60">Qty: <span className="text-white/80 font-semibold">{quantity}</span></p>
+                  <p className="text-sm text-white/60">
+                    Qty:{" "}
+                    <span className="text-white/80 font-semibold">
+                      {quantity}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -87,7 +100,7 @@ const BuyNowModal: React.FC<Props> = ({
               >
                 {isProcessing ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 rounded-full transparent animate-spin" />
                     Processing...
                   </>
                 ) : (
