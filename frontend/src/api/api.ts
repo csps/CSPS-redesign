@@ -32,8 +32,9 @@ api.interceptors.request.use(
       if (isTokenExpired(accessToken)) {
         console.warn("Access token is expired, setting session expired flag");
         useAuthStore.getState().setSessionExpired(true);
-        // Don't add the expired token to headers
-        return config;
+        useAuthStore.getState().clearAuth();
+        // Reject the request immediately with 401 error
+        return Promise.reject(new Error("Token expired - session has expired"));
       }
 
       if (!config.url?.includes("/auth/login")) {
@@ -47,28 +48,27 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  (error) => {
+    // Handle 401 Unauthorized responses (invalid or expired tokens)
+    if (error.response?.status === 401) {
+      console.warn(
+        "401 Unauthorized - Token invalid or expired, setting session expired flag",
+      );
+      useAuthStore.getState().setSessionExpired(true);
+      useAuthStore.getState().clearAuth();
+      return Promise.reject(error);
+    }
 
+    // Handle specific error messages about invalid/expired tokens
+    const errorMessage = error.response?.data?.message || "";
     if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/refresh") &&
-      !originalRequest.url?.includes("/auth/login")
+      errorMessage.toLowerCase().includes("invalid token") ||
+      errorMessage.toLowerCase().includes("expired token") ||
+      errorMessage.toLowerCase().includes("invalid jwt")
     ) {
-      originalRequest._retry = true;
-
-      const accessToken = sessionStorage.getItem("accessToken");
-
-      // If no token or token is expired, set session expired flag
-      if (!accessToken || isTokenExpired(accessToken)) {
-        console.warn("Token expired or missing, setting session expired flag");
-        useAuthStore.getState().setSessionExpired(true);
-        return Promise.reject(error);
-      }
-
-      // If token exists and is not expired, try to refresh (if refresh endpoint exists)
-      // For now, we'll just reject since we don't have a refresh mechanism
+      console.warn("Invalid/Expired token error:", errorMessage);
+      useAuthStore.getState().setSessionExpired(true);
+      useAuthStore.getState().clearAuth();
       return Promise.reject(error);
     }
 
