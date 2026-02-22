@@ -95,12 +95,12 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
             <button
               onClick={handleConfirm}
               disabled={isProcessing}
-              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale cursor-pointer shadow-xl shadow-yellow-500/5 flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-[#FDE006] text-black text-sm font-black uppercase hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:brightness-75 cursor-pointer shadow-xl shadow-yellow-500/5 flex items-center justify-center gap-2"
             >
               {isProcessing ? (
                 <>
-                  <div className="w-4 h-4 border-2 rounded-full animate-spin" />
-                  Processing...
+                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                  Processing
                 </>
               ) : (
                 "Complete Order"
@@ -110,7 +110,7 @@ const ConfirmOrderModal: React.FC<ConfirmOrderModalProps> = ({
             <button
               onClick={onClose}
               disabled={isProcessing}
-              className="w-full py-4 rounded-xl bg-transparent border border-white/10 text-white/60 text-sm font-bold hover:bg-white/5 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-4 rounded-xl bg-transparent border border-white/10 text-white/60 text-sm font-bold hover:bg-white/5 transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Go Back
             </button>
