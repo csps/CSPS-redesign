@@ -57,6 +57,18 @@ export interface TransactionParams {
   search?: string;
   status?: TransactionStatus;
   year?: number;
+  studentId?: string;
+  studentName?: string;
+}
+
+export interface TransactionSearchParams {
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  size?: number;
+  sort?: string;
+  studentId?: string;
+  studentName?: string;
 }
 
 // ==================== API Functions ====================
@@ -95,6 +107,21 @@ export const getTransactions = async (
     },
   );
   return response.data.data;
+};
+
+/**
+ * Search transactions by date range
+ */
+export const searchTransactions = async (
+  params: TransactionSearchParams,
+): Promise<Transaction[]> => {
+  const response = await api.get<TransactionPageResponse>(
+    "/sales/transactions",
+    {
+      params,
+    },
+  );
+  return response.data.data.content;
 };
 
 /**
