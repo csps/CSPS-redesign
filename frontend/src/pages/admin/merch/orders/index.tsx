@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
+import AdminPageLoader from "../../../../components/AdminPageLoader";
 import Footer from "../../../../components/Footer";
 import OrderGroup from "./components/OrderGroup";
 import StatusHeader from "./components/StatusHeader";
@@ -111,95 +112,99 @@ const Index = () => {
 
   return (
     <>
-      <Layout>
-        <div className="relative w-full max-w-[90rem] p-6 text-white">
-          <AuthenticatedNav />
+      <AdminPageLoader isLoading={loading}>
+        <Layout>
+          <div className="relative w-full max-w-[90rem] p-6 text-white">
+            <AuthenticatedNav />
 
-          <div className="mt-8">
-            {/* Page Header */}
-            <div className="mb-8">
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
-                ADMIN DASHBOARD
-              </p>
-              <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">
-                Order Management
-              </h1>
-              <p className="text-white/50">Manage and track customer orders</p>
-            </div>
-
-            {/* Filter & Search Section */}
-            <div className="bg-[#1E1E3F] rounded-2xl border border-white/5 p-6 mb-6">
-              <StatusHeader
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                startDate={startDate}
-                onStartDateChange={setStartDate}
-                endDate={endDate}
-                onEndDateChange={setEndDate}
-              />
-            </div>
-
-            {/* Loading State */}
-            {loading && (
-              <div className="flex justify-center items-center py-24">
-                <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 mb-6">
-                <p className="text-red-400 text-center">{error}</p>
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!loading && !error && groupedOrders.length === 0 && (
-              <div className="bg-[#1E1E3F] border border-white/5 rounded-2xl p-16 text-center">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <FiPackage className="text-white/30" size={36} />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">
-                  No Orders Found
-                </h3>
-                <p className="text-white/50 max-w-md mx-auto">
-                  {searchQuery ||
-                  selectedStatus !== "All" ||
-                  startDate ||
-                  endDate
-                    ? "No orders match your search criteria. Try adjusting your filters."
-                    : "There are no orders to display at the moment."}
+            <div className="mt-8">
+              {/* Page Header */}
+              <div className="mb-8">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
+                  ADMIN DASHBOARD
+                </p>
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">
+                  Order Management
+                </h1>
+                <p className="text-white/50">
+                  Manage and track customer orders
                 </p>
               </div>
-            )}
 
-            {/* Orders List */}
-            {!loading && !error && groupedOrders.length > 0 && (
-              <div className="space-y-6">
-                {groupedOrders.map((order) => (
-                  <OrderGroup key={order.orderId} order={order} />
-                ))}
+              {/* Filter & Search Section */}
+              <div className="bg-[#1E1E3F] rounded-2xl border border-white/5 p-6 mb-6">
+                <StatusHeader
+                  selectedStatus={selectedStatus}
+                  onStatusChange={setSelectedStatus}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
+                  startDate={startDate}
+                  onStartDateChange={setStartDate}
+                  endDate={endDate}
+                  onEndDateChange={setEndDate}
+                />
               </div>
-            )}
 
-            {/* Pagination Controls */}
-            {!loading &&
-              !error &&
-              paginationInfo &&
-              paginationInfo.totalPages > 1 && (
-                <div className="mt-8">
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={paginationInfo.totalPages}
-                    onPageChange={setCurrentPage}
-                  />
+              {/* Loading State */}
+              {loading && (
+                <div className="flex justify-center items-center py-24">
+                  <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
                 </div>
               )}
+
+              {/* Error State */}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-6 mb-6">
+                  <p className="text-red-400 text-center">{error}</p>
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!loading && !error && groupedOrders.length === 0 && (
+                <div className="bg-[#1E1E3F] border border-white/5 rounded-2xl p-16 text-center">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                    <FiPackage className="text-white/30" size={36} />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    No Orders Found
+                  </h3>
+                  <p className="text-white/50 max-w-md mx-auto">
+                    {searchQuery ||
+                    selectedStatus !== "All" ||
+                    startDate ||
+                    endDate
+                      ? "No orders match your search criteria. Try adjusting your filters."
+                      : "There are no orders to display at the moment."}
+                  </p>
+                </div>
+              )}
+
+              {/* Orders List */}
+              {!loading && !error && groupedOrders.length > 0 && (
+                <div className="space-y-6">
+                  {groupedOrders.map((order) => (
+                    <OrderGroup key={order.orderId} order={order} />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination Controls */}
+              {!loading &&
+                !error &&
+                paginationInfo &&
+                paginationInfo.totalPages > 1 && (
+                  <div className="mt-8">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={paginationInfo.totalPages}
+                      onPageChange={setCurrentPage}
+                    />
+                  </div>
+                )}
+            </div>
           </div>
-        </div>
-      </Layout>{" "}
+        </Layout>
+      </AdminPageLoader>{" "}
       <Footer />
     </>
   );

@@ -70,76 +70,99 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4 sm:p-8"
           >
-            <div className="w-full max-w-2xl bg-[#1E1E3F] border border-white/10 rounded-2xl overflow-hidden">
+            <div className="w-full max-w-sm sm:max-w-2xl bg-[#1E1E3F] border border-white/10 rounded-2xl overflow-hidden">
               {/* Header */}
-              <div className="relative px-6 py-5 border-b border-white/5 flex items-center justify-between">
-                <div>
+              <div className="relative px-4 sm:px-6 py-4 sm:py-5 border-b border-white/5 flex items-center justify-between">
+                <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-500 mb-1">
                     Order #{orderItem.orderId}
                   </p>
-                  <h2 className="text-xl font-bold text-white">
+                  <h2 className="text-lg sm:text-xl font-bold text-white">
                     Manage Order Status
                   </h2>
                 </div>
                 <button
                   onClick={handleClose}
-                  className="w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
+                  className="ml-2 shrink-0 w-10 h-10 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all"
                 >
                   <FiX size={20} />
                 </button>
               </div>
 
               {/* Content */}
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row gap-6 mb-8">
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
                   {/* Image */}
-                  <div className="shrink-0 w-32 h-32 bg-black/20 rounded-xl flex items-center justify-center p-2 overflow-hidden border border-white/5">
+                  <div className="shrink-0 w-24 h-24 sm:w-32 sm:h-32 bg-black/20 rounded-xl flex items-center justify-center p-2 overflow-hidden border border-white/5 mx-auto sm:mx-0">
                     <img
-                      src={orderItem.s3ImageKey ? S3_BASE_URL + orderItem.s3ImageKey : ""}
+                      src={
+                        orderItem.s3ImageKey
+                          ? S3_BASE_URL + orderItem.s3ImageKey
+                          : ""
+                      }
                       alt={orderItem.merchName}
                       className="w-full h-full object-cover rounded-lg"
                     />
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1">
+                  <div className="flex-1 text-center sm:text-left">
                     <p className="text-xs text-gray-400 mb-1">
                       CSPS Official • {orderItem.merchType}
                     </p>
-                    <h3 className="text-2xl font-bold text-white mb-2">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 line-clamp-2">
                       {orderItem.merchName}
                     </h3>
-                    <p className="text-2xl font-bold text-white mb-4">
+                    <p className="text-xl sm:text-2xl font-bold text-white mb-3">
                       ₱{orderItem.totalPrice.toLocaleString()}
                     </p>
 
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
-                      <p>Qty: <span className="font-bold text-white">{orderItem.quantity}</span></p>
+                    <div className="flex flex-wrap justify-center sm:justify-start gap-x-4 sm:gap-x-6 gap-y-1 sm:gap-y-2 text-xs sm:text-sm text-gray-400">
+                      <p>
+                        Qty:{" "}
+                        <span className="font-bold text-white">
+                          {orderItem.quantity}
+                        </span>
+                      </p>
                       {isClothing && orderItem.size && (
-                        <p>Size: <span className="font-bold text-white">{orderItem.size}</span></p>
+                        <p>
+                          Size:{" "}
+                          <span className="font-bold text-white">
+                            {orderItem.size}
+                          </span>
+                        </p>
                       )}
                       {isClothing && orderItem.color && (
-                        <p>Color: <span className="font-bold text-white">{orderItem.color}</span></p>
+                        <p>
+                          Color:{" "}
+                          <span className="font-bold text-white">
+                            {orderItem.color}
+                          </span>
+                        </p>
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* Customer Section */}
-                <div className="bg-black/20 border border-white/5 rounded-xl p-4 mb-8">
+                <div className="bg-black/20 border border-white/5 rounded-xl p-3 sm:p-4 mb-6 sm:mb-8">
                   <p className="text-xs text-gray-500 mb-2">CUSTOMER</p>
-                  <p className="text-white font-bold">{orderItem.studentName}</p>
-                  <p className="text-gray-400 text-sm">{orderItem.studentId}</p>
+                  <p className="text-white font-bold text-sm sm:text-base">
+                    {orderItem.studentName}
+                  </p>
+                  <p className="text-gray-400 text-xs sm:text-sm">
+                    {orderItem.studentId}
+                  </p>
                 </div>
 
                 {/* Status Selection */}
                 <div>
-                  <p className="text-xs text-gray-500 mb-4">
+                  <p className="text-xs text-gray-500 mb-3">
                     {canEdit ? "SELECT STATUS" : "CURRENT STATUS"}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
                     {statusOptions.map((option) => {
                       const style = statusStyles[option.value];
                       const isSelected = tempStatus === option.value;
@@ -149,7 +172,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                           key={option.value}
                           onClick={() => canEdit && setTempStatus(option.value)}
                           disabled={!canEdit}
-                          className={`px-4 py-4 rounded-xl border transition-all text-sm font-bold ${
+                          className={`px-3 sm:px-4 py-3 sm:py-4 rounded-xl border transition-all text-xs sm:text-sm font-bold ${
                             isSelected
                               ? `${style.bg} ${style.border} ${style.color}`
                               : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
@@ -164,10 +187,10 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-5 border-t border-white/5 flex justify-end items-center gap-3 bg-black/10">
+              <div className="px-4 sm:px-6 py-4 sm:py-5 border-t border-white/5 flex justify-end items-center gap-2 sm:gap-3 bg-black/10 flex-wrap">
                 <button
                   onClick={handleClose}
-                  className="px-6 py-2.5 text-sm font-bold text-gray-400 hover:text-white transition-colors"
+                  className="px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-gray-400 hover:text-white transition-colors"
                 >
                   {canEdit ? "Cancel" : "Close"}
                 </button>
@@ -175,7 +198,7 @@ const StatusCardModal: React.FC<StatusCardModalProps> = ({
                   <button
                     onClick={handleSave}
                     disabled={!hasChanges || isSaving}
-                    className={`px-8 py-2.5 rounded-lg text-sm font-bold transition-all ${
+                    className={`px-6 sm:px-8 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                       hasChanges
                         ? "bg-[#FDE006] text-black hover:bg-gray-200"
                         : "bg-[#FDE006]/5 text-gray-500 cursor-not-allowed"

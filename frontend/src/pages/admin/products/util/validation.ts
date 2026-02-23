@@ -93,6 +93,10 @@ export const validateVariants = (
           errors[`variant_${idx}_design`] = "Design is required";
         }
 
+        if (!variant.imageFile) {
+          errors[`variant_${idx}_image`] = "Variant image is required";
+        }
+
         if (variant.price === "" || variant.price === 0) {
           errors[`variant_${idx}_price`] =
             "Price is required and must be greater than 0";

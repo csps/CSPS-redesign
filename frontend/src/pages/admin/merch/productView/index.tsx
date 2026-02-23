@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
+import AdminPageLoader from "../../../../components/AdminPageLoader";
 import SAMPLE from "../../../../assets/image 8.png";
 import Layout from "../../../../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
@@ -452,190 +453,194 @@ const AdminMerchProductView = () => {
 
   // ========== Main Render ==========
   return (
-    <Layout>
-      <AuthenticatedNav />
+    <AdminPageLoader isLoading={loading}>
+      <Layout>
+        <AuthenticatedNav />
 
-      <div className="mb-8">
-        <button
-          onClick={() => navigate("/admin/merch/products")}
-          className="text-purple-400 hover:text-purple-300 transition-colors"
-        >
-          ← Back to Merch
-        </button>
-      </div>
+        <div className="mb-8">
+          <button
+            onClick={() => navigate("/admin/merch/products")}
+            className="text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            ← Back to Merch
+          </button>
+        </div>
 
-      <div className="flex flex-col lg:flex-row gap-16">
-        {/* Left - Variant List */}
-        <div className="flex-1">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-xl font-bold text-white mb-4">Variants</h2>
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
-              {merch.variants.map((variant, idx) => (
-                <button
-                  key={variant.merchVariantId}
-                  onClick={() => setActiveIndex(idx)}
-                  className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                    activeIndex === idx
-                      ? "border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/20"
-                      : "border-white/10 hover:border-purple-400 bg-white/5"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={
-                        variant.s3ImageKey
-                          ? S3_BASE_URL + variant.s3ImageKey
-                          : SAMPLE
-                      }
-                      alt="variant"
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <p className="font-semibold text-white">
-                        {variant.color ||
-                          variant.design ||
-                          `Variant ${idx + 1}`}
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        {variant.items.length}{" "}
-                        {merch.merchType === "CLOTHING" ? "sizes" : "items"}
-                      </p>
-                    </div>
-                    {canManageMerch && (
-                      <button
-                        onClick={(e) =>
-                          handleDeleteVariantClick(e, variant.merchVariantId)
+        <div className="flex flex-col lg:flex-row gap-16">
+          {/* Left - Variant List */}
+          <div className="flex-1">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-xl font-bold text-white mb-4">Variants</h2>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {merch.variants.map((variant, idx) => (
+                  <button
+                    key={variant.merchVariantId}
+                    onClick={() => setActiveIndex(idx)}
+                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                      activeIndex === idx
+                        ? "border-purple-500 bg-purple-500/10 ring-2 ring-purple-500/20"
+                        : "border-white/10 hover:border-purple-400 bg-white/5"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={
+                          variant.s3ImageKey
+                            ? S3_BASE_URL + variant.s3ImageKey
+                            : SAMPLE
                         }
-                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all"
-                        title="Delete variant"
-                      >
-                        <FaTrash size={14} />
-                      </button>
-                    )}
-                  </div>
+                        alt="variant"
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-semibold text-white">
+                          {variant.color ||
+                            variant.design ||
+                            `Variant ${idx + 1}`}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {variant.items.length}{" "}
+                          {merch.merchType === "CLOTHING" ? "sizes" : "items"}
+                        </p>
+                      </div>
+                      {canManageMerch && (
+                        <button
+                          onClick={(e) =>
+                            handleDeleteVariantClick(e, variant.merchVariantId)
+                          }
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all"
+                          title="Delete variant"
+                        >
+                          <FaTrash size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {canManageMerch && (
+                <button
+                  onClick={() => setShowAddVariantModal(true)}
+                  className="w-full mt-4 py-3 px-4 bg-[#341677] hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
+                >
+                  + Add Variant
                 </button>
-              ))}
+              )}
+            </div>
+          </div>
+
+          {/* Center - Main Image */}
+          <div className="flex-[2] flex flex-col items-center justify-center">
+            <img
+              src={
+                currentVariant?.s3ImageKey
+                  ? S3_BASE_URL + currentVariant.s3ImageKey
+                  : SAMPLE
+              }
+              alt="Preview"
+              className="w-full max-w-[350px] h-full max-h-[400px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)]"
+            />
+          </div>
+
+          {/* Right - Product Info & Stock Management */}
+          <div className="flex flex-col gap-6 flex-1">
+            {/* Header */}
+            <div>
+              <h1 className="text-3xl font-bold tracking-widest">
+                {merch.merchName}
+              </h1>
+              <p className="text-lg text-purple-200 mt-2">
+                ₱ {merch.basePrice.toFixed(2)}
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Type: {merch.merchType}
+              </p>
             </div>
 
-            {canManageMerch && (
-              <button
-                onClick={() => setShowAddVariantModal(true)}
-                className="w-full mt-4 py-3 px-4 bg-[#341677] hover:bg-purple-700 text-white rounded-lg font-semibold transition-all"
-              >
-                + Add Variant
-              </button>
+            {/* Stock Management */}
+            {currentVariant && (
+              <StockManagement
+                variant={currentVariant}
+                variantIndex={activeIndex}
+                editedStocks={editedStocks}
+                editedPrices={editedPrices}
+                onStockChange={handleStockChange}
+                onPriceChange={handlePriceChange}
+                onAddSize={handleAddSize}
+                onDeleteItem={handleDeleteItem}
+                isClothing={merch.merchType === "CLOTHING"}
+                canEdit={canManageMerch}
+              />
             )}
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+              {canManageMerch ? (
+                <>
+                  <button
+                    onClick={handleSaveChanges}
+                    disabled={isSaving || !hasChanges()}
+                    className={`flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all ${
+                      isSaving || !hasChanges()
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                  >
+                    {isSaving ? "Saving..." : "Save Changes"}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveIndex(0)}
+                    className="flex-1 py-3 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-all"
+                  >
+                    Reset View
+                  </button>
+                </>
+              ) : (
+                <div className="w-full text-center py-3 px-4 bg-gray-700/50 text-gray-400 rounded-lg">
+                  Read-only mode - You don't have permission to edit
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Center - Main Image */}
-        <div className="flex-[2] flex flex-col items-center justify-center">
-          <img
-            src={
-              currentVariant?.s3ImageKey
-                ? S3_BASE_URL + currentVariant.s3ImageKey
-                : SAMPLE
-            }
-            alt="Preview"
-            className="w-full max-w-[350px] h-full max-h-[400px] object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.5)]"
-          />
-        </div>
+        {/* Add Variant Modal */}
+        <AddVariantModal
+          open={showAddVariantModal}
+          onClose={() => setShowAddVariantModal(false)}
+          onConfirm={handleAddVariant}
+          merchType={merch.merchType}
+          isAddingVariant={isAddingVariant}
+        />
 
-        {/* Right - Product Info & Stock Management */}
-        <div className="flex flex-col gap-6 flex-1">
-          {/* Header */}
-          <div>
-            <h1 className="text-3xl font-bold tracking-widest">
-              {merch.merchName}
-            </h1>
-            <p className="text-lg text-purple-200 mt-2">
-              ₱ {merch.basePrice.toFixed(2)}
-            </p>
-            <p className="text-sm text-gray-400 mt-1">
-              Type: {merch.merchType}
-            </p>
-          </div>
+        {/* Confirmation Modal */}
+        <ConfirmationModal
+          open={showConfirmationModal}
+          onClose={() => setShowConfirmationModal(false)}
+          onConfirm={handleConfirmSave}
+          isSaving={isSaving}
+          editedStocks={editedStocks}
+          editedPrices={editedPrices}
+          merch={merch!}
+        />
 
-          {/* Stock Management */}
-          {currentVariant && (
-            <StockManagement
-              variant={currentVariant}
-              variantIndex={activeIndex}
-              editedStocks={editedStocks}
-              editedPrices={editedPrices}
-              onStockChange={handleStockChange}
-              onPriceChange={handlePriceChange}
-              onAddSize={handleAddSize}
-              onDeleteItem={handleDeleteItem}
-              isClothing={merch.merchType === "CLOTHING"}
-              canEdit={canManageMerch}
-            />
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-            {canManageMerch ? (
-              <>
-                <button
-                  onClick={handleSaveChanges}
-                  disabled={isSaving || !hasChanges()}
-                  className={`flex-1 py-3 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-all ${
-                    isSaving || !hasChanges() ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </button>
-
-                <button
-                  onClick={() => setActiveIndex(0)}
-                  className="flex-1 py-3 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-all"
-                >
-                  Reset View
-                </button>
-              </>
-            ) : (
-              <div className="w-full text-center py-3 px-4 bg-gray-700/50 text-gray-400 rounded-lg">
-                Read-only mode - You don't have permission to edit
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Add Variant Modal */}
-      <AddVariantModal
-        open={showAddVariantModal}
-        onClose={() => setShowAddVariantModal(false)}
-        onConfirm={handleAddVariant}
-        merchType={merch.merchType}
-        isAddingVariant={isAddingVariant}
-      />
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        open={showConfirmationModal}
-        onClose={() => setShowConfirmationModal(false)}
-        onConfirm={handleConfirmSave}
-        isSaving={isSaving}
-        editedStocks={editedStocks}
-        editedPrices={editedPrices}
-        merch={merch!}
-      />
-
-      {/* Delete Variant Confirmation Modal */}
-      <DeleteConfirmationModal
-        open={showDeleteVariantModal}
-        onClose={() => {
-          setShowDeleteVariantModal(false);
-          setVariantToDelete(null);
-        }}
-        onConfirm={handleConfirmDeleteVariant}
-        isDeleting={isDeletingVariant}
-        title="Delete Variant"
-        message="Are you sure you want to delete this variant?"
-        warningMessage="This will permanently delete the variant and all its items."
-      />
-    </Layout>
+        {/* Delete Variant Confirmation Modal */}
+        <DeleteConfirmationModal
+          open={showDeleteVariantModal}
+          onClose={() => {
+            setShowDeleteVariantModal(false);
+            setVariantToDelete(null);
+          }}
+          onConfirm={handleConfirmDeleteVariant}
+          isDeleting={isDeletingVariant}
+          title="Delete Variant"
+          message="Are you sure you want to delete this variant?"
+          warningMessage="This will permanently delete the variant and all its items."
+        />
+      </Layout>
+    </AdminPageLoader>
   );
 };
 
