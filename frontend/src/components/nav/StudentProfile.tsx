@@ -41,7 +41,7 @@ const StudentProfile: React.FC<StudentProfileProps> = ({ student }) => {
     >
       <button
         onClick={toggleDropdown}
-        className="hidden xl:flex flex-col items-center hover:opacity-80 transition-opacity cursor-pointer"
+        className="hidden lg:flex flex-col items-center hover:opacity-80 transition-opacity cursor-pointer"
       >
         <div className="h-14 w-14 bg-purple-700/40 rounded-md flex items-center justify-center">
           <svg

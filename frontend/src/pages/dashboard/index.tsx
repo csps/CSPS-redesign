@@ -11,7 +11,6 @@ import { useAuthStore } from "../../store/auth_store";
 import LoadingPage from "../loading";
 import ProfileCompletionModal from "../../components/ProfileCompletionModal";
 import type { StudentResponse } from "../../interfaces/student/StudentResponse";
-import { hydrateFullProfile } from "../../api/auth";
 import { useScrollLock } from "../../hooks/useScrollLock";
 
 const Index = () => {
@@ -21,13 +20,7 @@ const Index = () => {
   // Lock scroll when profile modal is open
   useScrollLock(showProfileModal);
 
-  // Fetch the full user profile on mount. During optimistic login the store
-  // only contains JWT-decoded minimal data (name + role). This background
-  // call replaces it with the complete profile from the API, which includes
-  // fields like isProfileComplete, email, yearLevel, etc.
-  useEffect(() => {
-    hydrateFullProfile();
-  }, []);
+
 
   // Show profile completion modal only when isProfileComplete is explicitly false.
   // During optimistic login, isProfileComplete is undefined (from JWT decode) — modal stays hidden.

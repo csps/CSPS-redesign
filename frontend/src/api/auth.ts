@@ -60,9 +60,7 @@ const buildMinimalUserFromClaims = (
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : "";
 
   const isAdmin =
-    role === "ADMIN" ||
-    role === "ROLE_ADMIN" ||
-    role.startsWith("ROLE_ADMIN_");
+    role === "ADMIN" || role === "ROLE_ADMIN" || role.startsWith("ROLE_ADMIN_");
 
   if (isAdmin) {
     // Build a minimal UserResponse-shaped object for admin routing
@@ -126,7 +124,11 @@ export const login = async (authRequest: AuthRequest) => {
 
     // If JWT decode failed for any reason, fall back to blocking profile fetch
     const { isAuthenticated } = useAuthStore.getState();
-    if (!isAuthenticated) {
+
+    console.log("Login successful, JWT claims:", claims);
+    console.log("isAuthenticated:", isAuthenticated);
+
+    if (isAuthenticated) {
       await profile();
     }
 
@@ -214,15 +216,49 @@ export const logout = async () => {
 
 /**
  * Fetches the authenticated user's full profile from the backend.
- * Tries the student profile endpoint first, falling back to the admin
- * profile endpoint if the student call fails (role-agnostic discovery).
+ * Checks the JWT token role: if ADMIN, calls the admin endpoint directly.
+ * Otherwise, tries the student profile endpoint first, falling back to the admin
+ * profile endpoint if the student call fails.
  *
  * @returns The fully populated AuthUser object with role discrimination
  * @throws Propagates API errors after clearing auth state on failure
  */
 export const profile = async (): Promise<AuthUser> => {
+  // Get the access token and decode it to check the role
+  const accessToken = sessionStorage.getItem("accessToken");
+  const jwtClaims = accessToken ? decodeJwtPayload(accessToken) : null;
+  const tokenRole = jwtClaims?.role;
+
+  const isAdmin =
+    tokenRole === "ADMIN" ||
+    tokenRole === "ROLE_ADMIN" ||
+    (typeof tokenRole === "string" && tokenRole.startsWith("ROLE_ADMIN_"));
+
+  // If JWT indicates admin role, call admin endpoint directly
+  if (isAdmin) {
+    try {
+      const res = await api.get<UserResponse>("/auth/admin/profile");
+
+      if (!res?.data) {
+        useAuthStore.getState().clearAuth();
+        throw new Error("Invalid admin profile response");
+      }
+
+      const user: AuthUser = {
+        ...res.data,
+        role: "ADMIN",
+      };
+
+      useAuthStore.getState().setUser(user);
+      return user;
+    } catch (err) {
+      useAuthStore.getState().clearAuth();
+      throw err;
+    }
+  }
+
+  // For students, try student endpoint first
   try {
-    // Try to get student profile first
     const res = await api.get<StudentResponse>("/auth/profile");
 
     // validate shape
@@ -234,7 +270,6 @@ export const profile = async (): Promise<AuthUser> => {
       useAuthStore.getState().clearAuth();
       throw new Error("Invalid student profile response");
     }
-
     const user: AuthUser = {
       ...res.data,
       role: "STUDENT",
@@ -243,7 +278,7 @@ export const profile = async (): Promise<AuthUser> => {
     useAuthStore.getState().setUser(user);
     return user;
   } catch (err) {
-    // If student endpoint fails, try admin endpoint
+    // If student endpoint fails, try admin endpoint as fallback
     try {
       const res = await api.get<UserResponse>("/auth/admin/profile");
 

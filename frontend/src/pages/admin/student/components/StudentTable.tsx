@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import SearchFilter from "../../merch/components/SearchFilter"; 
+import SearchFilter from "../../merch/components/SearchFilter";
 import type { StudentResponse } from "../../../../interfaces/student/StudentResponse";
 import { getAllStudents } from "../../../../api/student";
 import { toast } from "sonner";
@@ -15,6 +15,8 @@ const StudentTable = ({
   onStudentClick,
   onSearch,
   onFilterYear,
+  searchQuery = "",
+  yearFilter = "All",
 }: {
   students: StudentResponse[];
   currentPage: number;
@@ -24,6 +26,8 @@ const StudentTable = ({
   onStudentClick?: (student: StudentResponse) => void;
   onSearch: (query: string) => void;
   onFilterYear: (year: string) => void;
+  searchQuery?: string;
+  yearFilter?: string;
 }) => {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -60,33 +64,42 @@ const StudentTable = ({
     setIsExporting(true);
     try {
       const data = await getAllStudents();
-      
+
       if (!data || data.length === 0) {
         toast.error("No data to export");
         return;
       }
 
-      const csvHeader = "Student ID,Last Name,First Name,Middle Name,Email,Year Level\n";
-      const csvRows = data.map(student => {
-        const { studentId, yearLevel, user } = student;
-        // Escape quotes in strings
-        const escape = (str: string) => `"${(str || "").replace(/"/g, '""')}"`;
-        
-        return [
-          escape(studentId),
-          escape(user.lastName),
-          escape(user.firstName),
-          escape(user.middleName || ""),
-          escape(user.email),
-          yearLevel
-        ].join(",");
-      }).join("\n");
-      
-      const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
+      const csvHeader =
+        "Student ID,Last Name,First Name,Middle Name,Email,Year Level\n";
+      const csvRows = data
+        .map((student) => {
+          const { studentId, yearLevel, user } = student;
+          // Escape quotes in strings
+          const escape = (str: string) =>
+            `"${(str || "").replace(/"/g, '""')}"`;
+
+          return [
+            escape(studentId),
+            escape(user.lastName),
+            escape(user.firstName),
+            escape(user.middleName || ""),
+            escape(user.email),
+            yearLevel,
+          ].join(",");
+        })
+        .join("\n");
+
+      const blob = new Blob([csvHeader + csvRows], {
+        type: "text/csv;charset=utf-8;",
+      });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `students_export_${new Date().toISOString().slice(0, 10)}.csv`);
+      link.setAttribute(
+        "download",
+        `students_export_${new Date().toISOString().slice(0, 10)}.csv`,
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -106,6 +119,8 @@ const StudentTable = ({
         onSearch={onSearch}
         onFilterYear={onFilterYear}
         onExport={handleExportCSV}
+        searchQuery={searchQuery}
+        yearFilter={yearFilter}
       />
 
       {/* Exporting Modal */}
@@ -120,8 +135,12 @@ const StudentTable = ({
             >
               <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
               <div className="text-center">
-                <h3 className="text-lg font-bold text-white mb-1">Exporting Data</h3>
-                <p className="text-white/50 text-sm">Please wait while we generate your CSV...</p>
+                <h3 className="text-lg font-bold text-white mb-1">
+                  Exporting Data
+                </h3>
+                <p className="text-white/50 text-sm">
+                  Please wait while we generate your CSV...
+                </p>
               </div>
             </motion.div>
           </div>
@@ -263,6 +282,6 @@ const StudentTable = ({
       </div>
     </div>
   );
-}
+};
 
 export default StudentTable;

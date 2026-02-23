@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import type { StudentResponse } from "../../interfaces/student/StudentResponse";
 import { logout } from "../../api/auth";
+import { useAuthStore } from "../../store/auth_store";
 
 interface ProfileDropdownProps {
   student: StudentResponse | null;
@@ -14,8 +15,38 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
+  const user = useAuthStore.getState().user;
 
-  const isAdmin = student?.user.role === "ADMIN";
+  const isAdmin = user?.role === "ADMIN";
+
+  // Get user data based on role
+  const getUserData = () => {
+    if (isAdmin && user && "firstName" in user) {
+      // Admin user - data is at top level
+      return {
+        firstName: (user as any).firstName || "",
+        lastName: (user as any).lastName || "",
+        userId: (user as any).userId,
+        studentId: null,
+      };
+    } else if (!isAdmin && student && "user" in student) {
+      // Student user - data is nested under user
+      const studentUser = (student as any).user;
+      return {
+        firstName: studentUser?.firstName || "",
+        lastName: studentUser?.lastName || "",
+        userId: studentUser?.userId,
+        studentId: (student as any).studentId,
+      };
+    }
+    return {
+      firstName: "",
+      lastName: "",
+      userId: null,
+      studentId: null,
+    };
+  };
+
   const handleLogout = async () => {
     await logout();
     onClose();

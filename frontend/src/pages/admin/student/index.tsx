@@ -105,6 +105,8 @@ const StudentsPage = () => {
               onStudentClick={handleStudentClick}
               onSearch={handleSearch}
               onFilterYear={handleFilterYear}
+              searchQuery={searchQuery}
+              yearFilter={yearFilter}
             />
           )}
         </div>
