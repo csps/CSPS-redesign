@@ -1,12 +1,10 @@
-import React from 'react';
-
 // Define the shape of the data
 interface PostData {
   id: number | string;
   title: string;
   username: string;
   description: string;
-  timestamp?: string; 
+  timestamp?: string;
 }
 
 interface PendingPostCardProps {
@@ -16,17 +14,21 @@ interface PendingPostCardProps {
   onDecline: (id: number | string) => void;
 }
 
-const PendingPostCard = ({ post, logo, onApprove, onDecline }: PendingPostCardProps) => {
+const PendingPostCard = ({
+  post,
+  logo,
+  onApprove,
+  onDecline,
+}: PendingPostCardProps) => {
   return (
     <div className="w-full bg-[#0F033C] border border-gray-600 rounded-lg p-6 flex flex-col md:flex-row gap-6 shadow-lg">
-      
       {/* LEFT: CSPS Logo / Avatar */}
       <div className="flex-1 flex gap-5">
         <div className="flex-shrink-0">
           <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center overflow-hidden border border-white/20">
-            <img 
-              src={logo} 
-              alt="CSPS Logo" 
+            <img
+              src={logo}
+              alt="CSPS Logo"
               className="w-full h-full object-contain p-1" // 'object-contain' keeps the logo from getting cut off
             />
           </div>
@@ -46,13 +48,13 @@ const PendingPostCard = ({ post, logo, onApprove, onDecline }: PendingPostCardPr
 
       {/* RIGHT: Action Buttons */}
       <div className="flex flex-col gap-3 min-w-[140px] justify-center">
-        <button 
+        <button
           onClick={() => onApprove(post.id)}
           className="w-full py-2 px-4 bg-[#AB83C2] hover:bg-[#9a75b0] text-white font-semibold rounded-md transition-colors"
         >
           Approve
         </button>
-        <button 
+        <button
           onClick={() => onDecline(post.id)}
           className="w-full py-2 px-4 bg-[#7D4B99] hover:bg-[#6a3f82] text-white font-semibold rounded-md transition-colors"
         >

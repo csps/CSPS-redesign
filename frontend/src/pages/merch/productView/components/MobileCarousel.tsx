@@ -1,30 +1,72 @@
-import SAMPLE from "../../../../assets/image 8.png";
+import { S3_BASE_URL } from "../../../../constant";
+import type { MerchVariantResponse } from "../../../../interfaces/merch_variant/MerchVariantResponse";
 
 type Props = {
   items: number[];
+  merchVariants: MerchVariantResponse[];
+
   activeIndex: number;
   setActiveIndex: (i: number) => void;
 };
 
-const MobileCarousel = ({ items, activeIndex, setActiveIndex }: Props) => {
+const MobileCarousel = ({
+  items,
+  activeIndex,
+  setActiveIndex,
+  merchVariants,
+}: Props) => {
+  if (!items?.length) return null;
+
   return (
-    <div className="lg:hidden w-full flex flex-col items-center mt-6">
-      <div className="flex gap-3 overflow-x-scroll px-4 py-4 w-full">
+    <div className="lg:hidden w-full flex flex-col gap-6">
+      {/* Horizontal Scroll Container */}
+      <div className="flex gap-4 overflow-x-auto px-6 pb-2 no-scrollbar snap-x snap-mandatory">
         {items.map((n, index) => {
           const isActive = index === activeIndex;
           return (
             <div
               key={n}
               onClick={() => setActiveIndex(index)}
-              className={`w-[110px] h-[110px] rounded-xl flex flex-col items-center justify-center ${
-                isActive ? "bg-purple-200/20 scale-105" : "bg-white/5"
+              className={`flex-shrink-0 w-[100px] aspect-square rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 snap-center ${
+                isActive
+                  ? "bg-[#242050] border-purple-500/50 shadow-lg shadow-purple-500/10"
+                  : "bg-white/5 border-white/5"
               }`}
             >
-              <img src={SAMPLE} className={isActive ? "scale-110" : ""} />
-              <p className="text-[11px] mt-2 opacity-80">{n}</p>
+              <div className="relative w-full h-full p-3 flex items-center justify-center">
+                {isActive && (
+                  <div className="absolute inset-0 bg-purple-500/10 blur-lg rounded-full" />
+                )}
+                <img
+                  src={`${S3_BASE_URL}${merchVariants[index].s3ImageKey}`}
+                  alt={`variant-${n}`}
+                  className={`w-full h-full object-contain transition-transform duration-300 ${
+                    isActive ? "scale-110" : "scale-90 opacity-60"
+                  }`}
+                />
+              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Modern Progress Indicator mimicking the "1/5" logic */}
+      <div className="flex justify-center items-center gap-4 px-6">
+        <div className="flex gap-1.5 h-1 items-center">
+          {items.map((_, index) => (
+            <div
+              key={index}
+              className={`rounded-full transition-all duration-300 ${
+                index === activeIndex
+                  ? "w-6 h-full bg-[#FDE006]"
+                  : "w-1.5 h-full bg-white/20"
+              }`}
+            />
+          ))}
+        </div>
+        <span className="text-[10px] font-bold text-white/40 uppercase">
+          {activeIndex + 1} / {items.length}
+        </span>
       </div>
     </div>
   );

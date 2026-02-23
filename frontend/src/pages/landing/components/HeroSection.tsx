@@ -1,7 +1,22 @@
 import BACKGROUNDCSSLOGO from "../../../assets/logos/Background_Logo.png";
 import { FaGreaterThan } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  scrollToDiv: (section: string) => void;
+}
+
+const HeroSection = ({ scrollToDiv }: HeroSectionProps) => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate("/login");
+  };
+
+  const handleLearnMore = () => {
+    scrollToDiv("about");
+  };
+
   return (
     <div className="flex w-full py-10 relative">
       <div className="absolute top-0 left-0 lg:static">
@@ -23,12 +38,18 @@ const HeroSection = () => {
         </p>
 
         <div className="flex mt-10 gap-5">
-          <button className="bg-[#FDE006] px-7 py-4 text-black font-semibold rounded-xl">
+          <button
+            onClick={handleGetStarted}
+            className="bg-[#FDE006] px-7 py-4 text-black font-semibold rounded-xl hover:bg-[#FDE006]/90 transition-colors cursor-pointer"
+          >
             GET STARTED
           </button>
-          <p className="flex items-center text-sm font-semibold text-[#D2D2D2] gap-2">
+          <button
+            onClick={handleLearnMore}
+            className="flex items-center text-sm font-semibold text-[#D2D2D2] gap-2 hover:text-white transition-colors cursor-pointer"
+          >
             Learn more <FaGreaterThan />
-          </p>
+          </button>
         </div>
       </div>
     </div>

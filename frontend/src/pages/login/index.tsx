@@ -38,7 +38,7 @@ const Index = () => {
     >
       <div className="relative flex flex-wrap bg-[#2d0f52]/10  rounded-4xl  border-b border-b-white/20 border-t border-t-white/20 shadow-[-11px_10px_5px_0px_rgba(0,_0,_0,_0.3)] min-h-[40rem]">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="absolute top-6 left-6 z-10
                      flex items-center gap-2 text-sm text-gray-300
                      hover:text-white transition"

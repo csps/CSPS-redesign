@@ -1,4 +1,3 @@
-import React from "react";
 import UCMAP from "../../../assets/ucLoc.png";
 import { FaClock, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 

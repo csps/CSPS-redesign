@@ -66,7 +66,7 @@ const Index = () => {
               Forgot Your Password?
             </p>
             <p className="text-base sm:text-lg lg:text-xl font-extralight max-w-lg text-gray-400 mt-5">
-              Enter your ID number and the code sent to your email to reset your
+              Enter your email address and we'll send you a link to reset your
               password.
             </p>
           </div>
