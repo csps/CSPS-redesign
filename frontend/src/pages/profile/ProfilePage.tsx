@@ -194,6 +194,7 @@ const ProfilePage: React.FC = () => {
         email={student.user.email || ""}
         onClose={() => setShowVerificationModal(false)}
         onVerified={handleVerified}
+        profile={refreshProfile as any}
       />
       <EmailUpdateModal
         isOpen={showEmailUpdateModal}
