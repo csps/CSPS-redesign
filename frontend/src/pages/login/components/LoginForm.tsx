@@ -105,9 +105,11 @@ const LoginForm = () => {
 
       toast.success("Login successful! Welcome back!");
 
-      // Trigger the crossfade overlay, then navigate after animation completes
-      setPendingDestination(destination);
-      setIsTransitioning(true);
+      // Brief delay for form fade effect, then trigger the crossfade overlay
+      setTimeout(() => {
+        setPendingDestination(destination);
+        setIsTransitioning(true);
+      }, 900);
     } catch (error: any) {
       // Handle different error scenarios with specific messages
       if (
@@ -191,7 +193,11 @@ const LoginForm = () => {
       <form
         action=""
         method="post"
-        className="space-y-5 w-full py-6 sm:py-10 z-10"
+        className="space-y-5 w-full py-6 sm:py-10 z-10 transition-all duration-300"
+        style={{
+          opacity: isTransitioning ? 0.6 : 1,
+          filter: isTransitioning ? "blur(2px)" : "blur(0px)",
+        }}
         onSubmit={handleSubmit}
       >
         <div className="w-full relative">
@@ -265,7 +271,11 @@ const LoginForm = () => {
             disabled={isLoading || isTransitioning}
             className="bg-purple-700/40 font-semibold text-lg sm:text-xl lg:text-2xl w-full py-3 sm:py-4 rounded-lg shadow-[0px_8px_6px_0px_rgba(0,_0,_0,_0.4)] hover:bg-purple-600/50 disabled:opacity-50"
           >
-            {isLoading ? "Logging in..." : isTransitioning ? "Welcome!" : "Log In"}
+            {isLoading
+              ? "Logging in..."
+              : isTransitioning
+                ? "Welcome!"
+                : "Log In"}
           </button>
         </div>
       </form>
