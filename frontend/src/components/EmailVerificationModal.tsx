@@ -10,6 +10,7 @@ interface EmailVerificationModalProps {
   email: string;
   onClose: () => void;
   onVerified: () => void;
+  profile?: () => Promise<void>;
 }
 
 /**
@@ -22,6 +23,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   email,
   // onClose,
   onVerified,
+  profile,
 }) => {
   const CODE_LENGTH = 6;
   const [code, setCode] = useState<string[]>(Array(CODE_LENGTH).fill(""));
@@ -105,6 +107,9 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
         setIsLoading(true);
         setError(null);
         await verifyEmailCode(codeStr);
+        if (profile) {
+          await profile();
+        }
         onVerified();
       } catch (err: any) {
         const data = err?.response?.data;
@@ -119,7 +124,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
         setIsLoading(false);
       }
     },
-    [onVerified],
+    [onVerified, profile],
   );
 
   const handleChange = (index: number, value: string) => {
