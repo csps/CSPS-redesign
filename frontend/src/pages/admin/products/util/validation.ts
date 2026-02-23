@@ -21,8 +21,8 @@ export const validateMerchInfo = (
 
   // Only validate base price for non-clothing items
   if (formState.merchType !== "CLOTHING") {
-    if (!formState.basePrice) {
-      errors.basePrice = "Price is required";
+    if (formState.basePrice === 0 || formState.basePrice === ("" as any)) {
+      errors.basePrice = "Price is required and must be greater than 0";
     } else if (
       isNaN(Number(formState.basePrice)) ||
       Number(formState.basePrice) <= 0
@@ -60,6 +60,17 @@ export const validateVariants = (
           errors[`variant_${idx}_color`] = "Color is required";
         }
 
+        if (!variant.imageFile) {
+          errors[`variant_${idx}_image`] = "Variant image is required";
+        }
+
+        if (variant.price === "" || variant.price === 0) {
+          errors[`variant_${idx}_price`] =
+            "Price is required and must be greater than 0";
+        } else if (isNaN(Number(variant.price)) || Number(variant.price) <= 0) {
+          errors[`variant_${idx}_price`] = "Price must be a positive number";
+        }
+
         const checkedSizes = variant.sizeStock.filter((s) => s.checked);
         if (checkedSizes.length === 0) {
           errors[`variant_${idx}_sizes`] = "At least one size must be selected";
@@ -80,6 +91,13 @@ export const validateVariants = (
       nonClothingVariants.forEach((variant, idx) => {
         if (!variant.design.trim()) {
           errors[`variant_${idx}_design`] = "Design is required";
+        }
+
+        if (variant.price === "" || variant.price === 0) {
+          errors[`variant_${idx}_price`] =
+            "Price is required and must be greater than 0";
+        } else if (isNaN(Number(variant.price)) || Number(variant.price) <= 0) {
+          errors[`variant_${idx}_price`] = "Price must be a positive number";
         }
 
         if (variant.stock === "" || variant.stock <= 0) {

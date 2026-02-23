@@ -87,8 +87,12 @@ export const useMerchForm = () => {
   }, []);
 
   const setBasePrice = useCallback((price: string) => {
-    const numPrice = parseFloat(price) || 0;
-    setFormState((prev) => ({ ...prev, basePrice: numPrice }));
+    if (price === "" || price === "0") {
+      setFormState((prev) => ({ ...prev, basePrice: 0 }));
+    } else {
+      const numPrice = parseFloat(price) || 0;
+      setFormState((prev) => ({ ...prev, basePrice: numPrice }));
+    }
   }, []);
 
   const handleMerchImageUpload = useCallback((index: number, file: File) => {

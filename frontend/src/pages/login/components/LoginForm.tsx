@@ -86,15 +86,16 @@ const LoginForm = () => {
       };
 
       await login(authRequest);
-
+      
       const { isAuthenticated, user } = useAuthStore.getState();
 
       if (!isAuthenticated || !user) {
         throw new Error("Auth state not ready");
       }
-
+      
       let destination = "";
-
+      
+      toast.success("Login successful! Welcome back!");
       if (user.role === "ADMIN") {
         // Use position-based routing for admins
         const adminUser = user as UserResponse;
@@ -102,8 +103,6 @@ const LoginForm = () => {
       } else {
         destination = "/dashboard";
       }
-
-      toast.success("Login successful! Welcome back!");
 
       // Brief delay for form fade effect, then trigger the crossfade overlay
       setTimeout(() => {

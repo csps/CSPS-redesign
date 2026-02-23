@@ -29,6 +29,7 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
   variantIndex,
   errors = {},
   onColorChange,
+  onPriceChange,
   onImageUpload,
   onSizeCheckChange,
   onStockQuantityChange,
@@ -87,6 +88,19 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
         <label className="block text-sm font-medium text-white/60 mb-2">
           Price
         </label>
+        <div className="flex items-center gap-3">
+          <span className="text-white/60 font-medium">₱</span>
+          <input
+            type="number"
+            value={variant.price === "" ? "" : variant.price}
+            onChange={(e) => onPriceChange(e.target.value)}
+            onWheel={(e) => e.currentTarget.blur()}
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            className="flex-1 bg-[#1a163d] rounded-lg px-4 py-3 outline-none placeholder-white/30 text-base text-white border border-transparent focus:border-white/20 transition [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
       </div>
 
       {/* Image Upload */}

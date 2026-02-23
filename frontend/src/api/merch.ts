@@ -86,7 +86,6 @@ export const createMerch = async (
   formState: MerchFormState,
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   try {
-
     const formData = new FormData();
 
     // Add base merch fields
@@ -120,7 +119,7 @@ export const createMerch = async (
           .map((item) => ({
             size: item.size as ClothingSizing,
             stockQuantity: Number(item.stock),
-            price: Number(variant.price),
+            price: variant.price ? Number(variant.price) : 0,
           })),
       }));
     } else {
@@ -214,7 +213,6 @@ export const addVariantToMerch = async (
 
     formData.append("variantImage", variantRequest.variantImage);
 
-  
     const response = await api.post(`/merch-variant/${merchId}/add`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

@@ -204,10 +204,10 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
                   <span className="text-purple-400 font-bold text-xl">₱</span>
                   <input
                     type="number"
-                    value={formState.basePrice || ""}
+                    value={formState.basePrice === 0 ? "" : formState.basePrice}
                     onChange={(e) => {
                       const value = e.target.value;
-                      onBasePriceChange(value === "" ? "0" : value);
+                      onBasePriceChange(value);
                     }}
                     onWheel={(e) => e.currentTarget.blur()}
                     placeholder="0.00"
