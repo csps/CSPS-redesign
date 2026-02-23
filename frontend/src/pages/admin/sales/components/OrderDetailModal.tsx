@@ -49,7 +49,6 @@ export default function OrderDetailModal({
         const data = await getOrderById(orderId);
         setOrder(data);
 
-        console.log(`Loaded order details for orderId ${orderId}:`, data);
       }
     } catch (err) {
       console.error("Failed to load order details", err);

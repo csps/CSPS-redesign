@@ -351,9 +351,7 @@ const Index = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(`ORDER IS: ${confirmModal.isOpen} WITH ${confirmModal.id}`);
-  }, [confirmModal.isOpen]);
+
 
   const handleViewOrderDetails = (transaction: Transaction) => {
     setOrderDetailModal({

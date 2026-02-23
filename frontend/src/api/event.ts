@@ -286,7 +286,6 @@ export const getEventByMonth = async (
       `${EVENTS}/by-month?year=${year}&month=${month}`,
     );
 
-    console.log(`Fetched events for ${month}/${year}:`, response.data.data);
     return response.data.data;
   } catch (err: any) {
     if (err.response?.status === 404) {

@@ -33,7 +33,6 @@ export const getStudents = async (
       }
     }
 
-    console.log(`Fetching students with params: ${params.toString()}`);
 
     const response = await api.get<PaginatedStudentsResponse>(
       `/students?${params.toString()}`,

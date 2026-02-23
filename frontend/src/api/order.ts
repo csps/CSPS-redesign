@@ -94,7 +94,6 @@ export const getMyOrders = async (
 
     const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
 
-    console.log("getMyOrders response:", response);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching my orders:", err);
@@ -128,7 +127,6 @@ export const getOrders = async (
 
     const response = await api.get<{ data: PaginatedOrdersResponse }>(url);
 
-    console.log("getOrders response:", response);
     return response.data.data;
   } catch (err) {
     console.error("Error fetching orders:", err);
@@ -179,7 +177,6 @@ export const getOrderItemById = async (
       `${ORDER_ITEMS}/${id}`,
     );
 
-    console.log(`RESPONSE API: ${response.data}`);
     return response.data.data;
   } catch (err) {
     console.error(`Error fetching order item ${id}:`, err);
@@ -222,10 +219,7 @@ export const getOrderItemByStatus = async (
       },
     );
 
-    console.log(
-      `Fetched order items with status ${status}:`,
-      response.data.data,
-    );
+ 
 
     return response.data.data;
   } catch (err) {

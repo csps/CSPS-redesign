@@ -51,7 +51,6 @@ export const convertFormStateToMerchRequest = (
 ): MerchRequest => {
   const { ...merchRequest } = formState;
 
-  console.log("Converting form state to MerchRequest:", merchRequest);
   return merchRequest as MerchRequest;
 };
 

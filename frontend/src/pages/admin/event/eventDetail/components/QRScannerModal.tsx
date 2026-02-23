@@ -107,7 +107,6 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
     } catch {}
 
     try {
-      console.log("Checking in with QR token:", qrToken);
       const record = await checkInToSession(sessionId, qrToken);
       setResult({
         type: "success",

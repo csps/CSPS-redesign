@@ -48,7 +48,6 @@ const GlassCalendar = () => {
 
       const data = await getUpcomingEventsPaginated(0, 6);
 
-      console.log("Fetched upcoming events:", data);
       setUpcomingEvents(data.content || []);
     } catch (err) {
       setUpcomingEvents([]);

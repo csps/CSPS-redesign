@@ -81,7 +81,6 @@ const ProfilePage: React.FC = () => {
 
   const handleSaveProfile = () => {
     // Implement save logic here (API call)
-    console.log("Saving profile:", formData);
     setIsEditing(false);
   };
 

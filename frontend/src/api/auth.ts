@@ -125,8 +125,6 @@ export const login = async (authRequest: AuthRequest) => {
     // If JWT decode failed for any reason, fall back to blocking profile fetch
     const { isAuthenticated } = useAuthStore.getState();
 
-    console.log("Login successful, JWT claims:", claims);
-    console.log("isAuthenticated:", isAuthenticated);
 
     if (isAuthenticated) {
       await profile();

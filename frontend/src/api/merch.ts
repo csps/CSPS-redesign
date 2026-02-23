@@ -86,7 +86,6 @@ export const createMerch = async (
   formState: MerchFormState,
 ): Promise<{ success: boolean; data?: any; error?: string }> => {
   try {
-    console.log(`Creating merch with form state:`, formState);
 
     const formData = new FormData();
 
@@ -162,10 +161,8 @@ export const createMerch = async (
       formData.append("variantImages", file);
     });
 
-    console.log(Object.fromEntries(formData.entries()));
     const response = await api.post("/merch/post", formData);
 
-    console.log("Merch created successfully:", response.data.data);
     return {
       success: response.data.status === "CREATED",
       data: response.data.data,
@@ -217,10 +214,7 @@ export const addVariantToMerch = async (
 
     formData.append("variantImage", variantRequest.variantImage);
 
-    console.log(
-      `FormData entries before sending:`,
-      Object.fromEntries(formData.entries()),
-    );
+  
     const response = await api.post(`/merch-variant/${merchId}/add`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",

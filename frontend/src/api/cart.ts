@@ -13,7 +13,6 @@ export const addCartItem = async (
     }
 
     const response = await api.post<CartItemResponse>(`cart-items`, cartItem);
-    console.log("Added cart item:", response.data);
 
     if (response.status === 400)
       throw new Error("Bad request: Unable to add cart item");
@@ -35,7 +34,6 @@ export const getCart = async (): Promise<CartResponse> => {
 
     const cart = response.data.data;
 
-    console.log("Fetched cart:", cart);
 
     return cart;
   } catch (err) {
