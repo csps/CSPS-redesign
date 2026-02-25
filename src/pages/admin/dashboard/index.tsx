@@ -15,7 +15,6 @@ import {
   getFinanceDashboard,
   type FinanceDashboardDTO,
 } from "../../../api/dashboard";
-import { getAllAnnouncements } from "../../../api/announcement";
 import { getUpcomingEvents } from "../../../api/event";
 import { S3_BASE_URL } from "../../../constant";
 import Layout from "../../../components/Layout";
@@ -24,7 +23,6 @@ import { useNavigate } from "react-router-dom";
 const Index = () => {
   const [dashboardData, setDashboardData] =
     useState<FinanceDashboardDTO | null>(null);
-  const [announcements, setAnnouncements] = useState<any[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,13 +32,11 @@ const Index = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const [dash, anns, events] = await Promise.all([
+        const [dash, events] = await Promise.all([
           getFinanceDashboard(),
-          getAllAnnouncements(),
           getUpcomingEvents(),
         ]);
         setDashboardData(dash);
-        setAnnouncements(anns);
         setUpcomingEvents(events);
       } catch (err) {
         console.error("Dashboard fetch error:", err);
@@ -79,18 +75,9 @@ const Index = () => {
     });
 
     // Add announcements
-    announcements.slice(0, 2).forEach((ann) => {
-      items.push({
-        id: ann.announcementId,
-        type: "ANNOUNCEMENT",
-        title: "Announcement Published",
-        subtitle: ann.title,
-        time: "Published",
-      });
-    });
 
     return items;
-  }, [dashboardData, announcements]);
+  }, [dashboardData]);
 
   return (
     <AdminPageLoader isLoading={isLoading}>

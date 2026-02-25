@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import Footer from "../../../components/Footer";
 import RatioCards from "./components/RatioCards";
 import MemberTabs from "./components/MemberTabs";
-import EligibilityChecker from "./components/EligibilityChecker";
 import BulkMembershipModal from "./components/BulkMembershipModal";
 import { getMembershipRatio } from "../../../api/studentMembership";
 import type { MembershipRatioResponse } from "../../../interfaces/student/MembershipRatioResponse";
