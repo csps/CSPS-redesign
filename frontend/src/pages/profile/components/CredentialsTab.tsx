@@ -161,9 +161,9 @@ const CredentialsTab: React.FC<CredentialsTabProps> = ({
                   className={inputStyles.base}
                 />
               }
-              isLast={!(isVerified && onUpdateEmail)}
+              isLast={!onUpdateEmail}
             />
-            {isVerified && onUpdateEmail && (
+            {onUpdateEmail && (
               <div className="px-8 py-4 border-t border-white/5 bg-white/[0.01]">
                 <button
                   onClick={onUpdateEmail}
