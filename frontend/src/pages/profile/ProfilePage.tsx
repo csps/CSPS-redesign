@@ -199,6 +199,7 @@ const ProfilePage: React.FC = () => {
         isOpen={showEmailUpdateModal}
         onClose={() => setShowEmailUpdateModal(false)}
         currentEmail={student.user.email || ""}
+        isVerified={student.user.isVerified ?? true}
         onSuccess={handleEmailUpdateSuccess}
       />
     </Layout>
