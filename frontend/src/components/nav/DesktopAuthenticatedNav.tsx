@@ -9,6 +9,7 @@ import { isRouteActive } from "./constants";
 import LogoSection from "./LogoSection";
 import NavItemContent from "./NavItemContent";
 import MerchandiseDropdown from "./MerchandiseDropdown";
+import StudentsDropdown from "./StudentsDropdown";
 import StudentProfile from "./StudentProfile";
 
 interface DesktopAuthenticatedNavProps {
@@ -33,6 +34,11 @@ const DesktopAuthenticatedNav: React.FC<DesktopAuthenticatedNavProps> = ({
     setOpenDropdown(openDropdown === "Merchandise" ? null : "Merchandise");
   };
 
+  const handleStudentsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setOpenDropdown(openDropdown === "Students" ? null : "Students");
+  };
+
   return (
     <div className="hidden lg:flex w-full justify-center px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 relative z-40">
       <nav className="w-full max-w-7xl bg-white/5 backdrop-blur-lg border border-white/20 rounded-[25px] shadow-lg py-3 sm:py-4 px-4 sm:px-6 md:px-8 flex items-center justify-between text-white relative z-40">
@@ -42,12 +48,22 @@ const DesktopAuthenticatedNav: React.FC<DesktopAuthenticatedNavProps> = ({
           {getAuthenticatedNavbar(isAdmin, adminPosition).map(
             (navItem, index) => {
               const isMerchandise = navItem.name === "Merchandise";
+              const isStudents = navItem.name === "Students";
               let isActive = isRouteActive(navItem.name, location, navItem.to);
 
               if (
                 isMerchandise &&
                 (location.startsWith("/merch") ||
                   (isAdmin && location.startsWith("/admin/merch")))
+              ) {
+                isActive = true;
+              }
+
+              // Students dropdown includes both /admin/students and /admin/membership
+              if (
+                isStudents &&
+                (location.startsWith("/admin/students") ||
+                  location.startsWith("/admin/membership"))
               ) {
                 isActive = true;
               }
@@ -80,6 +96,38 @@ const DesktopAuthenticatedNav: React.FC<DesktopAuthenticatedNavProps> = ({
                           location={location}
                           isAdmin={isAdmin}
                         />
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              }
+
+              // Students dropdown (only for executives)
+              if (isStudents) {
+                return (
+                  <li
+                    key={`nav-${index}`}
+                    className="relative z-50"
+                    onMouseEnter={() => setOpenDropdown("Students")}
+                    onMouseLeave={() => setOpenDropdown(null)}
+                  >
+                    <div
+                      onClick={handleStudentsClick}
+                      className={`cursor-pointer text-xs sm:text-sm md:text-base lg:text-lg font-medium transition-all ${
+                        isActive
+                          ? "text-white"
+                          : "text-gray-400 hover:text-gray-200"
+                      }`}
+                    >
+                      <NavItemContent
+                        isActive={isActive}
+                        icon={navItem.icon}
+                        name={navItem.name}
+                      />
+                    </div>
+                    <AnimatePresence>
+                      {openDropdown === "Students" && (
+                        <StudentsDropdown location={location} />
                       )}
                     </AnimatePresence>
                   </li>

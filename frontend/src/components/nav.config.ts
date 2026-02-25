@@ -24,7 +24,7 @@ interface NavItem {
 
 /**
  * Get authenticated navbar items based on role and position.
- * 
+ *
  * For students: Shows Home, Merchandise, Bulletin, Events
  * For executives (President, VPs, Secretary): Shows ALL admin nav items with /admin/dashboard as Home
  * For finance (Treasurer, Asst Treasurer): Shows finance-related items with /admin/finance as Home
@@ -32,7 +32,7 @@ interface NavItem {
  */
 export const getAuthenticatedNavbar = (
   isAdmin: boolean,
-  position?: AdminPosition | string
+  position?: AdminPosition | string,
 ): NavItem[] => {
   // Check position categories
   const isExecutive = isExecutivePosition(position);
@@ -66,20 +66,44 @@ export const getAuthenticatedNavbar = (
   }
 
   // Events - shown to all admins
-  const eventsItem: NavItem = { name: "Events", icon: EVENTS, to: "/admin/event" };
+  const eventsItem: NavItem = {
+    name: "Events",
+    icon: EVENTS,
+    to: "/admin/event",
+  };
 
   // Students - only for executives
-  const studentsItem: NavItem = { name: "Students", icon: STUDENT, to: "/admin/students" };
+  const studentsItem: NavItem = {
+    name: "Students",
+    icon: STUDENT,
+    to: "/admin/students",
+  };
 
   // Sales - for all admins (general admins see read-only)
-  const salesItem: NavItem = { name: "Sales", icon: MERCHANDISE, to: "/admin/sales" };
+  const salesItem: NavItem = {
+    name: "Sales",
+    icon: MERCHANDISE,
+    to: "/admin/sales",
+  };
 
   // Build admin nav based on position
   if (isExecutive) {
     // Executives get full access to everything (including Finance as a separate nav item)
-    const financeItem: NavItem = { name: "Finance", icon: HOME, to: "/admin/finance" };
-    const staffItem: NavItem = { name: "Staff", icon: STUDENT, to: "/admin/staff" };
-    const auditItem: NavItem = { name: "Audit Logs", icon: BULLETIN, to: "/admin/audit" };
+    const financeItem: NavItem = {
+      name: "Finance",
+      icon: HOME,
+      to: "/admin/finance",
+    };
+    const staffItem: NavItem = {
+      name: "Staff",
+      icon: STUDENT,
+      to: "/admin/staff",
+    };
+    const auditItem: NavItem = {
+      name: "Audit Logs",
+      icon: BULLETIN,
+      to: "/admin/audit",
+    };
 
     return [
       ...baseItems,
@@ -94,17 +118,21 @@ export const getAuthenticatedNavbar = (
 
   if (isFinance) {
     // Finance positions - Home is already /admin/finance, so no separate Finance nav item needed
-    return [
-      ...baseItems,
-      eventsItem,
-      salesItem,
-    ];
+    // Add Membership as direct nav item (not under Students dropdown since they don't have access to student list)
+    const membershipItem: NavItem = {
+      name: "Membership",
+      icon: STUDENT,
+      to: "/admin/membership",
+    };
+    return [...baseItems, eventsItem, membershipItem, salesItem];
   }
 
   // General admins - Home is /admin/finance (read-only), show Sales (read-only)
-  return [
-    ...baseItems,
-    eventsItem,
-    salesItem,
-  ];
+  // Add Membership as direct nav item
+  const membershipItem: NavItem = {
+    name: "Membership",
+    icon: STUDENT,
+    to: "/admin/membership",
+  };
+  return [...baseItems, eventsItem, membershipItem, salesItem];
 };

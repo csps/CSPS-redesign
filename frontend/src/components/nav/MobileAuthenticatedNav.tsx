@@ -70,6 +70,7 @@ const MobileAuthenticatedNav: React.FC = () => {
                 {getAuthenticatedNavbar(isAdmin, adminPosition).map(
                   (navItem, index) => {
                     const isMerchandise = navItem.name === "Merchandise";
+                    const isStudents = navItem.name === "Students";
 
                     if (isMerchandise) {
                       return (
@@ -108,6 +109,10 @@ const MobileAuthenticatedNav: React.FC = () => {
                                         to: "/admin/merch/orders",
                                         label: "Orders",
                                       },
+                                      {
+                                        to: "/admin/merch/customers",
+                                        label: "Customers",
+                                      },
                                     ]
                                   : [
                                       { to: "/merch", label: "Products" },
@@ -118,6 +123,63 @@ const MobileAuthenticatedNav: React.FC = () => {
                                       { to: "/merch/cart", label: "Cart" },
                                     ]
                                 ).map((item) => (
+                                  <Link
+                                    key={item.to}
+                                    to={item.to}
+                                    onClick={() => {
+                                      toggleMenu();
+                                      setOpenMobileDropdown(null);
+                                    }}
+                                    className="text-gray-300 text-xs xs:text-sm sm:text-base hover:text-white transition-colors block py-1.5 xs:py-2 sm:py-2"
+                                  >
+                                    {item.label}
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </li>
+                      );
+                    }
+
+                    // Students dropdown (for executives)
+                    if (isStudents) {
+                      return (
+                        <li key={`mobile-nav-${index}`}>
+                          <button
+                            onClick={() => toggleMobileDropdown("Students")}
+                            className="text-white text-sm xs:text-base sm:text-lg md:text-xl hover:bg-white/10 hover:text-gray-300 transition-colors w-full text-left flex items-center justify-between px-2 xs:px-2.5 sm:px-3 py-1.5 xs:py-2 sm:py-2.5 rounded-lg"
+                          >
+                            <span className="truncate">{navItem.name}</span>
+                            <span
+                              className={`ml-2 shrink-0 transform transition-transform ${
+                                openMobileDropdown === "Students"
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
+                            >
+                              ▼
+                            </span>
+                          </button>
+                          <AnimatePresence>
+                            {openMobileDropdown === "Students" && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="mt-1.5 xs:mt-2 sm:mt-3 ml-3 xs:ml-3 sm:ml-4 space-y-1 xs:space-y-1.5 border-l border-purple-200/40 pl-3"
+                              >
+                                {[
+                                  {
+                                    to: "/admin/students",
+                                    label: "Student List",
+                                  },
+                                  {
+                                    to: "/admin/membership",
+                                    label: "Membership",
+                                  },
+                                ].map((item) => (
                                   <Link
                                     key={item.to}
                                     to={item.to}

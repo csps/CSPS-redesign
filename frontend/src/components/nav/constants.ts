@@ -37,4 +37,14 @@ export const getMerchandiseActiveStates = (location: string) => ({
   isTransactionsActive: location.startsWith("/merch/transactions"),
   isCartActive: location.startsWith("/merch/cart"),
   isOrderActive: location.startsWith("/admin/merch/orders"),
+  isCustomersActive: location.startsWith("/admin/merch/customers"),
 });
+
+/**
+ * Current academic year configuration.
+ * This is the frontend single source of truth — must match
+ * the backend application.properties values.
+ * Updated each August when the new school year begins.
+ */
+export const CURRENT_YEAR_START = 2025;
+export const CURRENT_YEAR_END = 2026;
