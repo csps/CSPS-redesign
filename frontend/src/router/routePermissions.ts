@@ -31,6 +31,8 @@ export const ALL_ADMIN_ROUTES = [
   "/admin/event",
   "/admin/merch/products",
   "/admin/merch/orders",
+  "/admin/merch/customers",
+  "/admin/membership",
   "/admin/merch", // For dynamic routes like /admin/merch/:merchId
 ];
 

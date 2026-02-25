@@ -31,6 +31,8 @@ import AdminMerchArchivePage from "../pages/admin/merch/archive";
 
 import AdminFinancePage from "../pages/admin/dashboard/finance";
 import AdminSalesPage from "../pages/admin/sales";
+import AdminMerchCustomersPage from "../pages/admin/merch/customers";
+import AdminMembershipPage from "../pages/admin/membership";
 
 import NotFoundPage from "../pages/notFound";
 import LoadingPage from "../pages/loading";
@@ -112,6 +114,8 @@ const routers = [
       { path: "/admin/merch/:merchId", element: <AdminMerchProductView /> },
       { path: "/admin/staff", element: <StaffPage /> },
       { path: "/admin/audit", element: <AuditPage /> },
+      { path: "/admin/merch/customers", element: <AdminMerchCustomersPage /> },
+      { path: "/admin/membership", element: <AdminMembershipPage /> },
     ],
   },
 
