@@ -11,6 +11,10 @@ import {
 } from "../../../../api/studentMembership";
 import { AdminPosition } from "../../../../enums/AdminPosition";
 import CustomDropdown from "../../../../components/CustomDropdown";
+import {
+  CURRENT_YEAR_START,
+  CURRENT_YEAR_END,
+} from "../../../../components/nav/constants";
 
 interface StudentDetailModalProps {
   student: StudentResponse;
@@ -37,7 +41,8 @@ const formatPosition = (position: AdminPosition): string => {
 
 /**
  * A modal component for viewing and managing student-specific data.
- * Adheres to Stripe-inspired design principles: tight tracking, generous spacing, and structural minimalism.
+ * Displays student identity, admin position, and the annual membership
+ * history with the ability to add new membership records.
  *
  * @param {StudentDetailModalProps} props - Component properties.
  * @returns {JSX.Element} The rendered modal.
@@ -53,20 +58,18 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
   const [showAddForm, setShowAddForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [newMembership, setNewMembership] = useState<{
-    academicYear: number;
-    semester: number;
-    status: "current" | "future";
-  }>({
-    academicYear: 1,
-    semester: 1,
-    status: "current",
-  });
+  // New membership form state — uses year range instead of academic year + semester
+  const [selectedYearRange, setSelectedYearRange] = useState<string>(
+    `${CURRENT_YEAR_START}-${CURRENT_YEAR_END}`,
+  );
 
   useEffect(() => {
     fetchMemberships();
   }, [student.studentId]);
 
+  /**
+   * Fetches all membership records for the current student, sorted by date joined (newest first).
+   */
   const fetchMemberships = async () => {
     setLoading(true);
     try {
@@ -84,37 +87,43 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
     }
   };
 
+  /**
+   * Submits a new membership record for the student. The server auto-determines
+   * the active flag based on whether yearStart/yearEnd matches the current academic year.
+   */
   const handleAddMembership = async () => {
     setIsSubmitting(true);
     try {
+      const [yearStart, yearEnd] = selectedYearRange.split("-").map(Number);
+
       const request: StudentMembershipRequest = {
         studentId: student.studentId,
-        active: newMembership.status === "current",
-        academicYear: newMembership.academicYear,
-        semester: newMembership.semester,
+        yearStart,
+        yearEnd,
       };
 
       await createStudentMembership(request);
-      toast.success("Membership added successfully");
+      toast.success(`Membership added for ${yearStart}–${yearEnd}`);
       setShowAddForm(false);
-      setNewMembership({ academicYear: 1, semester: 1, status: "current" });
+      setSelectedYearRange(`${CURRENT_YEAR_START}-${CURRENT_YEAR_END}`);
       await fetchMemberships();
     } catch (error: any) {
       const errorMessage =
-        error?.response?.data?.message || "Failed to add membership";
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        "Failed to add membership";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const getYearSuffix = (year: number) => {
-    if (year === 1) return "st";
-    if (year === 2) return "nd";
-    if (year === 3) return "rd";
-    return "th";
-  };
-
+  /**
+   * Formats an ISO date string to a readable short date.
+   *
+   * @param dateString - ISO datetime string
+   * @returns formatted date like "Feb 23, 2026"
+   */
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -123,20 +132,45 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
     });
   };
 
-  const yearOptions = [1, 2, 3, 4].map((y) => ({
-    label: `${y}${getYearSuffix(y)} year`,
-    value: y.toString(),
-  }));
+  /**
+   * Returns the ordinal suffix for a year level number.
+   *
+   * @param year - year level number (1-4)
+   * @returns ordinal suffix string
+   */
+  const getYearSuffix = (year: number) => {
+    if (year === 1) return "st";
+    if (year === 2) return "nd";
+    if (year === 3) return "rd";
+    return "th";
+  };
 
-  const semesterOptions = [
-    { label: "1st semester", value: "1" },
-    { label: "2nd semester", value: "2" },
-  ];
+  // Generate academic year range options for the dropdown
+  const currentYear = new Date().getFullYear();
+  const yearRangeOptions = Array.from({ length: 5 }, (_, i) => {
+    const start = currentYear - 2 + i; // from 2 years ago to 2 years ahead
+    return {
+      label: `${start}–${start + 1}`,
+      value: `${start}-${start + 1}`,
+    };
+  });
 
-  const statusOptions = [
-    { label: "Active", value: "current" },
-    { label: "Inactive", value: "future" },
-  ];
+  /**
+   * Determines the membership status label and style based on its active flag
+   * and whether it matches the current academic year.
+   *
+   * @param m - the membership response
+   * @returns an object with label and CSS class
+   */
+  const getMembershipStatus = (m: StudentMembershipResponse) => {
+    if (m.active) {
+      return { label: "Active", className: "text-purple-400" };
+    }
+    if (m.yearStart > CURRENT_YEAR_START) {
+      return { label: "Pre-order", className: "text-amber-400" };
+    }
+    return { label: "Expired", className: "text-zinc-600" };
+  };
 
   return (
     <>
@@ -215,40 +249,36 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
 
               {showAddForm && (
                 <div className="bg-zinc-800/40 rounded-xl p-8 border border-zinc-800 space-y-6 animate-in fade-in slide-in-from-top-2">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <CustomDropdown
-                      label="Year"
-                      options={yearOptions}
-                      value={newMembership.academicYear.toString()}
-                      onChange={(val) =>
-                        setNewMembership({
-                          ...newMembership,
-                          academicYear: parseInt(val),
-                        })
-                      }
+                      label="Academic Year"
+                      options={yearRangeOptions}
+                      value={selectedYearRange}
+                      onChange={(val) => setSelectedYearRange(val)}
                     />
-                    <CustomDropdown
-                      label="Semester"
-                      options={semesterOptions}
-                      value={newMembership.semester.toString()}
-                      onChange={(val) =>
-                        setNewMembership({
-                          ...newMembership,
-                          semester: parseInt(val),
-                        })
-                      }
-                    />
-                    <CustomDropdown
-                      label="Status"
-                      options={statusOptions}
-                      value={newMembership.status}
-                      onChange={(val) =>
-                        setNewMembership({
-                          ...newMembership,
-                          status: val as "current" | "future",
-                        })
-                      }
-                    />
+                    <div className="flex items-end">
+                      <div className="w-full">
+                        <p className="text-xs text-zinc-500 mb-1.5">
+                          Status Preview
+                        </p>
+                        {selectedYearRange ===
+                        `${CURRENT_YEAR_START}-${CURRENT_YEAR_END}` ? (
+                          <div className="flex items-center gap-2 px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                            <span className="text-xs font-medium text-green-400">
+                              Will be activated immediately
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                            <div className="w-2 h-2 rounded-full bg-amber-400" />
+                            <span className="text-xs font-medium text-amber-400">
+                              Will be inactive (not current year)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <div className="flex justify-end">
                     <button
@@ -274,29 +304,37 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
                     </p>
                   </div>
                 ) : (
-                  memberships.map((membership) => (
-                    <div
-                      key={membership.membershipId}
-                      className="flex items-center justify-between px-6 py-4 rounded-xl border border-zinc-800 bg-zinc-800/20 hover:bg-zinc-800/40 transition-colors"
-                    >
-                      <div className="space-y-1">
-                        <p className="text-zinc-100 text-sm font-semibold tracking-[-0.01em]">
-                          {membership.academicYear}
-                          {getYearSuffix(membership.academicYear)} year,{" "}
-                          {membership.semester}
-                          {membership.semester === 1 ? "st" : "nd"} semester
-                        </p>
-                        <p className="text-zinc-500 text-xs tracking-[-0.01em]">
-                          Joined {formatDate(membership.dateJoined)}
-                        </p>
-                      </div>
-                      <span
-                        className={`text-xs font-semibold tracking-[-0.01em] ${membership.active ? "text-purple-400" : "text-zinc-600"}`}
+                  memberships.map((membership) => {
+                    const status = getMembershipStatus(membership);
+                    return (
+                      <div
+                        key={membership.membershipId}
+                        className="flex items-center justify-between px-6 py-4 rounded-xl border border-zinc-800 bg-zinc-800/20 hover:bg-zinc-800/40 transition-colors"
                       >
-                        {membership.active ? "Active" : "Inactive"}
-                      </span>
-                    </div>
-                  ))
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p className="text-zinc-100 text-sm font-semibold tracking-[-0.01em]">
+                              {membership.yearStart}–{membership.yearEnd} Pass
+                            </p>
+                            {membership.yearStart === CURRENT_YEAR_START &&
+                              membership.yearEnd === CURRENT_YEAR_END && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20">
+                                  Current
+                                </span>
+                              )}
+                          </div>
+                          <p className="text-zinc-500 text-xs tracking-[-0.01em]">
+                            Joined {formatDate(membership.dateJoined)}
+                          </p>
+                        </div>
+                        <span
+                          className={`text-xs font-semibold tracking-[-0.01em] ${status.className}`}
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>

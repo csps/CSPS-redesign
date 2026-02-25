@@ -73,6 +73,8 @@ const EventViewPage = () => {
         ]);
         setSessions(sessionsData);
         setAttendance(attendanceData);
+
+        console.log(`ATTENDANCE: ${JSON.stringify(attendance)}`);
         setIsParticipant(true);
       } catch {
         navigate("/events");
@@ -280,16 +282,17 @@ const EventViewPage = () => {
       {/* sessions and attendance (participants only) */}
       {isParticipant && (
         <>
-          {/* leave event */}
-          <div className="flex justify-end mb-3 xs:mb-4">
-            <button
-              onClick={() => setLeaveModalOpen(true)}
-              disabled={leaving}
-              className="text-red-400/70 hover:text-red-400 disabled:opacity-50 text-xs xs:text-sm font-medium transition-colors"
-            >
-              {leaving ? "Leaving..." : "Leave Event"}
-            </button>
-          </div>
+          {attendance.length === 0 && (
+            <div className="flex justify-end mb-3 xs:mb-4">
+              <button
+                onClick={() => setLeaveModalOpen(true)}
+                disabled={leaving}
+                className="text-red-400/70 hover:text-red-400 disabled:opacity-50 text-xs xs:text-sm font-medium transition-colors"
+              >
+                {leaving ? "Leaving..." : "Leave Event"}
+              </button>
+            </div>
+          )}
 
           <SessionList
             sessions={sessions}

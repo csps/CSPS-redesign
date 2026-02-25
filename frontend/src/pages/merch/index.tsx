@@ -106,8 +106,8 @@ const Index = () => {
                 <div className="mt-5 px-1">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="text-white/60 text-xs font-medium uppercase tracking-wider mb-1">
-                        CSPS Official
+                      <p className="text-white/60 text-xs font-medium uppercase mb-1">
+                        Name
                       </p>
                       <h3 className="text-white font-semibold text-lg leading-tight group-hover:text-[#FDE006] transition-colors">
                         {c.merchName}
@@ -117,7 +117,10 @@ const Index = () => {
                       ₱{c.basePrice}
                     </p>
                   </div>
-
+                  <p className="text-white/60 text-xs font-medium uppercase mt-2">
+                    <span>Total Stock: </span>
+                    {c.totalStockQuantity}
+                  </p>
                   {/* Primary Action Button from Design System */}
                   <div className="mt-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all">
                     <div className="w-full bg-[#FDE006] text-black text-center py-3 rounded-xl font-bold text-sm">
