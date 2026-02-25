@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { getPaginatedStudentMemberships } from "../../../../../api/studentMembership";
 import type { StudentMembershipResponse } from "../../../../../interfaces/student/StudentMembership";
 import Pagination from "../../../../../components/Pagination";
+import {
+  CURRENT_YEAR_START,
+  CURRENT_YEAR_END,
+} from "../../../../../components/nav/constants";
 
 interface MembershipListModalProps {
   isOpen: boolean;
@@ -14,6 +18,7 @@ const LoadingSkeleton = ({ className }: { className?: string }) => (
 
 /**
  * A modal that displays a paginated list of student memberships in a table format.
+ * Shows the annual pass year range (e.g. 2025–2026) instead of the old academic year / semester.
  * Features a custom deep blue background and conditional color coding for status.
  *
  * @param {MembershipListModalProps} props - Component properties.
@@ -52,6 +57,16 @@ const MembershipListModal: React.FC<MembershipListModalProps> = ({
     }
   };
 
+  /**
+   * Determines whether a membership belongs to the current academic year.
+   *
+   * @param yearStart - membership start year
+   * @param yearEnd   - membership end year
+   * @returns true if the membership matches the current academic year
+   */
+  const isCurrentAcademicYear = (yearStart: number, yearEnd: number): boolean =>
+    yearStart === CURRENT_YEAR_START && yearEnd === CURRENT_YEAR_END;
+
   if (!isOpen) return null;
 
   return (
@@ -87,7 +102,7 @@ const MembershipListModal: React.FC<MembershipListModalProps> = ({
                   Joined Date
                 </th>
                 <th className="px-8 py-4 border-b border-white/5">
-                  Academic Status
+                  Academic Year
                 </th>
                 <th className="px-8 py-4 border-b border-white/5 text-right">
                   Status
@@ -133,11 +148,16 @@ const MembershipListModal: React.FC<MembershipListModalProps> = ({
                       </span>
                     </td>
                     <td className="px-8 py-5">
-                      <span className="text-xs text-white/80 font-semibold">
-                        {m.active
-                          ? `${m.academicYear}${m.academicYear === 1 ? "st" : m.academicYear === 2 ? "nd" : m.academicYear === 3 ? "rd" : "th"} Year, Sem ${m.semester}`
-                          : "—"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-white/80 font-semibold">
+                          {m.yearStart}–{m.yearEnd}
+                        </span>
+                        {isCurrentAcademicYear(m.yearStart, m.yearEnd) && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 border border-purple-500/20">
+                            Current
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-8 py-5 text-right">
                       <span

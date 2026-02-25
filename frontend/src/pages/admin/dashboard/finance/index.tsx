@@ -445,7 +445,7 @@ const Index = () => {
                     </h2>
                   </div>
                   <button
-                    onClick={() => setIsMembershipModalOpen(true)}
+                    onClick={() => navigate("/admin/membership")}
                     className="text-xs font-bold text-purple-400 hover:text-purple-300 uppercase tracking-widest transition-colors"
                   >
                     See More
