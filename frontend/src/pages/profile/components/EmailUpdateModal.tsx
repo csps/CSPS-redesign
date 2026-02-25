@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { MdOutlineClose, MdEmail, MdCheckCircle } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { initiateEmailUpdate, confirmEmailUpdate } from "../../../api/auth";
+import {
+  initiateEmailUpdate,
+  confirmEmailUpdate,
+  updateEmail,
+} from "../../../api/auth";
 import type {
   InitiateEmailUpdateRequest,
   ConfirmEmailUpdateRequest,
@@ -11,6 +15,7 @@ interface EmailUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentEmail: string;
+  isVerified: boolean;
   onSuccess?: () => void;
 }
 
@@ -20,8 +25,10 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
   isOpen,
   onClose,
   currentEmail,
+  isVerified,
   onSuccess,
 }) => {
+  const updateMethod = isVerified ? "verify" : "direct";
   const [step, setStep] = useState<UpdateStep>("request");
   const [newEmail, setNewEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -40,6 +47,45 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
   const handleClose = () => {
     resetForm();
     onClose();
+  };
+
+  const handleDirectUpdate = async () => {
+    setError(null);
+    setSuccessMessage(null);
+
+    if (!newEmail.trim()) {
+      setError("Please enter your new email address");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (newEmail.toLowerCase() === currentEmail.toLowerCase()) {
+      setError("New email must be different from your current email");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateEmail(newEmail.trim());
+      setSuccessMessage("Email updated successfully!");
+
+      setTimeout(() => {
+        resetForm();
+        onClose();
+        onSuccess?.();
+      }, 1500);
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as any)?.response?.data?.message ||
+        "Failed to update email. Please try again.";
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRequestCode = async () => {
@@ -135,12 +181,18 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
             <div className="flex items-center justify-between px-8 py-6 border-b border-white/5 bg-gray-800/30">
               <div>
                 <h2 className="text-xl font-bold text-white">
-                  {step === "request" ? "Update Email" : "Verify Update"}
+                  {updateMethod === "verify"
+                    ? step === "request"
+                      ? "Update Email"
+                      : "Verify Update"
+                    : "Update Email"}
                 </h2>
                 <p className="text-xs text-white/40 mt-1 font-medium tracking-wide">
-                  {step === "request"
-                    ? "Change your primary account email"
-                    : "Enter the code sent to your inbox"}
+                  {updateMethod === "verify"
+                    ? step === "request"
+                      ? "Change your primary account email"
+                      : "Enter the code sent to your inbox"
+                    : "Update your email address directly"}
                 </p>
               </div>
               <button
@@ -164,7 +216,7 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
                 </p>
               </div>
 
-              {step === "request" && (
+              {step === "request" && updateMethod === "direct" && (
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
                     New Email Address
@@ -180,7 +232,23 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
                 </div>
               )}
 
-              {step === "confirm" && (
+              {step === "request" && updateMethod === "verify" && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
+                    New Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="you@university.edu"
+                    disabled={isLoading}
+                    className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/20 focus:outline-none focus:border-purple-500/50 transition-all font-medium"
+                  />
+                </div>
+              )}
+
+              {step === "confirm" && updateMethod === "verify" && (
                 <>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-white/30 block ml-1">
@@ -262,7 +330,11 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
               </button>
               <button
                 onClick={
-                  step === "request" ? handleRequestCode : handleConfirmEmail
+                  updateMethod === "direct"
+                    ? handleDirectUpdate
+                    : step === "request"
+                      ? handleRequestCode
+                      : handleConfirmEmail
                 }
                 disabled={isLoading}
                 className="px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-black bg-[#FDE006] hover:brightness-110 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-yellow-500/10 active:scale-95 flex items-center gap-3"
@@ -271,6 +343,11 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
                   <>
                     <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                     Processing
+                  </>
+                ) : updateMethod === "direct" ? (
+                  <>
+                    <MdCheckCircle size={18} />
+                    Update Email
                   </>
                 ) : step === "request" ? (
                   <>
