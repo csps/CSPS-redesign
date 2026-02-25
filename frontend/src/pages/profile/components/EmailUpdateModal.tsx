@@ -70,7 +70,7 @@ const EmailUpdateModal: React.FC<EmailUpdateModalProps> = ({
 
     setIsLoading(true);
     try {
-      await updateEmail(newEmail.trim());
+      await updateEmail({ email: newEmail.trim() });
       setSuccessMessage("Email updated successfully!");
 
       setTimeout(() => {
