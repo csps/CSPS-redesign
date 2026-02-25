@@ -1,0 +1,34 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+
+.env
+.github
+C:\Users\Ginand\Desktop\CSPS-redesign\frontend\DESIGN_SYSTEM_PROMPT.md
+
+# Allow documentation files
+!docs/
+!docs/**/*.md

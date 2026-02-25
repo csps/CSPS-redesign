@@ -1,0 +1,145 @@
+import React from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import type { StudentResponse } from "../../interfaces/student/StudentResponse";
+import { logout } from "../../api/auth";
+import { useAuthStore } from "../../store/auth_store";
+
+interface ProfileDropdownProps {
+  student: StudentResponse | null;
+  onClose: () => void;
+}
+
+const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
+  student,
+  onClose,
+}) => {
+  const navigate = useNavigate();
+  const user = useAuthStore.getState().user;
+
+  const isAdmin = user?.role === "ADMIN";
+
+  // Get user data based on role
+ 
+
+  const handleLogout = async () => {
+    await logout();
+    onClose();
+    navigate("/login");
+  };
+
+  const handleProfile = () => {
+    onClose();
+    const navPath = isAdmin ? "/admin/profile" : "/profile";
+    navigate(navPath);
+  };
+
+  const getInitials = (name?: string) => {
+    return name ? name.charAt(0).toUpperCase() : "S";
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="absolute top-full right-0 mt-2 w-72 bg-[#2d0d70] rounded-2xl shadow-2xl border border-white/10 z-[1000] overflow-hidden flex flex-col"
+    >
+      {/* Header (Avatar & Name) */}
+      <div className="p-4 flex items-center gap-3.5">
+        <div className="h-11 w-11 shrink-0 rounded-xl bg-white/10 flex items-center justify-center text-white font-bold text-lg border border-white/5 shadow-inner">
+          {getInitials(student?.user.firstName)}
+        </div>
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-white font-semibold text-sm truncate">
+            {student?.user.firstName || "Student"}{" "}
+            {student?.user.lastName || ""}
+          </span>
+          <span className="text-xs text-purple-200/60 truncate">
+            {isAdmin ? "Admin" : "Student"} Account
+          </span>
+        </div>
+      </div>
+
+      {/* Dashed Divider */}
+      <div className="border-b border-dashed border-white/10 mx-3" />
+
+      {/* ID Context */}
+      <div className="px-4 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-purple-200/40 font-bold mb-2 ml-1">
+          Active ID
+        </p>
+        <div className="flex items-center justify-between group cursor-default px-1">
+          <span className="text-sm text-white/90 font-medium">
+            {isAdmin ? "Admin" : "Student"} ID:{" "}
+            {isAdmin ? student?.user.userId : student?.studentId}
+          </span>
+          <svg
+            className="w-4 h-4 text-purple-300 opacity-100"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Dashed Divider */}
+      <div className="border-b border-dashed border-white/10 mx-3" />
+
+      {/* Menu Actions */}
+      <div className="p-2 space-y-1">
+        <button
+          onClick={handleProfile}
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-white rounded-xl transition-all hover:bg-white/10 text-left group"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-purple-200/70 group-hover:text-white transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+            />
+          </svg>
+          <span className="text-sm font-medium">Profile</span>
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-white rounded-xl transition-all hover:bg-white/10 text-left group"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-purple-200/70 group-hover:text-white transition-colors"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          <span className="text-sm font-medium">Log out</span>
+        </button>
+      </div>
+    </motion.div>
+  );
+};
+
+export default ProfileDropdown;
