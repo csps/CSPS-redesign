@@ -172,11 +172,7 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
       <div className="lg:col-span-7 flex flex-col justify-center">
         <div className="space-y-6">
           {/* Row 1: Name & Price */}
-          <div
-            className={`grid grid-cols-1 ${
-              formState.merchType !== MerchType.CLOTHING ? "md:grid-cols-2" : ""
-            } gap-6`}
-          >
+          <div className={`grid grid-cols-2  gap-6`}>
             <InputBlock
               label="Product Name"
               error={errors.merchName}
@@ -198,26 +194,24 @@ const MerchInfoStep: React.FC<MerchInfoStepProps> = ({
               />
             </InputBlock>
 
-            {formState.merchType !== MerchType.CLOTHING && (
-              <InputBlock label="Base Price" error={errors.basePrice}>
-                <div className="flex items-center gap-3 w-full">
-                  <span className="text-purple-400 font-bold text-xl">₱</span>
-                  <input
-                    type="number"
-                    value={formState.basePrice === 0 ? "" : formState.basePrice}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      onBasePriceChange(value);
-                    }}
-                    onWheel={(e) => e.currentTarget.blur()}
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                    className="w-full bg-transparent text-white text-lg font-bold placeholder-white/20 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                </div>
-              </InputBlock>
-            )}
+            <InputBlock label="Base Price" error={errors.basePrice}>
+              <div className="flex items-center gap-3 w-full">
+                <span className="text-purple-400 font-bold text-xl">₱</span>
+                <input
+                  type="number"
+                  value={formState.basePrice === 0 ? "" : formState.basePrice}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    onBasePriceChange(value);
+                  }}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  className="w-full bg-transparent text-white text-lg font-bold placeholder-white/20 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </div>
+            </InputBlock>
           </div>
 
           {/* Row 2: Category */}

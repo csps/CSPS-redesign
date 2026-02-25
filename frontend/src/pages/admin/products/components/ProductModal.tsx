@@ -86,8 +86,8 @@ const ProductModal: React.FC<ProductModalProps> = ({
         resetForm();
         setCurrentStep(1);
         setValidationErrors({});
+
         setShowSuccessModal(true);
-        onSuccess?.();
       } else {
         setSubmitError(result.error || "Failed to create product");
         toast.error(result.error || "Failed to create product");
@@ -175,56 +175,59 @@ const ProductModal: React.FC<ProductModalProps> = ({
   );
 
   // Success Modal Component
-  const SuccessModal = () => (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-      <div className="relative bg-gradient-to-b from-[#1e1a4a] to-[#151238] rounded-3xl border border-white/10 p-10 max-w-md w-full text-center overflow-hidden">
-        {/* Background glow effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-green-500/20 rounded-full blur-3xl" />
+  const SuccessModal = ({ isSuccess }: { isSuccess: boolean }) =>
+    isSuccess && (
+      <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div className="relative bg-gradient-to-b from-[#1e1a4a] to-[#151238] rounded-3xl border border-white/10 p-10 max-w-md w-full text-center overflow-hidden">
+          {/* Background glow effect */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-green-500/20 rounded-full blur-3xl" />
 
-        <div className="relative z-10">
-          {/* Success Icon */}
-          <div className="mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto transform rotate-3">
-              <svg
-                className="w-10 h-10 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+          <div className="relative z-10">
+            {/* Success Icon */}
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto transform rotate-3">
+                <svg
+                  className="w-10 h-10 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
             </div>
+
+            <h3 className="text-2xl font-bold text-white mb-3">
+              Product Created!
+            </h3>
+            <p className="text-white/60 mb-8 leading-relaxed">
+              Your new merchandise has been successfully added to the catalog
+              and is ready for sale.
+            </p>
+
+            <button
+              onClick={() => {
+                setShowSuccessModal(false);
+                handleClose();
+                onSuccess?.();
+              }}
+              className="w-full bg-[#FDE006] hover:brightness-110 text-black font-bold py-4 px-8 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Continue to Products
+            </button>
           </div>
-
-          <h3 className="text-2xl font-bold text-white mb-3">
-            Product Created!
-          </h3>
-          <p className="text-white/60 mb-8 leading-relaxed">
-            Your new merchandise has been successfully added to the catalog and
-            is ready for sale.
-          </p>
-
-          <button
-            onClick={() => {
-              setShowSuccessModal(false);
-              handleClose();
-            }}
-            className="w-full bg-[#FDE006] hover:brightness-110 text-black font-bold py-4 px-8 rounded-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
-          >
-            Continue to Products
-          </button>
         </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <>
+      <SuccessModal isSuccess={showSuccessModal} />
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 sm:p-6">
           <div className="relative w-full max-w-6xl bg-gradient-to-b from-[#1e1a4a] to-[#151238] rounded-3xl border border-white/10 overflow-hidden animate-in fade-in zoom-in duration-300">
@@ -317,7 +320,6 @@ const ProductModal: React.FC<ProductModalProps> = ({
           </div>
         </div>
       )}
-      {showSuccessModal && <SuccessModal />}
     </>
   );
 };

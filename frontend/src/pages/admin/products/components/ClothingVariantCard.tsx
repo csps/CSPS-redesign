@@ -86,10 +86,9 @@ const ClothingVariantCard: React.FC<ClothingVariantCardProps> = ({
       {/* Price Input */}
       <div className="mb-6">
         <label className="block text-sm font-medium text-white/60 mb-2">
-          Price
+          Prices
         </label>
         <div className="flex items-center gap-3">
-          <span className="text-white/60 font-medium">₱</span>
           <input
             type="number"
             value={variant.price === "" ? "" : variant.price}
