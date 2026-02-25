@@ -125,7 +125,6 @@ export const login = async (authRequest: AuthRequest) => {
     // If JWT decode failed for any reason, fall back to blocking profile fetch
     const { isAuthenticated } = useAuthStore.getState();
 
-
     if (isAuthenticated) {
       await profile();
     }
@@ -342,6 +341,33 @@ export const confirmEmailUpdate = async (
     const response = await api.post<EmailUpdateApiResponse>(
       "/auth/email/update/confirm",
       request,
+    );
+    return response.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+interface UpdateEmailSimpleRequestDTO {
+  email: string;
+}
+
+/**
+ * Directly updates the user's email address without verification
+ * Used for updating email even if it's unverified
+ */
+export const updateEmail = async (
+  request: UpdateEmailSimpleRequestDTO,
+): Promise<EmailUpdateApiResponse> => {
+  try {
+    const response = await api.patch<EmailUpdateApiResponse>(
+      "user/update-email",
+      request,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
     return response.data;
   } catch (err) {
