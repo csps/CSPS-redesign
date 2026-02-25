@@ -1,59 +1,45 @@
-# CSPS Website Frontend
+# CSP-S Redesign - Frontend
 
-A modern, responsive web application for the Computer Science and Programming Society (CSPS), built as a comprehensive platform for student engagement, event management, merchandise sales, and administrative operations.
+<p align="center">
+    <img width="200" height="200" src="https://raw.githubusercontent.com/csps/.github/main/images/CSPS_LOGO.png">
+</p>
 
-## 🚀 Features
+The modern, redesigned frontend for the UC Main **Computing Society of the Philippines - Students** (CSP-S) website. This repository contains the frontend application that serves as the digital hub for our inclusive community of computer science students at the University of Cebu - Main Campus.
 
-### For Students
+This is part of the UC Main CSP-S organization's website infrastructure, which provides a seamless experience for students to discover events, purchase merchandise, connect with peers, and manage their community involvement.
 
-- **Dashboard**: Personalized student portal with membership information and quick access to features
-- **Events**: Browse upcoming and recent events, register for activities
-- **Bulletin**: Stay updated with announcements and news
-- **Merchandise Store**: Purchase official CSPS merchandise with secure checkout
-- **Profile Management**: Update personal information and membership details
+## What's New?
 
-### For Administrators
+The CSP-S Redesign frontend is a complete modernization of our web platform, built with the latest industry standards:
 
-- **Student Management**: View and manage student memberships, details, and status
-- **Event Management**: Create, edit, and manage society events
-- **Merchandise Management**: Add products, manage inventory, variants, and pricing
-- **Order Management**: Process and track merchandise orders with status updates
-- **Analytics**: View charts and statistics for events, sales, and membership
+- **React 19** - The latest stable version with improved performance and developer experience
+- **TypeScript** - Full type safety for reliable, maintainable code
+- **Vite** - Ultra-fast build tool with instant HMR during development
+- **Tailwind CSS 4** - Modern styling with dark/light theme support
+- **Zustand** - Lightweight state management for efficient user data handling
+- **TanStack React Query** - Smart server state management with caching
 
-### Core Features
+We've rebuilt the entire platform from scratch to provide a faster, more responsive, and more user-friendly experience for our community.
 
-- **Authentication**: Secure login/logout with JWT token management
-- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **Real-time Updates**: Live data fetching with React Query
-- **Smooth Animations**: Framer Motion powered transitions and interactions
-- **Modern UI**: Clean, iOS-inspired design with Tailwind CSS
-- **Type Safety**: Full TypeScript implementation for reliability
+---
 
-## 🛠 Tech Stack
+## Installation
 
-- **Frontend Framework**: React 19 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS 4
-- **State Management**: Zustand
-- **Data Fetching**: TanStack React Query
-- **HTTP Client**: Axios
-- **Routing**: React Router DOM v7
-- **Icons**: Lucide React, React Icons
-- **Charts**: Chart.js with React Chart.js 2
-- **Calendar**: React Calendar
-- **Animations**: Framer Motion
-- **Notifications**: Sonner (toast notifications)
-- **Image Carousel**: Swiper
-- **Typewriter Effect**: React Simple Typewriter
-- **Utilities**: Lodash Move, JWT Decode
+### Prerequisites
 
-## 📦 Installation
+Before you begin, ensure you have the following installed on your system:
+
+- **Node.js** (v16.0 or higher) - Download from [nodejs.org](https://nodejs.org/)
+- **npm** (v8.0 or higher) - Comes with Node.js
+- **Git** - For cloning the repository
+
+### Steps
 
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
-   cd csps-redesign/frontend
+   git clone https://github.com/csps/csps-redesign.git
+   cd csps-redesign
    ```
 
 2. **Install dependencies**
@@ -62,129 +48,144 @@ A modern, responsive web application for the Computer Science and Programming So
    npm install
    ```
 
-3. **Environment Setup**
-   - Copy `.env.example` to `.env`
-   - Configure API endpoints and other environment variables
+3. **Configure environment variables**
 
-4. **Start development server**
+   Create a `.env` file in the root directory by copying `.env.example`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Update the `.env` file with your API endpoint:
+
+   ```env
+   VITE_API_URL=http://localhost:3000
+   ```
+
+4. **Start the development server**
 
    ```bash
    npm run dev
    ```
 
-5. **Build for production**
-   ```bash
-   npm run build
-   ```
+   The application will be available at `http://localhost:5173`
 
-## 🚀 Usage
+---
 
-### Development
+## Usage
+
+### Running the Application
+
+**Development mode** with hot reload:
 
 ```bash
 npm run dev
 ```
 
-Starts the Vite development server with hot module replacement.
-
-### Production Build
+**Production build**:
 
 ```bash
 npm run build
 ```
 
-Creates an optimized production build in the `dist` directory.
+This creates an optimized build in the `dist/` directory ready for deployment.
 
-### Preview Production Build
+**Preview production build**:
 
 ```bash
 npm run preview
 ```
 
-Serves the production build locally for testing.
-
-### Linting
+**Code quality check**:
 
 ```bash
 npm run lint
 ```
 
-Runs ESLint to check for code quality issues.
+### Accessing the Platform
 
-## 📁 Project Structure
+After starting the development server:
+
+- **Student Dashboard**: Navigate to `http://localhost:5173/dashboard` (requires student login)
+- **Admin Dashboard**: Navigate to `http://localhost:5173/admin/dashboard` (requires admin login)
+- **Public Pages**: Landing page, login, and contact pages available without authentication
+
+### Key Features
+
+**For Students:**
+
+- Create and manage your profile
+- Browse and register for upcoming events
+- Purchase official CSP-S merchandise
+- Read announcements and stay connected
+- Network with fellow computer science students
+
+**For Administrators:**
+
+- Manage student memberships and data
+- Create and manage events
+- Handle merchandise inventory and orders
+- Track sales and community engagement
+- View analytics and insights
+
+---
+
+## Project Structure
 
 ```
-frontend/
-├── public/                 # Static assets
-├── src/
-│   ├── api/               # API service functions
-│   ├── assets/            # Images, icons, logos
-│   ├── components/        # Reusable UI components
-│   ├── data/              # Static data and constants
-│   ├── enums/             # TypeScript enums
-│   ├── helper/            # Utility functions
-│   ├── hooks/             # Custom React hooks
-│   ├── interfaces/        # TypeScript interfaces
-│   ├── pages/             # Page components
-│   │   ├── admin/         # Admin panel pages
-│   │   ├── bulletin/      # Announcements
-│   │   ├── checkout/      # Payment processing
-│   │   ├── dashboard/     # Student dashboard
-│   │   ├── events/        # Event listings
-│   │   ├── landing/       # Homepage
-│   │   ├── login/         # Authentication
-│   │   ├── merch/         # Merchandise store
-│   │   └── ...
-│   ├── router/            # Routing configuration
-│   ├── store/             # Zustand state stores
-│   ├── types/             # TypeScript type definitions
-│   ├── App.tsx            # Main app component
-│   ├── main.tsx           # App entry point
-│   └── index.css          # Global styles
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── README.md
+src/
+├── api/              # API service functions and endpoints
+├── components/       # Reusable UI components
+├── pages/           # Page-level components and routes
+│   ├── admin/       # Admin dashboard pages
+│   ├── student/     # Student pages
+│   └── public/      # Public pages (login, etc.)
+├── store/           # Zustand state management
+├── hooks/           # Custom React hooks
+├── interfaces/      # TypeScript type definitions
+├── enums/           # Application enums
+├── router/          # Route configuration and protection
+└── styles/          # Global styles and Tailwind config
 ```
 
-## 🎨 Design System
+---
 
-- **Color Scheme**: Purple-based theme with dark mode support
-- **Typography**: (SF Pro Text, system fonts)
-- **Components**: Modular, reusable component library
-- **Animations**: Smooth transitions and micro-interactions
-- **Accessibility**: WCAG compliant design patterns
+## Tech Stack
 
-## 🔧 Configuration
+- **Frontend**: React 19 with TypeScript 5.8
+- **Build Tool**: Vite 7
+- **Styling**: Tailwind CSS 4 with dark/light modes
+- **State Management**: Zustand
+- **Data Fetching**: TanStack React Query, Axios
+- **Routing**: React Router DOM v7
+- **Animations**: Framer Motion
+- **Icons**: Lucide React, React Icons
+- **Forms**: React Hook Form with Yup validation
+- **Utilities**: Chart.js, Recharts, Swiper, QR Code libraries
 
-### Vite Configuration
+---
 
-- SWC for fast compilation
-- Tailwind CSS integration
-- Path aliases for clean imports
+## Support & Contact
 
-### ESLint Configuration
+Have questions or need help? We're here to assist:
 
-- TypeScript support
-- React hooks rules
-- Custom rules for code consistency
+- **Report Issues**: Use [GitHub Issues](https://github.com/csps/csps-redesign/issues) to report bugs and request features
+- **Email**: [ucmaincsps@gmail.com](mailto:ucmaincsps@gmail.com)
+- **Facebook**: [@UCMainCSPS](https://web.facebook.com/UCMainCSPS)
+- **Discord**: [Join our community](https://discord.gg/w3BPVTQUWd)
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Acknowledgments
 
-## 📄 License
+Special thanks to **Calister Creations** (Cal Calajatan) for designing our beautiful CSP-S logo. Cal is a talented computer science student and graphic designer - if you need design work, check out his [Behance portfolio](https://www.behance.net)!
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-## 👥 Team
+## Team
 
-Built by the CSPS development team for the Computer Science and Programming Society.
+Built by the CSP-S development team at University of Cebu - Main Campus
 
-## 📞 Support
+---
 
-For support or questions, please contact the development team or create an issue in the repository.
+**CSP-S Redesign © 2026** - All rights reserved. See LICENSE file for details.
