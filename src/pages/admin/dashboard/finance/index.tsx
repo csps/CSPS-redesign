@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Chart from "./components/Chart";
 import RadialChart from "./components/RadialChart";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
-import AdminPageLoader from "../../../../components/AdminPageLoader";
 import { S3_BASE_URL } from "../../../../constant";
 import {
   getFinanceDashboard,
@@ -180,10 +179,9 @@ const Index = () => {
   };
 
   return (
-    <AdminPageLoader isLoading={loading}>
-      <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
-        <div className="relative w-full max-w-[90rem] p-4 md:p-6 text-white">
-          <AuthenticatedNav />
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#41169C] via-[#20113F] to-black flex justify-center">
+      <div className="relative w-full max-w-[90rem] p-4 md:p-6 text-white">
+        <AuthenticatedNav />
 
           <div className="py-6 space-y-8">
             {/* Error Banner */}
@@ -556,7 +554,6 @@ const Index = () => {
           onClose={() => setIsMembershipModalOpen(false)}
         />
       </div>
-    </AdminPageLoader>
   );
 };
 

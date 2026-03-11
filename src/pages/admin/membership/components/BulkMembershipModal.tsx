@@ -268,9 +268,7 @@ const BulkMembershipModal: React.FC<BulkMembershipModalProps> = ({
         <div className="bg-[#1E1E3F] border border-white/10 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
           {/* Header */}
           <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">
-              Add Membership
-            </h2>
+            <h2 className="text-lg font-bold text-white">Add Membership</h2>
             <button
               onClick={handleClose}
               disabled={isLoading}
@@ -417,7 +415,7 @@ const BulkMembershipModal: React.FC<BulkMembershipModalProps> = ({
               <label className="text-xs font-medium text-zinc-500 tracking-wide uppercase">
                 Add Manually or Paste IDs
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="text"
                   value={inputValue}
@@ -429,20 +427,22 @@ const BulkMembershipModal: React.FC<BulkMembershipModalProps> = ({
                   disabled={isLoading}
                   className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-200 placeholder-zinc-600 px-3 py-2 focus:outline-none focus:border-purple-500 transition-colors disabled:opacity-50"
                 />
-                <button
-                  onClick={handlePasteIds}
-                  disabled={!inputValue.trim() || isLoading}
-                  className="px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  Paste
-                </button>
-                <button
-                  onClick={handleAddManual}
-                  disabled={!inputValue.trim() || isLoading}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  Add
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handlePasteIds}
+                    disabled={!inputValue.trim() || isLoading}
+                    className="flex-1 sm:flex-none px-4 py-2 bg-zinc-700 hover:bg-zinc-600 text-zinc-300 rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Paste
+                  </button>
+                  <button
+                    onClick={handleAddManual}
+                    disabled={!inputValue.trim() || isLoading}
+                    className="flex-1 sm:flex-none px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
               <p className="text-xs text-zinc-600">
                 Enter single IDs and press Add, or paste multiple

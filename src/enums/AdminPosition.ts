@@ -9,9 +9,8 @@ export const AdminPosition = {
   // Finance positions (ROLE_ADMIN_FINANCE)
   TREASURER: "TREASURER",
   ASSISTANT_TREASURER: "ASSISTANT_TREASURER",
-
-  // General admin positions (ROLE_ADMIN only)
   AUDITOR: "AUDITOR",
+
   PIO: "PIO",
   PRO: "PRO",
   CHIEF_VOLUNTEER: "CHIEF_VOLUNTEER",
@@ -36,6 +35,7 @@ export const EXECUTIVE_POSITIONS: AdminPosition[] = [
 export const FINANCE_POSITIONS: AdminPosition[] = [
   AdminPosition.TREASURER,
   AdminPosition.ASSISTANT_TREASURER,
+  AdminPosition.AUDITOR,
 ];
 
 // Helper functions to check position category

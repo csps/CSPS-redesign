@@ -16,6 +16,10 @@ const officers2024Modules = import.meta.glob<{ default: string }>(
   "../../../assets/officers/2024/*.jpg",
   { eager: true },
 );
+const officers2023Modules = import.meta.glob<{ default: string }>(
+  "../../../assets/officers/2023/*.jpg",
+  { eager: true },
+);
 
 const positionOrder = [
   "President",
@@ -69,7 +73,7 @@ const createOfficerList = (
 const officersByYear: Record<string, Card[]> = {
   current: createOfficerList(officers2025Modules),
   "2024": createOfficerList(officers2024Modules),
-  "2023": [], // Placeholder for 2023 officers
+  "2023": createOfficerList(officers2023Modules),
 };
 
 const yearOrder = ["current", "2024", "2023"];

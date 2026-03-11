@@ -141,8 +141,23 @@ const AdminEventDetailPage = () => {
     return (
       <Layout>
         <AuthenticatedNav />
-        <div className="flex items-center justify-center py-32">
-          <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+        <div className="mt-4 mb-6">
+          <div className="h-4 w-16 bg-white/10 rounded animate-pulse"></div>
+        </div>
+        <div className="w-full h-[160px] xs:h-[180px] sm:h-[220px] rounded-lg xs:rounded-xl sm:rounded-2xl bg-[#1e1a4a]/50 border border-white/5 animate-pulse mb-4 xs:mb-5 sm:mb-6 md:mb-8"></div>
+        <div className="border border-white/5 rounded-xl bg-white/[0.02] p-5 mb-8 animate-pulse">
+          <div className="h-3 w-16 bg-white/10 rounded mb-4"></div>
+          <div className="space-y-2">
+            <div className="h-4 w-full bg-white/5 rounded"></div>
+            <div className="h-4 w-5/6 bg-white/5 rounded"></div>
+            <div className="h-4 w-4/6 bg-white/5 rounded"></div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div className="h-4 w-24 bg-white/10 rounded animate-pulse"></div>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-20 rounded-xl bg-white/[0.03] border border-white/10 animate-pulse"></div>
+          ))}
         </div>
       </Layout>
     );

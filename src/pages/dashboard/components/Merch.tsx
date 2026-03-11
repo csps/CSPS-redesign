@@ -4,13 +4,11 @@ import type { MerchSummaryResponse } from "../../../interfaces/merch/MerchRespon
 import { S3_BASE_URL } from "../../../constant";
 import { useNavigate } from "react-router-dom";
 import SAMPLE from "../../../assets/image 8.png";
-import { useInView } from "../../../hooks/useInView";
 
 const Merch = () => {
   const [merchandise, setMerchandise] = useState<MerchSummaryResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { ref, isInView } = useInView();
 
   const fetchMerchandise = async () => {
     setLoading(true);
@@ -24,16 +22,11 @@ const Merch = () => {
   };
 
   useEffect(() => {
-    if (!isInView) {
-      setLoading(true);
-      return;
-    }
-
     fetchMerchandise();
-  }, [isInView]);
+  }, []);
 
   return (
-    <div ref={ref} className="w-full">
+    <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-6">
         <div>
           <h2 className="text-3xl lg:text-[2rem] font-bold text-white ">

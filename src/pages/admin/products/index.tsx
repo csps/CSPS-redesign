@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import AdminPageLoader from "../../../components/AdminPageLoader";
 import SAMPLE from "../../../assets/image 8.png";
 import { IoMdAdd } from "react-icons/io";
 import { FiEdit3, FiTrash2, FiEye, FiArchive } from "react-icons/fi";
@@ -99,10 +98,9 @@ const Index = () => {
   ];
 
   return (
-    <AdminPageLoader isLoading={loading}>
-      <Layout>
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-          <AuthenticatedNav />
+    <Layout>
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <AuthenticatedNav />
 
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-8 sm:mt-12 mb-6 gap-4">
@@ -164,9 +162,15 @@ const Index = () => {
           {/* Grid Display */}
           <div className="relative min-h-[400px]">
             {loading && (
-              <div className="col-span-full flex flex-col items-center justify-center py-32">
-                <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
-                <p className="text-white font-medium">Loading products...</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="bg-[#1E293B]/40 border border-white/5 rounded-2xl p-3 sm:p-4 h-[300px] animate-pulse flex flex-col">
+                    <div className="aspect-[4/3] bg-[#0F172A]/60 rounded-xl mb-4"></div>
+                    <div className="h-4 bg-white/10 rounded w-1/3 mb-2"></div>
+                    <div className="h-5 bg-white/10 rounded w-2/3 mb-4"></div>
+                    <div className="mt-auto h-10 bg-white/10 rounded"></div>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -279,7 +283,6 @@ const Index = () => {
           warningMessage="This will permanently delete the product and all its variants and items."
         />
       </Layout>
-    </AdminPageLoader>
   );
 };
 

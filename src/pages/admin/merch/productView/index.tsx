@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
-import AdminPageLoader from "../../../../components/AdminPageLoader";
 import SAMPLE from "../../../../assets/image 8.png";
 import Layout from "../../../../components/Layout";
 import { useParams, useNavigate } from "react-router-dom";
@@ -453,9 +452,8 @@ const AdminMerchProductView = () => {
 
   // ========== Main Render ==========
   return (
-    <AdminPageLoader isLoading={loading}>
-      <Layout>
-        <AuthenticatedNav />
+    <Layout>
+      <AuthenticatedNav />
 
         <div className="mb-8">
           <button
@@ -640,7 +638,6 @@ const AdminMerchProductView = () => {
           warningMessage="This will permanently delete the variant and all its items."
         />
       </Layout>
-    </AdminPageLoader>
   );
 };
 

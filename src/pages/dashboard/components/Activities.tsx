@@ -3,20 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { getAllEvents } from "../../../api/event";
 import type { EventResponse } from "../../../interfaces/event/EventResponse";
 import { S3_BASE_URL } from "../../../constant";
-import { useInView } from "../../../hooks/useInView";
 import EventDetailModal from "../../events/components/EventDetailModal";
 
 const Activities = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventResponse | null>(
+    null,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { ref, isInView } = useInView();
 
   useEffect(() => {
-    if (!isInView) return; // Don't fetch if not in view
-
     const fetchEvents = async () => {
       setLoading(true);
       try {
@@ -28,7 +26,7 @@ const Activities = () => {
       }
     };
     fetchEvents();
-  }, [isInView]);
+  }, []);
 
   const handleEventClick = (event: EventResponse) => {
     setSelectedEvent(event);
@@ -36,7 +34,7 @@ const Activities = () => {
   };
 
   return (
-    <div ref={ref} className="w-full">
+    <div className="w-full">
       <div className="w-full flex justify-between items-end mb-10">
         <div>
           <h2 className="text-3xl lg:text-4xl font-bold text-white ">
@@ -46,7 +44,7 @@ const Activities = () => {
             Community Highlights
           </p>
         </div>
-        <p 
+        <p
           onClick={() => navigate("/events")}
           className="text-xs lg:text-sm font-bold cursor-pointer text-purple-400 hover:text-purple-300 uppercase"
         >

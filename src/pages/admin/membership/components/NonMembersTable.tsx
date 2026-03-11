@@ -37,16 +37,7 @@ const formatPosition = (position?: string | null): string => {
     .join(" ");
 };
 
-// skeleton row
-const SkeletonRow: React.FC<{ cols: number }> = ({ cols }) => (
-  <tr className="border-b border-white/5">
-    {Array.from({ length: cols }).map((_, i) => (
-      <td key={i} className="px-4 py-4">
-        <div className="h-4 bg-white/5 rounded animate-pulse" />
-      </td>
-    ))}
-  </tr>
-);
+// Removed SkeletonRow component
 
 const NonMembersTable: React.FC<NonMembersTableProps> = ({
   data,
@@ -61,32 +52,14 @@ const NonMembersTable: React.FC<NonMembersTableProps> = ({
   const totalPages = data?.totalPages ?? 0;
   const from = currentPage * (data?.size ?? 7) + 1;
   const to = Math.min(from + (data?.numberOfElements ?? 0) - 1, totalElements);
-  const colCount = canEditFinance ? 5 : 4;
 
   // empty state
   if (!loading && students.length === 0) {
     return (
       <div className="bg-[#1E1E3F] border border-white/5 rounded-2xl p-16 text-center">
-        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-          <svg
-            className="w-9 h-9 text-white/30"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
-            />
-          </svg>
-        </div>
-        <h3 className="text-xl font-bold text-white mb-2">
-          All Students Are Members
-        </h3>
-        <p className="text-white/50 max-w-md mx-auto">
-          Every registered student currently has an active membership.
+        <h3 className="text-xl font-bold text-white mb-2">No Students Found</h3>
+        <p className="text-gray-400 text-sm">
+          There are no students matching your current search or filter criteria.
         </p>
       </div>
     );
@@ -120,7 +93,26 @@ const NonMembersTable: React.FC<NonMembersTableProps> = ({
           <tbody>
             {loading
               ? Array.from({ length: 5 }).map((_, i) => (
-                  <SkeletonRow key={i} cols={colCount} />
+                  <tr key={i} className="border-b border-white/5 animate-pulse">
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-32 bg-white/10 rounded mb-1"></div>
+                      <div className="h-3 w-20 bg-white/10 rounded"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-5 w-8 bg-white/10 rounded-md"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-40 bg-white/10 rounded"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="h-6 w-20 bg-white/10 rounded-full"></div>
+                    </td>
+                    {canEditFinance && (
+                      <td className="px-4 py-4 text-center">
+                        <div className="h-8 w-28 bg-white/10 rounded-lg mx-auto"></div>
+                      </td>
+                    )}
+                  </tr>
                 ))
               : students.map((s) => (
                   <tr
@@ -178,7 +170,7 @@ const NonMembersTable: React.FC<NonMembersTableProps> = ({
       </div>
 
       {/* pagination footer */}
-      {!loading && totalPages > 0 && (
+      {totalPages > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 border-t border-white/5 gap-3">
           <p className="text-xs text-zinc-500">
             Showing {from}–{to} of {totalElements}

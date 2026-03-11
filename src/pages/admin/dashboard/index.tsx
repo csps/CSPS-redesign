@@ -1,6 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import AdminPageLoader from "../../../components/AdminPageLoader";
 import {
   Users,
   Calendar,
@@ -80,10 +79,9 @@ const Index = () => {
   }, [dashboardData]);
 
   return (
-    <AdminPageLoader isLoading={isLoading}>
-      <Layout>
-        <main className="relative w-full max-w-[90rem] mx-auto px-4 md:px-8 py-6 text-white">
-          <AuthenticatedNav />
+    <Layout>
+      <main className="relative w-full max-w-[90rem] mx-auto px-4 md:px-8 py-6 text-white">
+        <AuthenticatedNav />
 
           <section className="mt-10 space-y-10">
             {/* Header */}
@@ -240,7 +238,6 @@ const Index = () => {
           </section>
         </main>
       </Layout>
-    </AdminPageLoader>
   );
 };
 

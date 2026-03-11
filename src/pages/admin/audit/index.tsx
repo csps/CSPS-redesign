@@ -111,8 +111,21 @@ const AuditPage = () => {
 
         <div className="w-full">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+            <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02]">
+              <div className="w-full">
+                <div className="border-b border-white/10 bg-white/5 h-12"></div>
+                <div className="divide-y divide-white/5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="h-16 flex items-center px-5 gap-4 animate-pulse">
+                      <div className="h-4 bg-white/5 rounded w-1/6"></div>
+                      <div className="h-4 bg-white/5 rounded w-1/6"></div>
+                      <div className="h-6 bg-white/5 rounded-lg w-20"></div>
+                      <div className="h-4 bg-white/5 rounded w-1/4"></div>
+                      <div className="h-4 bg-white/5 rounded w-1/3"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <AuditLogTable logs={logs} />

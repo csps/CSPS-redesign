@@ -217,16 +217,26 @@ export default function HistoryModal({ isOpen, onClose }: HistoryModalProps) {
             </thead>
             <tbody className="divide-y divide-white/5">
               {loading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-20 text-center">
-                    <div className="flex flex-col items-center gap-4">
-                      <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
-                      <p className="text-sm font-bold text-zinc-500 uppercase tracking-widest">
-                        Synchronizing Records...
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="border-b border-white/5 bg-white/[0.01]">
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-2">
+                        <div className="h-4 w-16 bg-white/10 rounded animate-pulse"></div>
+                        <div className="h-3 w-24 bg-white/10 rounded animate-pulse"></div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col gap-2">
+                        <div className="h-4 w-32 bg-white/10 rounded animate-pulse"></div>
+                        <div className="h-3 w-20 bg-white/10 rounded animate-pulse"></div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5"><div className="h-6 w-24 bg-white/10 rounded-lg animate-pulse"></div></td>
+                    <td className="px-6 py-5 text-right"><div className="h-4 w-20 bg-white/10 rounded animate-pulse ml-auto"></div></td>
+                    <td className="px-6 py-5 text-center"><div className="h-6 w-20 bg-white/10 rounded-full animate-pulse mx-auto"></div></td>
+                    <td className="px-6 py-5"></td>
+                  </tr>
+                ))
               ) : transactions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-20 text-center">

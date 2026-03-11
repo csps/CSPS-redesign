@@ -17,7 +17,7 @@ const Index = () => {
   const user = useAuthStore((state) => state.user);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
-  // Lock scroll when profile modal is open
+  // Lock scroll whiten profile modal is open
   useScrollLock(showProfileModal);
 
 

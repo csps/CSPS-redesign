@@ -17,6 +17,7 @@ const StudentTable = ({
   onFilterYear,
   searchQuery = "",
   yearFilter = "All",
+  isLoading = false,
 }: {
   students: StudentResponse[];
   currentPage: number;
@@ -28,6 +29,7 @@ const StudentTable = ({
   onFilterYear: (year: string) => void;
   searchQuery?: string;
   yearFilter?: string;
+  isLoading?: boolean;
 }) => {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -146,7 +148,6 @@ const StudentTable = ({
           </div>
         )}
       </AnimatePresence>
-
       {/* Table */}
       <div className="overflow-x-auto flex-1">
         <table className="w-full text-left text-sm text-white">
@@ -168,7 +169,20 @@ const StudentTable = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {currentStudents.length > 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-b border-white/5 bg-white/[0.01]">
+                  <td className="px-6 py-5"><div className="h-4 w-4 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-4 w-20 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-4 w-24 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-4 w-24 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-4 w-24 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-4 w-32 bg-white/10 rounded animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-6 w-16 bg-white/10 rounded-full animate-pulse"></div></td>
+                  <td className="px-6 py-5"><div className="h-8 w-24 bg-white/10 rounded-lg animate-pulse mx-auto"></div></td>
+                </tr>
+              ))
+            ) : currentStudents.length > 0 ? (
               currentStudents.map((student, index) => (
                 <tr
                   key={index}
@@ -232,7 +246,6 @@ const StudentTable = ({
           </tbody>
         </table>
       </div>
-
       {/* Pagination Footer */}
       <div className="p-6 mt-auto flex flex-col sm:flex-row justify-between items-center text-xs text-white/50 border-t border-white/5 gap-4 bg-[#110e31]">
         <span>

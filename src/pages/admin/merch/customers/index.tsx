@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import Layout from "../../../../components/Layout";
 import AuthenticatedNav from "../../../../components/AuthenticatedNav";
-import Footer from "../../../../components/Footer";
 import StatsStrip from "./components/StatsStrip";
 import CustomerFilterBar from "./components/CustomerFilterBar";
 import CustomerTable from "./components/CustomerTable";
@@ -436,7 +435,6 @@ const MerchCustomersPage = () => {
           </div>
         </div>
       </Layout>
-      <Footer />
 
       {/* Bulk Payment Modal */}
       <BulkPaymentModal

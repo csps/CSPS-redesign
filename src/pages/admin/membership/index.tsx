@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/Layout";
 import AuthenticatedNav from "../../../components/AuthenticatedNav";
-import RatioCards from "./components/RatioCards";
 import MemberTabs from "./components/MemberTabs";
 import BulkMembershipModal from "./components/BulkMembershipModal";
 import { getMembershipRatio } from "../../../api/studentMembership";
@@ -50,21 +49,26 @@ const MembershipDashboardPage = () => {
   };
 
   return (
-    <>
-      <Layout>
+    <Layout>
+      <div className="relative w-full max-w-[90rem] mx-auto px-4 md:px-8 py-6 text-white">
         <AuthenticatedNav />
-        <div className="p-6 space-y-6">
+        <div className="mt-8 space-y-8">
           {/* page header */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-purple-400 uppercase tracking-widest mb-1">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">
                 ADMIN DASHBOARD
               </p>
-              <h1 className="text-2xl font-bold text-white">
-                Membership Dashboard
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">
+                Membership Management
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
-                Monitor membership status and student activity
+              <p className="text-white/50">
+                Monitor membership status and enroll students
+                {ratio && !ratioLoading && (
+                  <span className="ml-2 px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs font-semibold">
+                    {ratio.memberPercentage.toFixed(1)}% Active Members
+                  </span>
+                )}
               </p>
             </div>
 
@@ -72,25 +76,32 @@ const MembershipDashboardPage = () => {
             {canEditFinance && (
               <button
                 onClick={() => setShowBulkModal(true)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#FDE006] hover:brightness-110 text-black rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-lg shadow-yellow-500/10 active:scale-95"
               >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
                 Add Member
               </button>
             )}
           </div>
 
-          {/* ratio cards + progress bar */}
-          <RatioCards ratio={ratio} loading={ratioLoading} />
-
-          {/* main content — 2-column layout on large screens */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* member tables take 2/3 */}
-            <div className="lg:col-span-2">
-              <MemberTabs
-                refreshTrigger={refreshTrigger}
-                canEditFinance={canEditFinance}
-              />
-            </div>
+          {/* main content */}
+          <div className="w-full">
+            <MemberTabs
+              refreshTrigger={refreshTrigger}
+              canEditFinance={canEditFinance}
+            />
           </div>
         </div>
 
@@ -102,8 +113,8 @@ const MembershipDashboardPage = () => {
             onSuccess={handleBulkMembershipSuccess}
           />
         )}
-      </Layout>
-    </>
+      </div>
+    </Layout>
   );
 };
 

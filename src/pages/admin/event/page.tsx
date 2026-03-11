@@ -85,8 +85,12 @@ const UpcomingEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+        <div className="flex gap-5 overflow-hidden pb-12">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] h-[260px] rounded-2xl bg-[#1e1a4a]/50 border border-white/5 animate-pulse shrink-0">
+              <div className="h-full w-full bg-white/5"></div>
+            </div>
+          ))}
         </div>
       ) : events.length === 0 ? (
         /* Modern Empty State */
@@ -228,8 +232,12 @@ const RecentEvents: React.FC<EventSectionProps> = ({ refreshTrigger }) => {
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <div className="w-10 h-10 border-4 border-gray-500/20 border-t-gray-500 rounded-full animate-spin" />
+        <div className="flex gap-5 overflow-hidden pb-12">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="w-[280px] sm:w-[320px] md:w-[360px] lg:w-[400px] h-[260px] rounded-2xl bg-[#1e1a4a]/30 border border-white/5 animate-pulse shrink-0">
+              <div className="h-full w-full bg-white/5"></div>
+            </div>
+          ))}
         </div>
       ) : events.length === 0 ? (
         /* Modern Empty State */

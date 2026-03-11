@@ -87,11 +87,33 @@ export default function ArchivedMerchandise() {
         {/* Content */}
         <div className="bg-[#1E1E3F]/20 border border-white/5 rounded-2xl p-6 min-h-[400px]">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-32">
-              <div className="w-12 h-12 border-4 border-purple-500/10 border-t-purple-500 rounded-full animate-spin mb-4" />
-              <p className="text-white font-medium">
-                Loading archived items...
-              </p>
+            <div className="overflow-x-auto rounded-lg border border-white/10">
+              <table className="w-full text-left text-sm text-gray-400">
+                <thead className="bg-[#1E1E3F] text-xs uppercase text-gray-400">
+                  <tr>
+                    <th scope="col" className="px-6 py-3">ID</th>
+                    <th scope="col" className="px-6 py-3">Name</th>
+                    <th scope="col" className="px-6 py-3">Type</th>
+                    <th scope="col" className="px-6 py-3">Price</th>
+                    <th scope="col" className="px-6 py-3">Variants</th>
+                    <th scope="col" className="px-6 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 bg-[#1E1E3F]/40">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td className="px-6 py-4"><div className="h-4 bg-white/10 rounded w-8"></div></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-white/10 rounded w-32"></div></td>
+                      <td className="px-6 py-4"><div className="h-6 bg-white/10 rounded-md w-20"></div></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-white/10 rounded w-16"></div></td>
+                      <td className="px-6 py-4"><div className="h-4 bg-white/10 rounded w-8"></div></td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="h-8 bg-white/10 rounded-lg w-16 ml-auto"></div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : archivedItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 text-center">

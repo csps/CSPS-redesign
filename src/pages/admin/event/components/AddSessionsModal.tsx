@@ -271,8 +271,10 @@ const AddSessionsModal: React.FC<AddSessionsModalProps> = ({
               {/* Sessions List */}
               <div className="flex-1 min-h-[200px]">
                 {loading ? (
-                  <div className="flex items-center justify-center h-40">
-                    <div className="w-8 h-8 border-4 border-white/10 border-t-purple-500 rounded-full animate-spin" />
+                  <div className="grid gap-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="bg-white/5 border border-white/5 rounded-xl h-[72px] md:h-14 animate-pulse"></div>
+                    ))}
                   </div>
                 ) : sessions.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-40 text-white/30 border-2 border-dashed border-white/5 rounded-2xl">
